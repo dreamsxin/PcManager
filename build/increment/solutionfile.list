@@ -1,0 +1,1 @@
+sln\safemon.sln,/t:rebuild /p:Configuration=Release /tv:2.0,msbuild

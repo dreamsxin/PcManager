@@ -1,0 +1,15 @@
+sln\bkver.sln
+sln\commonlib.sln
+sln\avcenter.sln
+sln\vulfix.sln
+src\src_bksafe\beikesafe\beikesafe.vcproj
+src\src_bksafe\beikesafeexam\beikesafeexam.vcproj
+sln\softmgr.sln
+sln\sysopt.sln
+sln\ksafeperfopt.sln
+sln\lang.sln
+sln\kclear.sln
+sln\ksafesvc.sln
+sln\kmsspeed.sln
+sln\kprocesslib.sln
+sln\netmon.sln

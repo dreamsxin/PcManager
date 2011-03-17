@@ -1,0 +1,39 @@
+// bksafesvc.idl : IDL source for bksafesvc
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (bksafesvc.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(5D645E64-DC44-4b0f-A7E8-CA99D8FB01D5),
+	dual,
+	nonextensible,
+	helpstring("Ibaiducomm Interface"),
+	pointer_default(unique)
+]
+interface Ibkcomm : IDispatch{
+    [id(1), helpstring("method Initialize")] HRESULT Initialize([in] int nModule, [in] ULONG ulProcId, [in] int nVersion);
+    [id(2), helpstring("method Call")] HRESULT Call([in] int nMethod, [in] BSTR bstrParams, [out,retval] BSTR* pbstrResponse);
+    [id(3), helpstring("method Uninitialize")] HRESULT Uninitialize(void);
+};
+[
+	uuid(C8A9F943-A300-4f74-A5BE-2D018625976E),
+	version(1.0),
+	helpstring("baidusafesvc 1.0 Type Library")
+]
+library baidusafesvcLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(FD1FF7A9-E395-4094-B25D-E4B371BE3B20),
+		helpstring("baiducomm Class")
+	]
+	coclass bkcomm
+	{
+		[default] interface Ibkcomm;
+	};
+};

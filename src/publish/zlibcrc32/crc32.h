@@ -1,0 +1,18 @@
+#ifndef _CRC_32_
+#define _CRC_32_
+
+
+//////////////////////////////////////////////////////////////////////////
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+	unsigned int CRC32(unsigned int CRC, void const *pvBuf, unsigned int uLen);
+#ifdef __cplusplus
+};
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+
+#endif  // _CRC_32
