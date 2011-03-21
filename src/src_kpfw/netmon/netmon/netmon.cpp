@@ -5,8 +5,6 @@
 #include "urlmon/urlmonservice.h"
 #include "kpfw/netmonsp.h"
 #include "kascom/kascom.h"
-#include "kpfw/netmon_compatible.h"
-#include "common/utility.h"
 
 class KNetmonImpl: public INetMonServiceProvider
 {
@@ -23,25 +21,6 @@ public:
 
 	virtual int __stdcall InitializeService( )
 	{
-        WinMod::CWinPath    path;
-        // 此变量加入kis机制
-        int                 npri = NETMON_FOR_KSAFE;
-        CNetmonPri          priMgr;
-
-
-        CAppPath::GetLeidianAppPath( path.m_strPath, FALSE );
-
-        priMgr.Initialize( npri, path );
-
-        if ( priMgr.HashHighPriVersion() )
-        {
-            return E_FAIL;
-        }
-        else
-        {
-            priMgr.SetPriInfomation();
-        }
-
 		return 0;
 	}
 
@@ -68,7 +47,6 @@ public:
 	KAS_END_COM_MAP()
 private:
 	KUrlMonService		m_urlservice;
-    CNetmonPri          m_primgr;
 };
 
 
