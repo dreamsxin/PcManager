@@ -21,7 +21,7 @@
             <button id="8404" pos="-45,0,-0,-0" class="normalbtn">搜索</button>
           </dlg>
         </dlg>
-        <dlg pos="0,32,-0,-30">
+        <dlg pos="0,31,-0,-30">
           <dlg pos="0,0,118,-0">
 
             <!-- 屏蔽一键装机
@@ -35,34 +35,43 @@
             <imgbtn id="8433" pos="5,-30,129,-0" class="btnonekey" skin="btnonekey"></imgbtn>
 
           </dlg>
-          <dlg id="8410" pos="118,0,-0,-0">
-            <dlg id="8405" pos="0,0,-0,27" class="softmgrdetailheader" show="0">
-              <imgbtn	id="8406" pos="14,3" class="linkimage" skin="btnbackquery" />
-              <richtext id="8407" pos="88,8,-0,27"  class="addspace"></richtext>
-            </dlg>
-            <dlg id="8408" pos="0,27,-0,-0" show="0">
-              <text id="8409" pos="0,30,-0,-60" class="centertext" font="0200" >没有找到相关软件，请重新输入关键词搜索</text>
-            </dlg>
-            <realwnd pos="0,0,-0,-0" id="8402" ctrlid="8402"  />
+          <dlg id="8436" pos="118,0,-0,28" class="updatetip" show="0">
+            <img pos="18,7" skin="urlmon_tip"/>
+            <text pos="40,8,320,20" crtext="000000" >软件库已更新到最新版本，重启金山卫士后生效</text>
+            <text	id="8437" pos="335,8" class="linkblue">立即重启</text>
+            <text	id="8438" pos="400,8" class="linkblue">忽略此消息</text>
+            <imgbtn id="8439" class="linkimage" skin="updateverbtn" pos="-20,5,-0,-0" show="1"/>
           </dlg>
-          <dlg id="8411" pos="118,0,-0,-0" show="0">
-            <dlg pos="0,0,-0,52" crbg="FCFDFE">
-              <imgbtn	id="8412" pos="0,0" class="linkimage" skin="btnbackdetail" />
-              <img	pos="65,0" skin="splitdetail" sub="1"/>
-              <realwnd pos="80,9,112,41" id="8414" ctrlid="8414" />
-              <richtext id="8415" pos="130,9,-100,21" class="addspace"></richtext>
-              <img	id="8416" pos="130,29" skin="icondetail" sub="1"/>
-              <text id="8417" pos="145,29">免费</text>
-              <img	id="8418" pos="180,29" skin="icondetail" sub="1"/>
-              <text id="8419" pos="195,29">有插件</text>
-              <img	id="8420" pos="242,29" skin="icondetail" sub="1"/>
-              <text id="8421" pos="257,29">适合当前版本（winXP）</text>
-              <text id="8423" pos="417,29" class="linktext">我来完善</text>
-              <imgbtn id="8424" class="linkimage" skin="btndetailsetup" pos="-78,14" />
+          <dlg id="8435" pos="118,0,-0,-0">
+            <dlg id="8410" pos="0,0,-0,-0">
+              <dlg id="8405" pos="0,0,-0,27" class="softmgrdetailheader" show="0">
+                <imgbtn	id="8406" pos="14,3" class="linkimage" skin="btnbackquery" />
+                <richtext id="8407" pos="88,8,-0,27"  class="addspace"></richtext>
+              </dlg>
+              <dlg id="8408" pos="0,27,-0,-0" show="0">
+                <text id="8409" pos="0,30,-0,-60" class="centertext" font="0200" >没有找到相关软件，请重新输入关键词搜索</text>
+              </dlg>
+              <realwnd pos="0,0,-0,-0" id="8402" ctrlid="8402"  />
             </dlg>
-            <dlg pos="0,52,-0,53" crbg="D9D9D9"></dlg>
-            <dlg pos="0,54,-0,-0">
-              <realwnd id="8425" pos="0,0,-0,-0" ctrlid="8424"/>
+            <dlg id="8411" pos="0,0,-0,-0" show="0">
+              <dlg pos="0,0,-0,52" crbg="FCFDFE">
+                <imgbtn	id="8412" pos="0,0" class="linkimage" skin="btnbackdetail" />
+                <img	pos="65,0" skin="splitdetail" sub="1"/>
+                <realwnd pos="80,9,112,41" id="8414" ctrlid="8414" />
+                <richtext id="8415" pos="130,9,-100,21" class="addspace"></richtext>
+                <img	id="8416" pos="130,29" skin="icondetail" sub="1"/>
+                <text id="8417" pos="145,29">免费</text>
+                <img	id="8418" pos="180,29" skin="icondetail" sub="1"/>
+                <text id="8419" pos="195,29">有插件</text>
+                <img	id="8420" pos="242,29" skin="icondetail" sub="1"/>
+                <text id="8421" pos="257,29">适合当前版本（winXP）</text>
+                <text id="8423" pos="417,29" class="linktext">我来完善</text>
+                <imgbtn id="8424" class="linkimage" skin="btndetailsetup" pos="-78,14" />
+              </dlg>
+              <dlg pos="0,52,-0,53" crbg="D9D9D9"></dlg>
+              <dlg pos="0,54,-0,-0">
+                <realwnd id="8425" pos="0,0,-0,-0" ctrlid="8424"/>
+              </dlg>
             </dlg>
           </dlg>
         </dlg>
@@ -199,72 +208,81 @@
           <dlg pos="117,0,118,-0" crbg="A4BAD2"></dlg>
         </dlg>
 
-        <!--软件大全的正常显示页面-->
-        <dlg id="8115" pos="118,0,-0,-31"  show="1">
-          <!--搜索提示页面-->
-          <!--<dlg id="8134" pos="0,0,-0,27" class="softmgrdetailheader" show="0">
-            <imgbtn	id="8135" pos="14,3" class="linkimage" skin="btnbackquery" show="0"/>
-            <richtext id="8136" pos="88,8,-0,27"  class="addspace"  show="0"></richtext>
-          </dlg>-->
-
-          <dlg id="8222" pos="0,0,-0,24" class="listheadernull" >
-            <dlg id="8134" pos="0,0,-0,24" show="0">
-              <imgbtn id="8175" pos="5,4" skin="query_return" class="linkimage"/>
-              <text	id="8135" pos="30,5" class="linkblue">返回</text>
-              <richtext id="8136" pos="78,5,-0,17"  class="addspace"></richtext>
-            </dlg>
-
-            <text id="8227" pos="20,5,60,17" class="typesel2">最新</text>
-            <text id="8228" pos="85,5">共50款</text>
-
-            <text pos="-240,5">排序：</text>
-            <text id="8223" pos="-197,5,-157,17" class="linkblue">按名称</text>
-            <text pos="-148,5">|</text>
-            <text id="8224" pos="-127,5,-87,17" class="linkblue">按大小</text>
-            <text pos="-78,5">|</text>
-            <text id="8225" pos="-57,5,-17,17" class="linkblue">按评分</text>
-            <img id="8226" pos="5,5" skin="listheaderarrowup" show="0"/>
-          </dlg>
-          <!--<dlg id="8222" pos="0,0,-0,20">
-            <text id="8223" pos="0,0,-320,-0" class="listheader" crbg="AAAA00">软件名称</text>
-            <dlg pos="-320,0,-0,20">
-              <text id="8224" pos="0,0,100,-0" class="listheader" crbg="AAAA00">占用空间</text>
-              <text id="8225" pos="100,0,200,-0" class="listheader" crbg="00AA00">软件评分</text>
-              <text pos="200,0,320,-0" class="listheader" crbg="AAAA00">操作</text>
-            </dlg>
-            <img id="8226" pos="5,5" skin="listheaderarrowup" transparent="1" show="0"/>
-          </dlg>-->
-
-          <!--右侧listview-->
-          <realwnd pos="0,24,-0,-0" id="8100" ctrlid="8100" />
-
-          <dlg id="8137" pos="0,28,-0,-0" show="0">
-            <text pos="0,30,-0,-60" class="centertext" font="0200" >没有找到相关软件，请重新输入关键词搜索</text>
-          </dlg>
-
+        <dlg id="8441" pos="118,0,-0,28" class="updatetip" show="0">
+          <img pos="18,7" skin="urlmon_tip"/>
+          <text pos="40,8,320,20" crtext="000000" >软件库已更新到最新版本，重启金山卫士后生效</text>
+          <text	id="8442" pos="335,8" class="linkblue">立即重启</text>
+          <text	id="8443" pos="400,8" class="linkblue">忽略此消息</text>
+          <imgbtn id="8444" class="linkimage" skin="updateverbtn" pos="-20,5,-0,-0" show="1"/>
         </dlg>
+        <dlg id="8440" pos="118,0,-0,-31">
+          <!--软件大全的正常显示页面-->
+          <dlg id="8115" pos="0,0,-0,-0"  show="1">
+            <!--搜索提示页面-->
+            <!--<dlg id="8134" pos="0,0,-0,27" class="softmgrdetailheader" show="0">
+              <imgbtn	id="8135" pos="14,3" class="linkimage" skin="btnbackquery" show="0"/>
+              <richtext id="8136" pos="88,8,-0,27"  class="addspace"  show="0"></richtext>
+            </dlg>-->
 
-        <!--显示详情页面-->
-        <dlg id="8116" pos="118,1,-0,-31" show="1">
-          <dlg pos="0,0,-0,52" crbg="FCFDFE">
-            <imgbtn	id="8119" pos="0,0" class="linkimage" skin="btnbackdetail" />
-            <img	pos="65,0" skin="splitdetail" sub="1"/>
-            <realwnd pos="80,9,112,41" id="8122" ctrlid="8122" />
-            <richtext id="8121" pos="130,9,-100,21" class="addspace"></richtext>
-            <img	id="8129" pos="130,29" skin="icondetail" sub="1"/>
-            <text id="8123" pos="145,29">免费</text>
-            <img	id="8130" pos="180,29" skin="icondetail" sub="1"/>
-            <text id="8124" pos="195,29">有插件</text>
-            <img	id="8131" pos="242,29" skin="icondetail" sub="1"/>
-            <text id="8125" pos="257,29">适合当前版本（winXP）</text>
-            <text id="8133" pos="417,29" class="linktext">我来完善</text>
-            <imgbtn id="8126" class="linkimage" skin="btndetailsetup" pos="-78,14" />
+            <dlg id="8222" pos="0,0,-0,24" class="listheadernull" >
+              <dlg id="8134" pos="0,0,-0,24" show="0">
+                <imgbtn id="8175" pos="5,4" skin="query_return" class="linkimage"/>
+                <text	id="8135" pos="30,5" class="linkblue">返回</text>
+                <richtext id="8136" pos="78,5,-0,17"  class="addspace"></richtext>
+              </dlg>
+
+              <text id="8227" pos="20,5,60,17" class="typesel2">最新</text>
+              <text id="8228" pos="85,5">共50款</text>
+
+              <text pos="-240,5">排序：</text>
+              <text id="8223" pos="-197,5,-157,17" class="linkblue">按名称</text>
+              <text pos="-148,5">|</text>
+              <text id="8224" pos="-127,5,-87,17" class="linkblue">按大小</text>
+              <text pos="-78,5">|</text>
+              <text id="8225" pos="-57,5,-17,17" class="linkblue">按评分</text>
+              <img id="8226" pos="5,5" skin="listheaderarrowup" show="0"/>
+            </dlg>
+            <!--<dlg id="8222" pos="0,0,-0,20">
+              <text id="8223" pos="0,0,-320,-0" class="listheader" crbg="AAAA00">软件名称</text>
+              <dlg pos="-320,0,-0,20">
+                <text id="8224" pos="0,0,100,-0" class="listheader" crbg="AAAA00">占用空间</text>
+                <text id="8225" pos="100,0,200,-0" class="listheader" crbg="00AA00">软件评分</text>
+                <text pos="200,0,320,-0" class="listheader" crbg="AAAA00">操作</text>
+              </dlg>
+              <img id="8226" pos="5,5" skin="listheaderarrowup" transparent="1" show="0"/>
+            </dlg>-->
+
+            <!--右侧listview-->
+            <realwnd pos="0,24,-0,-0" id="8100" ctrlid="8100" />
+
+            <dlg id="8137" pos="0,28,-0,-0" show="0">
+              <text pos="0,30,-0,-60" class="centertext" font="0200" >没有找到相关软件，请重新输入关键词搜索</text>
+            </dlg>
+
           </dlg>
-          <dlg pos="0,52,-0,53" crbg="D9D9D9"></dlg>
 
-          <!--IE控件，显示软件详情-->
-          <dlg pos="0,54,-0,-0">
-            <realwnd id="8127" pos="0,0,-0,-0" ctrlid="8127"/>
+          <!--显示详情页面-->
+          <dlg id="8116" pos="0,0,-0,-0" show="1">
+            <dlg pos="0,0,-0,52" crbg="FCFDFE">
+              <imgbtn	id="8119" pos="0,0" class="linkimage" skin="btnbackdetail" />
+              <img	pos="65,0" skin="splitdetail" sub="1"/>
+              <realwnd pos="80,9,112,41" id="8122" ctrlid="8122" />
+              <richtext id="8121" pos="130,9,-100,21" class="addspace"></richtext>
+              <img	id="8129" pos="130,29" skin="icondetail" sub="1"/>
+              <text id="8123" pos="145,29">免费</text>
+              <img	id="8130" pos="180,29" skin="icondetail" sub="1"/>
+              <text id="8124" pos="195,29">有插件</text>
+              <img	id="8131" pos="242,29" skin="icondetail" sub="1"/>
+              <text id="8125" pos="257,29">适合当前版本（winXP）</text>
+              <text id="8133" pos="417,29" class="linktext">我来完善</text>
+              <imgbtn id="8126" class="linkimage" skin="btndetailsetup" pos="-78,14" />
+            </dlg>
+            <dlg pos="0,52,-0,53" crbg="D9D9D9"></dlg>
+
+            <!--IE控件，显示软件详情-->
+            <dlg pos="0,54,-0,-0">
+              <realwnd id="8127" pos="0,0,-0,-0" ctrlid="8127"/>
+            </dlg>
           </dlg>
         </dlg>
       </dlg>
@@ -317,52 +335,62 @@
             </richtext>
           </dlg>
         </dlg>
-        <dlg id="8256" pos="1,31,-0,-31"  show="1">
 
-          <dlg id="8290" pos="0,0,-0,-0">
-            <!--右侧listview-->
-            <realwnd pos="0,0,-0,-31" id="8257" ctrlid="8257" />
+        <dlg id="8446" pos="0,31,-0,59" class="updatetip" show="0">
+          <img pos="18,7" skin="urlmon_tip"/>
+          <text pos="40,8,320,20" crtext="000000" >软件库已更新到最新版本，重启金山卫士后生效</text>
+          <text	id="8447" pos="335,8" class="linkblue">立即重启</text>
+          <text	id="8448" pos="400,8" class="linkblue">忽略此消息</text>
+          <imgbtn id="8449" class="linkimage" skin="updateverbtn" pos="-20,5,-0,-0" show="1"/>
+        </dlg>
+        <dlg id="8445" pos="0,31,-0,-31">
+          <dlg id="8256" pos="0,0,-0,-0"  show="1">
 
-            <!--底部-->
-            <dlg pos="0,-31,-0,-0" crbg="EFF9FF">
-              <check id="8260"  pos="10,-21">全选</check>
+            <dlg id="8290" pos="0,0,-0,-0">
+              <!--右侧listview-->
+              <realwnd pos="0,0,-0,-31" id="8257" ctrlid="8257" />
 
-              <dlg id="8272" pos="-125,5,-20,26" class="normalbtn" onlydrawchild="1">
-                <img id="8273" pos="2,5" skin="arrow" sub="0" />
-                <text id="8274" pos="18,5">升级选中软件</text>
+              <!--底部-->
+              <dlg pos="0,-31,-0,-0" crbg="EFF9FF">
+                <check id="8260"  pos="10,-21">全选</check>
+
+                <dlg id="8272" pos="-125,5,-20,26" class="normalbtn" onlydrawchild="1">
+                  <img id="8273" pos="2,5" skin="arrow" sub="0" />
+                  <text id="8274" pos="18,5">升级选中软件</text>
+                </dlg>
               </dlg>
             </dlg>
+
+            <!--没有软件升级但有忽略升级-->
+            <dlg id="8286" pos="|-160,140,|160,158" show="0">
+              <img pos="0,3" skin="infoicon" sub="0"/>
+              <richtext id="8288" pos="32,12,-0,27" class="addspace">检测到有 0 款软件已设置为不再提醒升级</richtext>
+              <text id="8289" pos="277,12" class="linkblue">点击查看</text>
+            </dlg>
+
           </dlg>
 
-          <!--没有软件升级但有忽略升级-->
-          <dlg id="8286" pos="|-160,140,|160,158" show="0">
-            <img pos="0,3" skin="infoicon" sub="0"/>
-            <richtext id="8288" pos="32,12,-0,27" class="addspace">检测到有 0 款软件已设置为不再提醒升级</richtext>
-            <text id="8289" pos="277,12" class="linkblue">点击查看</text>
-          </dlg>
+          <!--显示详情页面-->
+          <dlg id="8258" pos="0,0,-0,-0" show="0">
+            <dlg pos="0,0,-0,52" crbg="FCFDFE">
+              <imgbtn	id="8263" pos="0,0" class="linkimage" skin="btnbackdetail" />
+              <img	pos="65,0" skin="splitdetail" sub="1"/>
+              <realwnd pos="80,9,112,41" id="8264" ctrlid="8264" />
+              <richtext id="8265" pos="130,9,-100,21" class="addspace"></richtext>
+              <img	id="8266" pos="130,29" skin="icondetail" sub="1"/>
+              <text id="8267" pos="145,29">免费</text>
+              <img	id="8268" pos="180,29" skin="icondetail" sub="1"/>
+              <text id="8269" pos="195,29">有插件</text>
+              <img	id="8270" pos="242,29" skin="icondetail" sub="1"/>
+              <text id="8271" pos="257,29">适合当前版本（winXP）</text>
+              <imgbtn id="8278" class="linkimage" skin="btndetailupdate" pos="-78,14" />
+            </dlg>
+            <dlg pos="0,52,-0,53" crbg="D9D9D9"></dlg>
 
-        </dlg>
-
-        <!--显示详情页面-->
-        <dlg id="8258" pos="0,31,-0,-31" show="0">
-          <dlg pos="0,0,-0,52" crbg="FCFDFE">
-            <imgbtn	id="8263" pos="0,0" class="linkimage" skin="btnbackdetail" />
-            <img	pos="65,0" skin="splitdetail" sub="1"/>
-            <realwnd pos="80,9,112,41" id="8264" ctrlid="8264" />
-            <richtext id="8265" pos="130,9,-100,21" class="addspace"></richtext>
-            <img	id="8266" pos="130,29" skin="icondetail" sub="1"/>
-            <text id="8267" pos="145,29">免费</text>
-            <img	id="8268" pos="180,29" skin="icondetail" sub="1"/>
-            <text id="8269" pos="195,29">有插件</text>
-            <img	id="8270" pos="242,29" skin="icondetail" sub="1"/>
-            <text id="8271" pos="257,29">适合当前版本（winXP）</text>
-            <imgbtn id="8278" class="linkimage" skin="btndetailupdate" pos="-78,14" />
-          </dlg>
-          <dlg pos="0,52,-0,53" crbg="D9D9D9"></dlg>
-
-          <!--IE控件，显示软件详情-->
-          <dlg pos="0,54,-0,-0">
-            <realwnd id="8259" pos="0,0,-0,-0" ctrlid="8259"/>
+            <!--IE控件，显示软件详情-->
+            <dlg pos="0,54,-0,-0">
+              <realwnd id="8259" pos="0,0,-0,-0" ctrlid="8259"/>
+            </dlg>
           </dlg>
         </dlg>
       </dlg>
@@ -566,11 +594,11 @@
               <img id="8304" pos="5,5" skin="listheaderarrowup" show="0"/>
             </dlg>
             <dlg pos="0,24,-0,44">
-              <text pos="0,0,-320,-0" class="listheader" crbg="AAAA00">名称</text>
+              <text pos="0,0,-320,-0" class="softlistheader" crbg="AAAA00">名称</text>
               <dlg pos="-320,0,-0,20">
-                <text pos="0,0,100,-0" class="listheader" crbg="AAAA00">软件大小</text>
-                <text pos="100,0,200,-0" class="listheader" crbg="00AA00">使用频率</text>
-                <text pos="200,0,320,-0" class="listheader" crbg="AAAA00">操作</text>
+                <text pos="0,0,100,-0" class="softlistheader" crbg="AAAA00">软件大小</text>
+                <text pos="100,0,200,-0" class="softlistheader" crbg="00AA00">使用频率</text>
+                <text pos="200,0,320,-0" class="softlistheader" crbg="AAAA00">操作</text>
               </dlg>
               <!--<img id="8304" pos="5,5" skin="listheaderarrowup" transparent="1" show="0"/>-->
             </dlg>
@@ -674,5 +702,4 @@
   <text id="8102" pos="-45,8"  class="linktext5" crtext="FFFFFF"> 设置</text>
   <img	id="8106" pos="-118,5" show="0" skin="refrshsoftmgr" />
   <text id="8103" pos="-96,8" show="0" class="linktext5" crtext="FFFFFF"> 刷新</text>
-
 </dlg>

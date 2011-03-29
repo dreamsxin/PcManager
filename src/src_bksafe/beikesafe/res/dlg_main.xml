@@ -1,4 +1,4 @@
-﻿<layer title="金山卫士 2.6Beta" width="800" height="570" appwin="1" resize="1">
+﻿<layer title="金山卫士 2.6" width="800" height="570" appwin="1" resize="1">
 	<header class="mainhead" width="full" height="23">
 		<dlgfile pos="0,0,-0,-0" src="509" />
 	</header>

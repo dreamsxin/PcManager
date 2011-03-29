@@ -62,8 +62,10 @@
 <class name=msgtext font=0000 crtext=000000 textmode=850/>
 <class name=msgtextsingleline font=0000 crtext=000000 textmode=874/>
   <class name="listheadernull" skin="listheaderbgnull" font="0000" crtext="000000" crbg="FBFCFD" textmode="25"/>
+  <class name="updatetip" skin="updatetipbg" font="0000" crtext="000000" crbg="FBFCFD" textmode="25"/>
 <class name=listheader skin=listheaderbg font=0000 crtext=6f6f6f crbg=FBFCFD textmode=25/>
-<class name=listheader2 skin=listheaderbg2 font=0000 crtext=000000 crbg=FBFCFD textmode=25/>  
+<class name=listheader2 skin=listheaderbg2 font=0000 crtext=000000 crbg=FBFCFD textmode=25/>
+  <class name="softlistheader" skin="softlistheaderbg" font="0000" crtext="6f6f6f" crbg="FBFCFD" textmode="25"/>  
 <class name=pluglistheader skin=pluglistheaderbg font=0000 crtext=000000 crbg=FBFCFD textmode=25/>
 <class name=list spacing=10/>
 <class name=dlgtitle font=0004 crtext=FFFFFF textmode="8030"/>

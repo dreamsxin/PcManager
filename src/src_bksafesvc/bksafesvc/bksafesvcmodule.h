@@ -204,7 +204,9 @@ public :
 		{
 			m_bStopKwsp = TRUE;
 
+            CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Begin Stop m_BasicSPWrapper");
 			m_BasicSPWrapper.Uninitialize();
+            CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Stop m_BasicSPWrapper Success");
 
 		}
 
@@ -214,10 +216,16 @@ public :
             m_hComMutex = NULL;
         }
 
+        CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Begin Stop Kwssp");
 		Kwssp::Instance().Stop();
+
+        CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Begin Stop KNetmonSp");
 		KNetmonSp::Instance().Stop();
 
+        CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Begin Stop RescanSp");
         CBKRescanSpMgr::Instance().StopRescanSP();
+
+        CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Begin Uninit RescanSp");
         CBKRescanSpMgr::Instance().Uninitialize();
 
         //         CUnkownRescan::Instance().NotifyStop();
@@ -229,14 +237,11 @@ public :
         //CUnkownReport::Instance().WaitExit(INFINITE);
         //CUnkownReport::Instance().Uninitialize();
 
-
+        CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Begin Uninit KxeBase");
 		KxeBaseUnInit();
-    }
 
-	void OnShutdown()
-	{
-		KNetmonSp::Instance().Stop();
-	}
+        CRunTimeLog::WriteLog(WINMOD_LLVL_DEBUG, L"[OnStop] Uninit Over");
+    }
 
     void OnFinal()
     {

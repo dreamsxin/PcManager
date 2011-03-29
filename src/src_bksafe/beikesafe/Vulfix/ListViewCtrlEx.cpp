@@ -80,7 +80,7 @@ CHeaderCtrlEx::CHeaderCtrlEx()
 {
 	m_nHeight = -1;
 	m_font.Attach( BkFontPool::GetFont(BKF_DEFAULTFONT) );
-	m_bitmapHeader.Attach( BkBmpPool::GetBitmap(IDB_BITMAP_LISTCTRL_HEADER));
+	m_bitmapHeader.Attach( BkBmpPool::GetBitmap(IDB_VUL_LIST_HEADER));
 }
 
 CHeaderCtrlEx::~CHeaderCtrlEx()
@@ -98,16 +98,20 @@ void CHeaderCtrlEx::OnPaint( CDCHandle )
 {	
 	CPaintDC dc(m_hWnd);
 	CDC dcTemp;
-	
+	COLORREF clrText = RGB(0x48, 0x46, 0x47);
+    COLORREF clrOld;
+
 	dcTemp.CreateCompatibleDC( dc );
 	HBITMAP hOldBitmap = dcTemp.SelectBitmap(m_bitmapHeader);
 
 	HFONT hOldFont = dc.SelectFont( m_font );
 	dc.SetBkMode( TRANSPARENT );
-	
+	clrOld = dc.SetTextColor(clrText);
+
 	RECT rc = {0};
 	GetClientRect( &rc );	
-	dc.StretchBlt(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, dcTemp, 0, 0, 3, 20, SRCCOPY);
+    dc.FillSolidRect(CRect(rc), RGB(255,255,255));
+	dc.StretchBlt(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, dcTemp, 0, 0, 3, 30, SRCCOPY);
 	int nItems = GetItemCount();
 	for(int i=0; i<nItems; ++i)
 	{
@@ -115,7 +119,7 @@ void CHeaderCtrlEx::OnPaint( CDCHandle )
 		GetItemRect(i, &rcItem);
 		
 		// Draw split 
-		dc.StretchBlt(rcItem.right-3, rcItem.top, 3, rcItem.Height(), dcTemp, 3, 0, 3, 20, SRCCOPY);
+		dc.StretchBlt(rcItem.right-3, rcItem.top, 3, rcItem.Height(), dcTemp, 3, 0, 3, 30, SRCCOPY);
 		
 		// Draw text
 		rcItem.DeflateRect(2, 0);
@@ -133,12 +137,15 @@ void CHeaderCtrlEx::OnPaint( CDCHandle )
 			uAlign = DT_CENTER;
 		else if(hdItem.fmt & HDF_RIGHT)
 			uAlign = DT_RIGHT;
+        else if (i==0)
+            uAlign = DT_CENTER;
 		uFormat |= uAlign;
 		
 		dc.DrawText(buf, -1, rcItem, uFormat);
 	}
 	dc.SelectFont(hOldFont);	
-	dcTemp.SelectBitmap(hOldBitmap);	
+    dc.SetTextColor(clrOld);
+	dcTemp.SelectBitmap(hOldBitmap);
 }
 
 BOOL CHeaderCtrlEx::OnEraseBkgnd( CDCHandle dc )
@@ -202,7 +209,7 @@ HWND CListViewCtrlEx::Create( HWND hWndParent, _U_RECT rect /*= NULL*/, LPCTSTR 
 	_super::SetExtendedListViewStyle( LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT|_super::GetExtendedListViewStyle() );
 	
 	m_ctlHeader.SubclassWindow( GetHeader().m_hWnd );
-	m_ctlHeader.SetHeight(25);
+	m_ctlHeader.SetHeight(30);
 	m_ctlHeader.ModifyStyle(HDS_FULLDRAG, 0, 0);
 
 	_super::SetBkColor(BACKGROUND_COLOR);
@@ -349,7 +356,7 @@ int CListViewCtrlEx::Append( LPCTSTR strItem, DWORD dwFlags /*=0*/, E_SubItemTyp
 	int nItem = _super::AddItem(_super::GetItemCount(), 0, _T(""));//子项
 	TListItem *pitem = new TListItem;
 	pitem->dwFlags = dwFlags;
-	pitem->subItems.push_back( TListSubItem(strItem, itemType) );
+	//pitem->subItems.push_back( TListSubItem(strItem, itemType) );
 	pitem->nLevel = LevelType(strItem);//hub  等级排序之用
 	m_arrItems.push_back( pitem );
 	return nItem;
@@ -369,13 +376,16 @@ int CListViewCtrlEx::AppendTitleItem(int nItem, LPCTSTR strItem, CRect rc, E_Sub
 	return m_arrItems[nItem]->subItems.size();
 }
 
-int CListViewCtrlEx::AppendSubItem( int nItem, LPCTSTR strItem, E_SubItemType itemType/*=SUBITEM_TEXT*/ )
+int CListViewCtrlEx::AppendSubItem(int nItem, LPCTSTR strItem, 
+                                   E_SubItemType itemType/* =SUBITEM_TEXT */, 
+                                   E_SubTextType iTextType/* =ST_LEFT */,
+                                   BOOL bDetail/* =FALSE */)
 {
 	BOOL bValid = nItem>=0 && nItem<m_arrItems.size();
 	ATLASSERT(bValid);
 	if( !bValid )
 		return -1;
-	m_arrItems[nItem]->subItems.push_back( TListSubItem(strItem, itemType) );
+	m_arrItems[nItem]->subItems.push_back( TListSubItem(strItem, itemType, iTextType, bDetail) );
 	return m_arrItems[nItem]->subItems.size();
 }
 DWORD CListViewCtrlEx::GetItemData(int nItem)
@@ -515,7 +525,9 @@ LRESULT CListViewCtrlEx::OnClick( int idCtrl, LPNMHDR pnmh, BOOL& bHandled )
 		// - link check 
 		int iSubItem = lpnmitem->iSubItem;
 		if(_PtInSubItemLink(lpnmitem->ptAction, lpnmitem->iItem, iSubItem) )
+        {
 			_FireEvent(WMH_LISTEX_LINK, lpnmitem->iItem, iSubItem);
+        }
 		else if( pItem->dwFlags & (LISTITEM_CHECKBOX|LISTITEM_RADIOBOX) )
 		{
 			// - check box 
@@ -529,6 +541,7 @@ LRESULT CListViewCtrlEx::OnClick( int idCtrl, LPNMHDR pnmh, BOOL& bHandled )
 			{
 				bDirty = TRUE;
 				SetCheckState( lpnmitem->iItem, !_super::GetCheckState(lpnmitem->iItem) );
+                _FireEvent(MSG_USER_VUL_SELECT_CHANGE, NULL, NULL);
 			}
 			
 			if( bDirty )
@@ -690,6 +703,7 @@ void CListViewCtrlEx::_DrawTitleItem( LPDRAWITEMSTRUCT lpdis, const TListItem *p
 	
 	// 
 	RECT rcItem = lpdis->rcItem;
+    rcItem.left += 8;
 	//if( pItem->dwFlags&LISTITEM_EXPANDABLE )
 	if (pItem->emTitle == TITLE_OPTION || pItem->emTitle == TITLE_SP)//可选
 	{
@@ -711,6 +725,7 @@ void CListViewCtrlEx::_DrawTitleItem( LPDRAWITEMSTRUCT lpdis, const TListItem *p
 		bool	bVCenter=TRUE;
 		const TListSubItem& subItem = pItem->subItems[i];
 		CRect rcItem = subItem.rcOffset;
+
 		if ( i == 0 )
 		{
 			rcItem = lpdis->rcItem;
@@ -726,7 +741,7 @@ void CListViewCtrlEx::_DrawTitleItem( LPDRAWITEMSTRUCT lpdis, const TListItem *p
 				rcItem.top += 2;
 				rcItem.bottom -= 2;
 			}
-			rcItem.left+= pItem->nLeftmargin;
+			rcItem.left+= pItem->nLeftmargin + 8;
 		}
 		else
 		{
@@ -819,6 +834,7 @@ void CListViewCtrlEx::_DrawNormalItem( LPDRAWITEMSTRUCT lpdis, const TListItem *
 		{
 			if( pItem->dwFlags&(LISTITEM_CHECKBOX|LISTITEM_RADIOBOX) )
 			{
+                rcSubItem.left+=24;
 				nMarginWidth+=rcSubItem.left;
 			}
 			else
@@ -833,28 +849,74 @@ void CListViewCtrlEx::_DrawNormalItem( LPDRAWITEMSTRUCT lpdis, const TListItem *
 		rcSubItem.left += LEFT_MARGIN_TEXT_COLUMN;
 		rcSubItem.right -= 3;
 		const TListSubItem &subItem = pItem->subItems[i];
+        UINT uFormat = DT_SINGLELINE|DT_NOPREFIX|DT_VCENTER|DT_CALCRECT;
+        UINT uFormat1 = DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS|DT_VCENTER;
+        if (subItem.tType == ST_LEFT)
+        {
+            uFormat |= DT_LEFT;
+            uFormat1 |= DT_LEFT;
+        }
+        else if (subItem.tType == ST_RIGHT)
+        {
+            uFormat |= DT_RIGHT;
+            uFormat1 |= DT_RIGHT;
+        }
+        else if (subItem.tType == ST_CENTER)
+        {
+            uFormat |= DT_CENTER;
+            uFormat1 |= DT_CENTER;
+        }
+        
+        if (subItem.bCheckDetail && bSelect)
+        {
+            CSize sizetemp;
+            dc.GetTextExtent(subItem.str, (int)subItem.str.GetLength(), &sizetemp);
+            if(rcSubItem.right - 80 >= rcSubItem.left + sizetemp.cx)
+                rcSubItem.right = rcSubItem.left + sizetemp.cx;
+            else 
+                rcSubItem.right = rcSubItem.right - 80;          
+        }
+
 		if(subItem.type==SUBITEM_LINK)
 		{
 			dc.SelectFont(m_fontLink);
 			dc.SetTextColor(COLOR_LIST_LINK);
 
 			CRect	rcProbeItem;
-			dc.DrawText( subItem.str, -1, &rcProbeItem, DT_SINGLELINE|DT_LEFT|DT_NOPREFIX|DT_VCENTER|DT_CALCRECT);
+			dc.DrawText( subItem.str, -1, &rcProbeItem, uFormat);
 			dc.DrawText( subItem.str, -1, &rcSubItem, DT_FLAGS_DRAW_TEXT);
 
 			DWORD nMaxWidth = rcProbeItem.Width()+nMarginWidth;
 			_SetColumnNeedWidth(i,nMaxWidth);
 		}
 		else
-		{
-			dc.SetTextColor( subItem.clr );
-			dc.DrawText( subItem.str, -1, &rcSubItem, DT_SINGLELINE|DT_LEFT|DT_NOPREFIX|DT_END_ELLIPSIS|DT_VCENTER);
+        {
+            CRect	rcProbeItem;
 
-			CRect	rcProbeItem;
-			dc.DrawText( subItem.str, -1, &rcProbeItem, DT_SINGLELINE|DT_LEFT|DT_NOPREFIX|DT_VCENTER|DT_CALCRECT);
+            dc.SetTextColor( subItem.clr );
+			dc.DrawText( subItem.str, -1, &rcSubItem, uFormat1);
+
+			dc.DrawText( subItem.str, -1, &rcProbeItem, uFormat);
 			DWORD nMaxWidth = rcProbeItem.Width()+nMarginWidth;
 			_SetColumnNeedWidth(i,nMaxWidth);
 		}
+
+        if (subItem.bCheckDetail && bSelect)
+        {
+            rcSubItem.left = rcSubItem.right + 5;
+            rcSubItem.right += 75;
+            HFONT oldFnt = dc.SelectFont(m_fontLink);
+            COLORREF clrOld = dc.SetTextColor(COLOR_LIST_LINK);
+
+            CRect rcProbeItem;
+            dc.DrawText( _T("查看详情"), -1, &rcProbeItem, uFormat);
+            dc.DrawText( _T("查看详情"), -1, &rcSubItem, DT_FLAGS_DRAW_TEXT);
+
+//             DWORD nMaxWidth = rcProbeItem.Width()+nMarginWidth;
+//             _SetColumnNeedWidth(i,nMaxWidth);
+            dc.SelectFont(oldFnt);
+            dc.SetTextColor(clrOld);
+        }
 	}
 	
 	CPen	penx;
@@ -971,6 +1033,41 @@ bool CListViewCtrlEx::_PtInSubItemLink( const POINT &pt, int nItem, int& nSubIte
 				RECT rcLink = {0};
 				return _GetSubItemLinkRect(nItem, nSubItem, subItem.str, rcLink) && PtInRect(&rcLink, pt);
 			}
+            else if (subItem.bCheckDetail && GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED)
+            {
+                CRect rcItem;
+                _super::GetSubItemRect( nItem, nSubItem, LVIR_LABEL, &rcItem );
+                
+                HDC hDC = GetWindowDC(); 
+
+                if(!hDC)
+                    return FALSE;
+
+                CDC dc;
+                CSize sizetemp;
+
+                dc.Attach( hDC );
+                
+                rcItem.left += 24;
+
+                HFONT oldFont = dc.SelectFont(BkFontPool::GetFont(FALSE, FALSE, FALSE));
+
+                dc.GetTextExtent(subItem.str, (int)subItem.str.GetLength(), &sizetemp);
+                if(rcItem.right - 80 >= rcItem.left + sizetemp.cx)
+                    rcItem.right = rcItem.left + sizetemp.cx;
+                else 
+                    rcItem.right = rcItem.right - 80;
+                CString str = _T("查看详情");
+                dc.GetTextExtent(str, (int)str.GetLength(), &sizetemp);
+
+                rcItem.left = rcItem.right + 5;
+                rcItem.right += sizetemp.cx;
+                dc.SelectFont(oldFont);
+                dc.Detach();
+                ReleaseDC( hDC );
+
+                return PtInRect(&rcItem, pt);
+            }
 		}
 	}
 	return false;
@@ -1011,7 +1108,7 @@ RECT CListViewCtrlEx::_GetRectCheckBox( RECT &rcItem )
 {
 	INT nHeight = rcItem.bottom - rcItem.top;
 	int nTop = rcItem.top + (nHeight-13)/2;
-	RECT rcCheckBox = {rcItem.left+6, nTop, rcItem.left+6+13, nTop+13};
+	RECT rcCheckBox = {rcItem.left+24, nTop, rcItem.left+24+13, nTop+13};
 	return rcCheckBox;
 }
 

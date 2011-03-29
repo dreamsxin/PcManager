@@ -34,10 +34,11 @@ CBeikeSafeSettingDlg::~CBeikeSafeSettingDlg()
 {
 }
 
-UINT_PTR CBeikeSafeSettingDlg::DoModal(int nPage, HWND hWndParent)
+UINT_PTR CBeikeSafeSettingDlg::DoModal(int nPage, HWND hWndParent, CBeikeSafeMainDlg *pDialog, int nSubPage /*= -1*/)
 {
     m_nPage = nPage;
-
+	m_dlg = pDialog;
+	m_nSubPage = nSubPage;
     return __super::DoModal(hWndParent);
 }
 
@@ -69,6 +70,8 @@ int CBeikeSafeSettingDlg::_LoadBkSafePorxServer()
 BOOL CBeikeSafeSettingDlg::OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
 {
     SetTabCurSel(IDC_TAB_SETTING, m_nPage);
+	if (m_nSubPage != -1)
+		SetTabCurSel(IDC_TAB_SETTING_SOFTMGR, m_nSubPage);
 
     _LoadBkSafeSettings();
     _LoadTraySettings();
@@ -105,30 +108,6 @@ LRESULT CBeikeSafeSettingDlg::OnAppProxyChange( UINT uMsg, WPARAM wParam, LPARAM
 {
 	GetParent().PostMessage( MSG_APP_PROXY_CHANGE, NULL, NULL );
 	return TRUE;
-}
-
-LRESULT CBeikeSafeSettingDlg::OnBkSafeSoftMgrUpdateSoftSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-	OnBkSafeSoftMgrSettingChanged();
-	return true;
-}
-
-LRESULT CBeikeSafeSettingDlg::OnBkSafeSoftMgrAutoInstallSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-	OnBkSafeSoftMgrSettingChanged();
-	return true;
-}
-
-LRESULT CBeikeSafeSettingDlg::OnBkSafeSoftMgrDelFile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-	OnBkSafeSoftMgrSettingChanged();
-	return true;
-}
-
-LRESULT CBeikeSafeSettingDlg::OnBkSafeSoftMgrPowerSweepFile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-	OnBkSafeSoftMgrSettingChanged();
-	return true;
 }
 
 void CBeikeSafeSettingDlg::OnBkBtnOK()
@@ -841,61 +820,51 @@ void CBeikeSafeSettingDlg::LoadSoftMgrSettings()
 
 	nRet = BKSafeConfig::GetHintPlugin();
 	if (nRet)
-		SetItemCheck(IDC_CHECK_SHOWHINT, TRUE);
+		SetItemCheck(IDC_RADIO_SHOW_PLUGIN_TIP, TRUE);
 	else
-		SetItemCheck(IDC_CHECK_SHOWHINT, FALSE);
+		SetItemCheck(IDC_RADIO_IGNORE_PLUGIN_TIP, TRUE);
 
 	nRet = BKSafeConfig::GetUpdatePointOut();
-	if (m_comBoUpdatSoft.IsWindow() == FALSE)
+	switch(nRet)
 	{
-		m_comBoUpdatSoft.Create( this->GetViewHWND(), NULL, _T(""), 
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 0, IDC_CHECK_DAY_POINT_OUT);
-		m_comBoUpdatSoft.SetFont(BkFontPool::GetFont(BKF_DEFAULTFONT));
-		m_comBoUpdatSoft.AddString(L"每天提示一次有哪些软件可以升级");
-		m_comBoUpdatSoft.AddString(L"每周提示一次有哪些软件可以升级");
-		m_comBoUpdatSoft.AddString(L"不再显示此提示");
+	case 0:SetItemCheck(IDC_RADIO_UPDATE_TIP_DAY, TRUE);break;
+	case 1:SetItemCheck(IDC_RADIO_UPDATE_TIP_WEEK, TRUE);break;
+	case 2:SetItemCheck(IDC_RADIO_UPDATE_TIP_NEVER, TRUE);break;
 	}
-	m_comBoUpdatSoft.SetCurSel(nRet);
 
 	nRet = BKSafeConfig::GetAutoInstall();
-	if (m_comBoAutoInstall.IsWindow() == FALSE)
+	switch(nRet)
 	{
-		m_comBoAutoInstall.Create( this->GetViewHWND(), NULL, _T(""), 
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 0, IDC_CHECK_AUTO_INSTALL);
-		m_comBoAutoInstall.SetFont(BkFontPool::GetFont(BKF_DEFAULTFONT));
-		m_comBoAutoInstall.AddString(L"手动进行安装");
-		m_comBoAutoInstall.AddString(L"自动启动安装程序");
+	case 0:SetItemCheck(IDC_RADIO_RUN_SETUP_HAND, TRUE);break;
+	case 1:SetItemCheck(IDC_RADIO_RUN_SETUP_AUTO, TRUE);break;
 	}
-	m_comBoAutoInstall.SetCurSel(nRet);
 
 	nRet = BKSafeConfig::GetPowerSweepFile();
-	if (m_comBoPowerSweepFile.IsWindow() == FALSE)
+	switch(nRet)
 	{
-		m_comBoPowerSweepFile.Create( this->GetViewHWND(), NULL, _T(""), 
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 0, IDC_CHECK_DEL_TO_RECY);
-		m_comBoPowerSweepFile.SetFont(BkFontPool::GetFont(BKF_DEFAULTFONT));
-		m_comBoPowerSweepFile.AddString(L"删除到回收站（可手工恢复）");
-		m_comBoPowerSweepFile.AddString(L"彻底删除文件（不可恢复）");
+	case 0:SetItemCheck(IDC_RADIO_DELETE_TO_RECYCLE, TRUE);break;
+	case 1:SetItemCheck(IDC_RADIO_DELETE_TO_DIRECT, TRUE);break;
 	}
-	m_comBoPowerSweepFile.SetCurSel(nRet);
 
 	nRet = BKSafeConfig::GetDelFile();
-	if (m_comBoDelFile.IsWindow() == FALSE)
+	switch(nRet)
 	{
-		m_comBoDelFile.Create( this->GetViewHWND(), NULL, _T(""), 
-			WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 0, IDC_CHECK_DEL_WEEK);
-		m_comBoDelFile.SetFont(BkFontPool::GetFont(BKF_DEFAULTFONT));
-		m_comBoDelFile.AddString(L"一直保留");
-		m_comBoDelFile.AddString(L"安装完成后立即删除");
-		m_comBoDelFile.AddString(L"一周后自动删除");
+	case 0:SetItemCheck(IDC_RADIO_DELETE_SETUP_NEVER, TRUE);break;
+	case 1:SetItemCheck(IDC_RADIO_DELETE_SETUP_NOW, TRUE);break;
+	case 2:SetItemCheck(IDC_RADIO_DELETE_SETUP_WEEK, TRUE);break;
 	}
-	m_comBoDelFile.SetCurSel(nRet);
 
 	nRet = BKSafeConfig::GetMajorUpdatePointOut();
 	if (nRet)
 		SetItemCheck(IDC_CHECK_MAJOR_POINT_OUT, TRUE);
 	else
 		SetItemCheck(IDC_CHECK_MAJOR_POINT_OUT, FALSE);
+
+	nRet = BKSafeConfig::GetUpdateWhenRun();
+	if (nRet)
+		SetItemCheck(IDC_RADIO_UPDATE_WHEN_RUN, TRUE);
+	else
+		SetItemCheck(IDC_RADIO_UPDATE_WHEN_RUN, FALSE);
 
 	nRet = BKSafeConfig::GetUnKnownFileOpen();
 	if( nRet && IsUnknownFileOpenValid() )
@@ -1074,19 +1043,35 @@ void CBeikeSafeSettingDlg::SaveSoftMgrSettings()
 	int		nValue = 0;
 	int		nValue2 = 0;
 
-	nValue = GetItemCheck( IDC_CHECK_SHOWHINT ) ? 1 : 0;
+	nValue = GetItemCheck(IDC_RADIO_SHOW_PLUGIN_TIP) ? 1 : 0;
 	BKSafeConfig::SetHintPlugin( nValue );
 
-	nValue = m_comBoUpdatSoft.GetCurSel();
+	if (GetItemCheck(IDC_RADIO_UPDATE_TIP_DAY))
+		nValue = 0;
+	else if (GetItemCheck(IDC_RADIO_UPDATE_TIP_WEEK))
+		nValue = 1;
+	else if (GetItemCheck(IDC_RADIO_UPDATE_TIP_NEVER))
+		nValue = 2;
 	BKSafeConfig::SetUpdatePointOut( nValue );
 
-	nValue = m_comBoAutoInstall.GetCurSel();
+	if (GetItemCheck(IDC_RADIO_RUN_SETUP_HAND))
+		nValue = 0;
+	else if (GetItemCheck(IDC_RADIO_RUN_SETUP_AUTO))
+		nValue = 1;
 	BKSafeConfig::SetAutoInstall( nValue );
 
-	nValue = m_comBoPowerSweepFile.GetCurSel();
+	if (GetItemCheck(IDC_RADIO_DELETE_TO_RECYCLE))
+		nValue = 0;
+	else if (GetItemCheck(IDC_RADIO_DELETE_TO_DIRECT))
+		nValue = 1;
 	BKSafeConfig::SetPowerSweepFile( nValue );
 
-	nValue = m_comBoDelFile.GetCurSel();
+	if (GetItemCheck(IDC_RADIO_DELETE_SETUP_NEVER))
+		nValue = 0;
+	else if (GetItemCheck(IDC_RADIO_DELETE_SETUP_NOW))
+		nValue = 1;
+	else if (GetItemCheck(IDC_RADIO_DELETE_SETUP_WEEK))
+		nValue = 2;
 	BKSafeConfig::SetDelFile( nValue );
 
 	CString	strStoreDir;
@@ -1095,6 +1080,9 @@ void CBeikeSafeSettingDlg::SaveSoftMgrSettings()
 
 	nValue = GetItemCheck(IDC_CHECK_MAJOR_POINT_OUT);
 	BKSafeConfig::SetMajorUpdatePointOut(nValue);
+
+	nValue = GetItemCheck(IDC_RADIO_UPDATE_WHEN_RUN);
+	BKSafeConfig::SetUpdateWhenRun(nValue);
 
 	nValue = GetItemCheck(IDC_CHECK_NO_HINT);
 	nValue2 = GetItemCheck(IDC_CHECK_SHOW_ICO_NUM);
@@ -1201,11 +1189,6 @@ void CBeikeSafeSettingDlg::OnBkSafeSoftMgrCreateDesktopIcoChanged()
 	OnBkSafeSoftMgrSettingChanged();
 }
 void CBeikeSafeSettingDlg::OnBkSafeSoftMgrSettingChanged()
-{
-	m_bBkSoftMgrSettingChanged = TRUE;
-	return;
-}
-void CBeikeSafeSettingDlg::OnMajorPointOutCheckChanged()
 {
 	m_bBkSoftMgrSettingChanged = TRUE;
 	return;
@@ -2046,9 +2029,15 @@ void CBeikeSafeSettingDlg::OnSvcSettingChanged()
 
 void CBeikeSafeSettingDlg::OnBtnSettingShowQuarantineDlg()
 {
-	CBeikeSafeVirScanLogDlg dlg;
-
-	dlg.DoModal();
+// 	CBeikeSafeVirScanLogDlg dlg;
+// 
+// 	dlg.DoModal();
+	if (m_dlg)
+	{
+		//调用查杀历史记录
+		m_dlg->ShowVirusLog();
+	}
+	
 
     m_bBkSafeSettingChanged = TRUE;
 }
@@ -2072,10 +2061,12 @@ CBkNavigator* CBeikeSafeSettingNavigator::OnNavigate(CString &strChildName)
     if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_COMMON))
     {
         nPage = SettingPageCommon;
+		DoModal(nPage);
     }
     else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_VIRSCAN))
     {
         nPage = SettingPageVirScan;
+		DoModal(nPage);
     }
 //     else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_VULSCAN))
 //     {
@@ -2084,6 +2075,7 @@ CBkNavigator* CBeikeSafeSettingNavigator::OnNavigate(CString &strChildName)
     else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_PROTECTION))
     {
         nPage = SettingPageProtection;
+		DoModal(nPage);
     }
 //     else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_IEFIX))
 //     {
@@ -2092,29 +2084,46 @@ CBkNavigator* CBeikeSafeSettingNavigator::OnNavigate(CString &strChildName)
 	else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_SYSOPT))//hub  系统优化
 	{
 		nPage = SettingPageSysopt;
+		DoModal(nPage);
 	}
 	else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_KWS))//hub  网盾页面设置
 	{
 		nPage = SettingPageKws;
+		DoModal(nPage);
 	}
-	else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING_PAGE_SOFTMGR))//hub 软件管理
+	else if (strChildName.Find(BKSFNS_SETTING_PAGE_SOFTMGR) != -1)//hub 软件管理
 	{
 		nPage = SettingPageSoftMgr;
+
+		int nSubPage = -1;
+		CString strCmd;
+		int nSpliter = strChildName.Find(L':');
+		if (-1 != nSpliter)
+		{ 
+			strCmd = strChildName.Mid(nSpliter + 1);
+			if (0 == strCmd.CompareNoCase(BKSFNS_SETTING_PAGE_SOFTMGR_UPDATE))
+				nSubPage = 1;
+		}
+		DoModal(nPage, ::GetActiveWindow(), nSubPage);
 	}
 
-    DoModal(nPage);
+    //DoModal(nPage);
 
     return NULL;
 }
 
-UINT_PTR CBeikeSafeSettingNavigator::DoModal(int nPage/* = SettingPageCommon*/, HWND hWndParent/* = ::GetActiveWindow()*/)
+UINT_PTR CBeikeSafeSettingNavigator::DoModal(int nPage/* = SettingPageCommon*/, HWND hWndParent/* = ::GetActiveWindow()*/, int nSubPage /*= -1*/)
 {
-    CBeikeSafeSettingDlg dlg;
-
-    UINT_PTR uRet = dlg.DoModal(nPage, hWndParent);
-
-    if (dlg.BkSafeSettingChanged())
-        m_pDlg->SettingChanged();
+	UINT_PTR uRet = 0;
+	if (!m_bHasDoModal)
+	{
+		m_bHasDoModal = TRUE;
+		CBeikeSafeSettingDlg dlg;
+		uRet = dlg.DoModal(nPage, hWndParent, m_pDlg, nSubPage);
+		m_bHasDoModal = FALSE;	
+		if (dlg.BkSafeSettingChanged())
+			m_pDlg->SettingChanged();
+	}
 
     return uRet;
 }

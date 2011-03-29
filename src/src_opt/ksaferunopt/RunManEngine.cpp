@@ -1388,7 +1388,8 @@ VOID CRunManEngine::EnumSysConfigInfo(DWORD dwFlags, IEnumRunCallBackNull2* pCal
 
 _FindItem:
 		sysoptInfo.m_strInitValue = strReadValue;
-		pCallback->FindRunItem(&sysoptInfo);
+		if (pCallback)
+			pCallback->FindRunItem(&sysoptInfo);
 		nFindCount++;
 		continue;
 	}

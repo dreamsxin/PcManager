@@ -1042,6 +1042,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Vulfix\DlgTipDetail.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Vulfix\DlgTipDetail.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Vulfix\DlgViewDetail.cpp"
 				>
 			</File>
@@ -1239,14 +1247,6 @@
 			</File>
 			<File
 				RelativePath=".\beikesafesoftmgrnecess.h"
-				>
-			</File>
-			<File
-				RelativePath=".\beikesafesoftmgrsettingdlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\beikesafesoftmgrsettingdlg.h"
 				>
 			</File>
 			<File

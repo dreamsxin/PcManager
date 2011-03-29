@@ -902,10 +902,21 @@ BOOL CBeikeSafeMainDlg::OnBkTabMainSelChange(int nTabItemIDOld, int nTabItemIDNe
 		if( nTabItemIDNew != 5 )
 			(*m_KClearHandle).Hide();
 	}
-	if ( 6 != nTabItemIDNew )
+
+	if( nTabItemIDNew == 2 )
 	{
-		(*m_pWebShieldHandle).Show(FALSE);
+		if( bRet )//打开毒霸的类型
+			(*m_pWebShieldHandle).Show(FALSE);//隐藏
 	}
+	else
+	{
+		if( nTabItemIDNew != 6 )
+			(*m_pWebShieldHandle).Show(FALSE);//隐藏
+	}
+// 	if ( 6 != nTabItemIDNew )
+// 	{
+// 		(*m_pWebShieldHandle).Show(FALSE);
+// 	}
 
 	return bRet;
 }

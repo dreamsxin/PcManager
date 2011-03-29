@@ -165,7 +165,10 @@ public:
 		if(nIDEvent==TIMER_RUNNING && m_uItemID>0)
 		{
 			static int nSubImage = 0;
-			nSubImage = ++nSubImage%5;
+            if (m_nProgressID == IDC_PROGRESS_VULFIX_SCANNING)
+			    nSubImage = ++nSubImage % 10;
+            else
+                nSubImage = ++nSubImage % 4;
 			
 			T *dlg = static_cast<T*>(this);
 			dlg->SetItemIntAttribute(m_uItemID, "sub", nSubImage);

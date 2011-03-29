@@ -145,6 +145,7 @@ public:
 	CCacheLastUse(Skylark::ISQLiteComDatabase3 *pDB) : _pDB(pDB) {}
 
 	BOOL Update(const std::wstring &key, LONG time);
+	BOOL UpdateCount(const std::wstring &key, int nCnt);
 
 private:
 	Skylark::ISQLiteComDatabase3 *_pDB;
@@ -393,6 +394,24 @@ inline BOOL CCacheLastUse::Update(const std::wstring &key, LONG time)
 	}
 
 	_pStateUpdate->Bind(1, static_cast<int>(time));
+	_pStateUpdate->Bind(2, key.c_str());
+
+	return (SUCCEEDED(_pStateUpdate->ExecuteUpdate()));
+}
+
+inline BOOL CCacheLastUse::UpdateCount(const std::wstring &key, int nCnt)
+{
+	if(_pStateUpdate == NULL)
+	{
+		HRESULT hr = _pDB->PrepareStatement(L"update local_soft_list set daycnt=? where soft_key=?", &_pStateUpdate);
+		if(!SUCCEEDED(hr)) return FALSE;
+	}
+	else
+	{
+		_pStateUpdate->Reset();
+	}
+
+	_pStateUpdate->Bind(1, nCnt);
 	_pStateUpdate->Bind(2, key.c_str());
 
 	return (SUCCEEDED(_pStateUpdate->ExecuteUpdate()));

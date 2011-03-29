@@ -55,24 +55,9 @@ public:
 		BOOL    bHung = FALSE;
 		HICON*  xhIcon = (HICON*)&hIcon;
 
-		/* Skip our window */
-// 		if (hWnd == m_hMainWnd)
-// 			return TRUE;
-
 		DWORD dwPID = -1;
 		GetWindowThreadProcessId(hWnd, &dwPID);
-
 		GetWindowTextW(hWnd, szText, MAX_PATH); /* Get the window text */
-
-		/* Check and see if this is a top-level app window */
-// 		if ((wcslen(szText) <= 0) ||
-// 			!IsWindowVisible(hWnd) ||
-// 			(GetParent(hWnd) != NULL) ||
-// 			(GetWindow(hWnd, GW_OWNER) != NULL) ||
-// 			(GetWindowLongPtrW(hWnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW))
-// 		{
-// 			return TRUE; /* Skip this window */
-// 		}
 
 		if ((wcslen(szText) <= 0) || !IsWindowMustList(hWnd))
 		{
@@ -89,10 +74,6 @@ public:
 
 	static HICON GetIconByHwnd(HWND hWnd)
 	{
-// 		CAtlMap<HWND, HICON>::CPair* ptr = m_mapWndIcon.Lookup(hWnd);
-// 		if (NULL != ptr)
-// 			return ptr->m_value;
-
 		HICON hIcon = NULL;
 		HICON*  xhIcon = (HICON*)&hIcon;
 		SendMessageTimeoutW(hWnd, WM_GETICON, ICON_SMALL, 0, 0, 100, (PDWORD_PTR)xhIcon);
@@ -105,13 +86,11 @@ public:
 				SendMessageTimeoutW(hWnd, WM_GETICON,  ICON_SMALL, 0, 0, 100, (PDWORD_PTR)xhIcon);
 			if (hIcon)
 			{
-/*				m_mapWndIcon[hWnd] = hIcon;*/
 				return hIcon;
 			}
 		}
 		else
 		{
-/*			m_mapWndIcon[hWnd] = hIcon;*/
 			return hIcon;
 		}
 		return NULL;

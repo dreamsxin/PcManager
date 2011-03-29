@@ -102,6 +102,10 @@ public:
 	BOOL	LoadOnekeyDat(LPCTSTR lpstrLib);
 	// 刷入数据库头部信息
 	virtual void UpdateCache();
+
+	//判断库文件跟缓存文件是否版本不一样
+	virtual BOOL IsLibUpdate();
+
 	BOOL	_CheckCacheOutTime();	// 检测是否cache过期
 
 	virtual BOOL GetNecessSoftInfo( CSimpleArray<NECESS_GROUP>** ppInfo );

@@ -49,6 +49,7 @@ enum SoftDataMask : ULONG
 	SDM_Size			= (1<<5),
 	SDM_LastUse			= (1<<6),
 	SDM_Type			= (1<<7),
+	SDM_Count			= (1<<8),
 	SDM_All				= (0xFFFFFFFF),
 };
 
@@ -72,6 +73,7 @@ typedef struct SoftData
 	LONG			_lastUse;		// ¿ÉÄÜÎª0
 	LONG			_id;
 	LONG			_type;
+	LONG			_count;
 } *PSoftData;
 typedef const SoftData* PCSoftData;
 

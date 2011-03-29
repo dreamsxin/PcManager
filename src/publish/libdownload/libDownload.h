@@ -21,12 +21,16 @@ enum ProcessState{
 };
 
 enum DLERRCode{
-	DLERR_SUCCESS,
-	DLERR_INTERNAL,				// internal stat 
+	DLERR_SUCCESS = 0,
+	DLERR_INTERNAL,				//internal stat 
 	DLLER_SERVER_FILENOTFOUND,	//服务器的文件未找到
-	DLERR_CREATEFILE,			// 
-	DLERR_WRITEFILE,			// 
-	DLLER_NETWORK,
+	DLERR_CREATEFILE,			//创建文件失败
+	DLERR_WRITEFILE,			//写入文件失败
+	DLLER_NETWORK,				//网络错误
+	DLLER_INTERNAL_WAIT_OBJ,	//内部错误等待其他对象
+	DLLER_INTERNAL_CHECKMD5,	//内部错误 计算md5
+	DLLER_USER_CANCEL,			//用户取消
+	DLLER_SEGENT_ERROR,			//达到最大尝试次数，仍然有块下载出错
 };
 
 struct RemoteFileInfo{

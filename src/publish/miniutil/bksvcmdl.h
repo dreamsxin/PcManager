@@ -141,7 +141,8 @@ public:
     {
         T* pT = static_cast<T*>(this);
 
-        if (SERVICE_CONTROL_STOP == dwOpcode)
+        if (SERVICE_CONTROL_STOP == dwOpcode
+            || SERVICE_CONTROL_SHUTDOWN == dwOpcode)
         {
             SetServiceStatus(SERVICE_STOP_PENDING);
             pT->OnStop();
@@ -169,16 +170,11 @@ public:
         }
 
         CRegKey key;
+		TCHAR szValue[MAX_PATH];
+		DWORD dwLen = MAX_PATH;
         lRes = key.Open(keyAppID, pT->GetAppIdT(), KEY_READ);
-        if (lRes != ERROR_SUCCESS)
-        {
-            m_status.dwWin32ExitCode = lRes;
-            return HRESULT_FROM_WIN32 ( m_status.dwWin32ExitCode );
-        }
-
-        TCHAR szValue[MAX_PATH];
-        DWORD dwLen = MAX_PATH;
-        lRes = key.QueryStringValue(_T("LocalService"), szValue, &dwLen);
+		if (lRes == ERROR_SUCCESS)
+			lRes = key.QueryStringValue(_T("LocalService"), szValue, &dwLen);
 
         if (lRes != ERROR_SUCCESS)
         {

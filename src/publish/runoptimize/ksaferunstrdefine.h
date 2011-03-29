@@ -106,7 +106,7 @@ public:
 
 	DWORD		nID;				//每项惟一ID
 	DWORD		nType;				//类型，根据类型决定界面上显示的类别，如“开关机加速”，“系统性能与稳定”，“通用优化”等.
-	BOOL		bNt6OnlyHave;		//是否Nt6独有的注册表
+	BOOL		bNt6OnlyHave;		//该优化项所适用的操作系统版本。0，通用。1，nt6独有。2，nt5独有。
 	CString		strDesc;			//该优化项的描述
 	CString		strRegKey;			//对应的注册表键
 	CString		strDefaultValue;	//默认值
@@ -228,7 +228,7 @@ Exit0:
 public:
 	DWORD		m_nID;					//ID
 	DWORD		m_nType;				//类别
-	BOOL		m_bIsNt6OnlyHave;		//是否NT6独有
+	BOOL		m_bIsNt6OnlyHave;		////该优化项所适用的操作系统版本。0，通用。1，nt6独有。2，nt5独有。
 	CString		m_strDesc;				//描述
 	HKEY		m_hKeyRoot;				//注册表根键
 	CString		m_strSubKey;			//注册表子键

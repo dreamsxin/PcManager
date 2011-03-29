@@ -52,6 +52,7 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   
+  !insertmacro FileEx "${BIN_DIR}\KnInstAD.exe" "$INSTDIR\KnInstAD.exe" "$INSTDIR\"
   !insertmacro FileEx "${BIN_DIR}\KSafeTray.exe" "$INSTDIR\KSafeTray.exe" "$INSTDIR\"
   !insertmacro FileEx "${BIN_DIR}\KSafe.exe" "$INSTDIR\KSafe.exe" "$INSTDIR\"
   !insertmacro FileEx "${BIN_DIR}\kscan.dll" "$INSTDIR\kscan.dll" "$INSTDIR\"
@@ -156,11 +157,12 @@ Section "MainSection" SEC01
   File "${BIN_DIR}\kqsccfg.xml"
   File "${BIN_DIR}\plugtrust.ini"
   File "${BIN_DIR}\kwsprio.ini"
-
- !insertmacro UpVirusDat4 "config3.dat" "2011.3.8" "1"
+  File "${BIN_DIR}\oem.ini"
+  
+ !insertmacro UpVirusDat4 "config3.dat" "2011.3.29" "1"
  !insertmacro UpVirusDat4 "WhiteList.dat" "2010.9.8.1" "1"
- !insertmacro UpVirusDat4 "sp3.nlb" "2011.3.8" "1"
- !insertmacro UpVirusDat4 "kwsu.dat" "2010.12.16" "1"
+ !insertmacro UpVirusDat4 "sp3.nlb" "2011.3.29" "1"
+ !insertmacro UpVirusDat4 "kwsu.dat" "2011.3.21" "1"
  !insertmacro UpVirusDat4 "vf1.dat" "2011.1.19" "1"
 
   SetOutPath "$INSTDIR\kse"
@@ -416,6 +418,14 @@ Section "MainSection" SEC01
     WriteRegDWORD HKLM "SOFTWARE\KSafe\Coop" "${SPECAIL_KEY_VALUE}" "${SPECAIL_KEY_VALUE_DATA}"
   !endif
 
+	${if} ${silent}
+  ${else}
+	  SetDetailsPrint none
+	  ExecWait '"$INSTDIR\KnInstAD.exe" -h:$HWNDPARENT -t:Ω…ΩŒ¿ ø -i:0'
+	  SetDetailsPrint both
+  ${endif}
+  
+	
 SectionEnd
 
 Section -AdditionalIcons

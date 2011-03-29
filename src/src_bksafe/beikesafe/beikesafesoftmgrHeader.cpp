@@ -40,6 +40,7 @@ using namespace stlsoft;
 #define TIMER_LOADTIP_SOFTMGR			1202  //提取软件信息定时器
 #define TIMER_LOADINFO_SOFTMGR			1203  //提取软件信息的时候展示图片定时器
 #define TIMER_LOADINFO_BIGBTN			1204  // 点击大按钮之后加载信息的tip
+#define TIMER_RESTART_KSAFE				1205  //检测软件库更新
 
 enum { UNI_BTN_ALL=0, UNI_BTN_DESK, UNI_BTN_STARTMENU, UNI_BTN_QUICKLAN, UNI_BTN_PROC, UNI_BTN_TRAY };
 
@@ -172,9 +173,9 @@ namespace
 		{
 			ATLASSERT(pLeft != NULL && pRight != NULL);
 			if(_asc)
-				return (pLeft->pInfo->nLastTime < pRight->pInfo->nLastTime);
+				return (pLeft->pInfo->nRunCount < pRight->pInfo->nRunCount);
 			else
-				return (pLeft->pInfo->nLastTime > pRight->pInfo->nLastTime);
+				return (pLeft->pInfo->nRunCount > pRight->pInfo->nRunCount);
 		}
 
 	private:
@@ -283,6 +284,60 @@ CString CalcStrFormatByteSize(LONGLONG qdw)
 	return retStr;
 }
 
+CString CalcStrFormatByCount(LONGLONG qdw)
+{
+	CString retStr;
+
+	if (qdw > 20)
+		retStr = L"经常";
+	else if (qdw <= 20 && qdw > 5)
+		retStr = L"偶尔";
+	else if (qdw <= 5 && qdw > 0)
+		retStr = L"很少";
+	else if (qdw == 0)
+		retStr = L"从不";
+	else//else if (qdw == -1)
+		retStr = L"未知";
+
+	return retStr;
+}
+
+void GetRunInfoFromTime(CString& strRunFrequency, LONG& nRunCount, LONG nLastTime)
+{
+	if (nLastTime == 0)
+	{
+		strRunFrequency = L"未知";
+		nRunCount = -1;
+		return ;
+	}
+
+	CTime	tLastUse( nLastTime );
+	CTime	tNow = CTime::GetCurrentTime();
+	CTimeSpan  tdiff = tNow - tLastUse;
+
+	int nLastUse = tdiff.GetDays();
+	if (nLastUse < 3 && nLastUse >= 0)
+	{
+		strRunFrequency = L"经常";
+		nRunCount = 21;
+	}
+	else if (nLastUse < 15 && nLastUse >= 3)
+	{
+		strRunFrequency = L"偶尔";
+		nRunCount = 6;
+	}
+	else if (nLastUse >= 15)
+	{
+		strRunFrequency = L"很少";
+		nRunCount = 1;
+	}
+	else
+	{
+		strRunFrequency = L"未知";
+		nRunCount = -1;
+	}
+}
+
 CString CalcStrFormatByteTime(LONGLONG qdw)
 {
 	CString retStr;
@@ -356,8 +411,10 @@ int CheckSetupCallBack(CString id, CString name, CString ver, CString curver, CS
 		}
 		else
 		{
+			BOOL bUpdatePointOutInfo = FALSE;
 			if (pData->m_bUpdate == TRUE)
 			{
+				bUpdatePointOutInfo = TRUE;
 				int nTmp = _wtoi( pData->m_strSoftID );
 				pDlg->m_softUpdatedList.Add(nTmp);
 			}
@@ -367,6 +424,9 @@ int CheckSetupCallBack(CString id, CString name, CString ver, CString curver, CS
 			{
 				pDlg->m_arrCheckUpdate.Remove(pData);
 			}
+
+			if (bUpdatePointOutInfo)
+				pDlg->SaveUpdatePointOutInfo();
 
 			_nRet = 0;
 		}
@@ -463,6 +523,8 @@ void DownloadCallBack(DTManager_Stat st, void* tk,void* para)
 	pParam->pDlg = para;
 	pParam->pTask = tk;
 
+	int nErr = -1;
+
 	CString strSoftId;
 	if (pDlg->m_arrTaskMap.Lookup(tk) != NULL)
 	{
@@ -528,15 +590,22 @@ void DownloadCallBack(DTManager_Stat st, void* tk,void* para)
 
 
 					pDlg->_RefershItemBySoftIDWorkerThread(pData->m_strSoftID);
-#ifdef _DEBUG
-					MYDOWNLOADLOG( _T("Download error, name:%s,ID:%s, %s\r\n\r\n"), pData->m_strName, pData->m_strSoftID, _T("TASK_ERROR"));
-#endif
+
 					if (pParam != NULL)
 					{
 						delete pParam;
 						pParam = NULL;
 					}
 
+
+//#ifdef _DEBUG
+					MYDOWNLOADLOG( _T("Download Success, name:%s,ID:%s,URL:%s, ERR:%d  %s\r\n\r\n"), 
+									pData->m_strName, 
+									pData->m_strSoftID, 
+									pData->m_strDownURL,
+									nErr, 
+									_T("TASK_ERROR"));
+//#endif
 				}
 
 				break;
@@ -551,9 +620,14 @@ void DownloadCallBack(DTManager_Stat st, void* tk,void* para)
 
 
 					pDlg->_RefershItemBySoftIDWorkerThread(pData->m_strSoftID);
-#ifdef _DEBUG
-					MYDOWNLOADLOG( _T("Download error, name:%s,ID:%s, %s\r\n\r\n"), pData->m_strName, pData->m_strSoftID, _T("TASK_ERROR_MD5"));
-#endif
+//#ifdef _DEBUG
+					MYDOWNLOADLOG( _T("Download Success, name:%s,ID:%s,URL:%s, ERR:%d  %s\r\n\r\n"), 
+									pData->m_strName, 
+									pData->m_strSoftID, 
+									pData->m_strDownURL,
+									nErr, 
+									_T("TASK_ERROR_MD5"));
+//#endif
 					if (pParam != NULL)
 					{
 						delete pParam;
@@ -747,6 +821,8 @@ BOOL CBeikeSafeSoftmgrUIHandler::InitInterface()
 	m_pSoftMgr->LoadNecessDat(strNecess);
 	m_pSoftMgr->UpdateCache();
 	m_pSoftMgr->GetCategroy(GetInfoUseMap, &m_arrTypeMap);
+
+	m_pDlg->SetTimer(TIMER_RESTART_KSAFE, 5000,NULL);
 
 	return TRUE;
 }
@@ -2334,6 +2410,22 @@ void CBeikeSafeSoftmgrUIHandler::OnTimer(UINT_PTR nIDEvent)
 
 		m_pDlg->KillTimer( TIMER_ID_PRE_LOAD_PHONE );
 	}
+	else if (nIDEvent == TIMER_RESTART_KSAFE)
+	{
+		if (m_pSoftMgr->IsLibUpdate())
+		{
+			m_pDlg->SetItemVisible(IDC_SOFT_NECESS_LEFT_VER_TIP, TRUE);
+			m_pDlg->SetItemAttribute(IDC_SOFT_NECESS_LEFT_VIEW, "pos", "118,28,-0,-0");
+
+			m_pDlg->SetItemVisible(IDC_SOFT_DAQUAN_LEFT_VER_TIP, TRUE);
+			m_pDlg->SetItemAttribute(IDC_SOFT_DAQUAN_LEFT_VIEW, "pos", "118,28,-0,-31");
+
+			m_pDlg->SetItemVisible(IDC_SOFT_UPDATE_LEFT_VER_TIP, TRUE);
+			m_pDlg->SetItemAttribute(IDC_SOFT_UPDATE_LEFT_VIEW, "pos", "0,59,-0,-31");
+
+			m_pDlg->KillTimer( TIMER_RESTART_KSAFE );
+		}
+	}
 	else
 		SetMsgHandled(FALSE);
 }
@@ -3480,12 +3572,15 @@ CString CBeikeSafeSoftmgrUIHandler::GetCurrentSystemVersion()
 			return strVersion;
 	}
 
-	pGNSI = (PGNSI) GetProcAddress(
-		GetModuleHandle(TEXT("kernel32.dll")), 
-		"GetNativeSystemInfo");
+	pGNSI = (PGNSI) GetProcAddress(	GetModuleHandle(TEXT("kernel32.dll")), "GetNativeSystemInfo");
 	if(NULL != pGNSI)
+	{
 		pGNSI(&si);
-	else GetSystemInfo(&si);
+	}
+	else
+	{
+		GetSystemInfo(&si);
+	}
 
 	switch (osvi.dwPlatformId)
 	{
@@ -3505,7 +3600,6 @@ CString CBeikeSafeSoftmgrUIHandler::GetCurrentSystemVersion()
 			else 
 				strVersion = _T("WinS2008" );
 		}
-
 
 		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2 )
 		{
@@ -5145,6 +5239,43 @@ void CBeikeSafeSoftmgrUIHandler::OnFreeBack()
 		}
 	}
 	ShellExecute( NULL, _T("open"), strURL, NULL, NULL , SW_SHOW);
+}
+
+void CBeikeSafeSoftmgrUIHandler::OnReStart()
+{
+	if (m_pDlg)
+	{
+		m_pDlg->OnBkBtnClose();
+
+		HWND hWnd = NULL;
+		hWnd = FindWindow(L"{5469F950-888A-4bc1-B0B4-72F0159D7ACD}", NULL);
+		if (hWnd)
+			::PostMessage(hWnd, (WM_USER + 111), 0, 0);
+	}
+}
+void CBeikeSafeSoftmgrUIHandler::OnIgnoreReStartTip()
+{
+	OnCloseReStartTip();
+}
+void CBeikeSafeSoftmgrUIHandler::OnCloseReStartTip()
+{
+	if ( m_pDlg->IsItemVisible(IDC_SOFT_NECESS_LEFT_VER_TIP) == TRUE )
+	{
+		m_pDlg->SetItemVisible(IDC_SOFT_NECESS_LEFT_VER_TIP, FALSE);
+		m_pDlg->SetItemAttribute(IDC_SOFT_NECESS_LEFT_VIEW, "pos", "118,0,-0,-0");
+	}
+
+	if ( m_pDlg->IsItemVisible(IDC_SOFT_DAQUAN_LEFT_VER_TIP) == TRUE )
+	{
+		m_pDlg->SetItemVisible(IDC_SOFT_DAQUAN_LEFT_VER_TIP, FALSE);
+		m_pDlg->SetItemAttribute(IDC_SOFT_DAQUAN_LEFT_VIEW, "pos", "118,0,-0,-31");
+	}
+
+	if ( m_pDlg->IsItemVisible(IDC_SOFT_UPDATE_LEFT_VER_TIP) == TRUE )
+	{
+		m_pDlg->SetItemVisible(IDC_SOFT_UPDATE_LEFT_VER_TIP, FALSE);
+		m_pDlg->SetItemAttribute(IDC_SOFT_UPDATE_LEFT_VIEW, "pos", "0,31,-0,-31");
+	}
 }
 
 void CBeikeSafeSoftmgrUIHandler::GetConfig()
@@ -7984,10 +8115,21 @@ SOFT_UNI_INFO * CBeikeSafeSoftmgrUIHandler::UniAddOrUpdateItemToList(ksm::SoftDa
 			pInfo->strInfoUrl = sd._pcInfoUrl;
 		if ((sd._mask & ksm::SDM_Main_Path) == ksm::SDM_Main_Path)
 			pInfo->strMainPath = sd._pcMainPath;
-		if ((sd._mask & ksm::SDM_LastUse) == ksm::SDM_LastUse)
+		if ((sd._mask & ksm::SDM_Count) == ksm::SDM_Count)
 		{
-			pInfo->strLastTime = sd._lastUse > 0 ? CalcStrFormatByteTime(sd._lastUse) : L"未知";
-			pInfo->nLastTime = sd._lastUse;
+			pInfo->strRunFrequency = CalcStrFormatByCount(sd._count);
+			pInfo->nRunCount = sd._count;
+
+			if (sd._count == -1)// 监控使用次数失败，使用LastTime转算
+			{
+				if ((sd._mask & ksm::SDM_LastUse) == ksm::SDM_LastUse)
+				{
+					//pInfo->strLastTime = sd._lastUse > 0 ? CalcStrFormatByteTime(sd._lastUse) : L"未知";
+					//pInfo->nLastTime = sd._lastUse;
+					
+					GetRunInfoFromTime(pInfo->strRunFrequency, pInfo->nRunCount, sd._lastUse);
+				}
+			}
 		}
 		if ((sd._mask & ksm::SDM_Type) == ksm::SDM_Type)
 			pInfo->strType = GetSoftType(sd._type);

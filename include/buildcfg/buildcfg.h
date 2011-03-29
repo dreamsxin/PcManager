@@ -415,5 +415,12 @@ here is a exe example:
 #define VI_ORIGINALFILENAME	"perfopt.exe"		    //原始EXE文件名
 #endif
 
+#ifdef SAFE_MON_SYS
+#pragma message("\t    SAFE_MON_SYS")
+#define VI_FILEDESCRIPTION	"金山卫士实时保护驱动"
+#define VI_INTERNALNAME		"ksfmonsys"
+#define VI_ORIGINALFILENAME	"ksfmonsys"
+#endif
+
 #endif /* __BUILDCFG_BUILDCFG_H__ */
 

@@ -93,7 +93,7 @@ public:
 	CString UrlToName( LPCTSTR pszUrl );
 	CString NameToUrl( LPCTSTR pszUrl );
 	bool ChildToParentRect( HWND hChild, HWND hParent, LPRECT rect );
-	HRESULT	GetCustomMainPage( KComboBox* pComBoBox );
+	HRESULT	GetCustomMainPage(void);
 
 	//ÉÏ±ß2¸ö½ÇÍä½Ç
 	void RoundWinRect( CRect &rect, int nCor, HWND hWnd );

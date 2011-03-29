@@ -39,6 +39,7 @@ void InitCacheDB(Skylark::ISQLiteComDatabase3 *pDB)
 		L"logo_url,"
 		L"size bigint,"
 		L"last_use int,"
+		L"daycnt int,"
 		L"type_id int,"
 		L"soft_id int,"
 		L"match_type int,"

@@ -16,6 +16,7 @@
 #include "kpfw/netflowformat.h"
 #include <time.h>
 #include "atltime.h"
+#include "kmaindlg.h"
 
 #define MSG_START_FIX_ITEM	WM_APP+0x402
 #define MSG_END_FIX_ITEM	WM_APP+0x403
@@ -88,7 +89,7 @@ class CBKSafeWndOptdlg
 
 {
 public:
-	CBKSafeWndOptdlg()
+	CBKSafeWndOptdlg(KMainDlg* pMainDlg)
 		:m_nPidCnt(0),
 		m_nWndCnt(0),
 		m_hFixThread(NULL),
@@ -98,7 +99,8 @@ public:
 		m_nPrcess(0),
 		m_uOptSize(0),
 		m_nFixingIndex(0),
-		m_nWndGif(0)
+		m_nWndGif(0),
+		m_pMainDlg(pMainDlg)
 	{
 
 	};
@@ -193,5 +195,6 @@ private:
 	ULONGLONG				m_uOptSize;
 	int						m_nWndGif;
 
+	KMainDlg*				m_pMainDlg;
 //	CSysPerfOpt	m_sysPerf;
 };

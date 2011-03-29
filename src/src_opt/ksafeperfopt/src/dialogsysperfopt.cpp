@@ -58,12 +58,13 @@ BOOL CBKSafeSysPerfOpt::OnInitDialog(HWND wParam, LPARAM lParam)
 
 void CBKSafeSysPerfOpt::OnBkClose()
 {
+	m_pMainDlg->SetPerfOptDlgHasDoModal(FALSE);
 	EndDialog(0);
 }
 
 void CBKSafeSysPerfOpt::OnOk()
 {
-
+	m_pMainDlg->SetPerfOptDlgHasDoModal(FALSE);
 	EndDialog(0);
 }
 void CBKSafeSysPerfOpt::UpDateOneKeyFreeMemHistory()

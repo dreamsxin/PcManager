@@ -11,3 +11,5 @@
 
 #include "resource.h"
 #include <bkres/bkres.h>
+
+BOOL IsExtExist();

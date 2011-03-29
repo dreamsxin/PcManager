@@ -6,6 +6,7 @@
 static int AppendItemInstalledList_WithDate( CListViewCtrlEx &listCtrl, T_VulListItemData * pVulItem )
 {
 	int nItem = listCtrl.Append( pVulItem->strPubDate );
+    listCtrl.AppendSubItem(nItem, pVulItem->strPubDate);
 	if(pVulItem->nType==VTYPE_SOFTLEAK)
 	{
 		listCtrl.AppendSubItem(nItem, pVulItem->strName);
@@ -30,6 +31,7 @@ static int AppendItemInstalledList_NoDate( CListViewCtrlEx &listCtrl, T_VulListI
 	if(pVulItem->nType==VTYPE_SOFTLEAK)
 	{
 		nItem = listCtrl.Append( pVulItem->strName );
+        listCtrl.AppendSubItem(nItem, pVulItem->strName);
 		listCtrl.AppendSubItem(nItem, pVulItem->strDesc);
 		listCtrl.AppendSubItem(nItem, BkString::Get(IDS_VULFIX_5072), SUBITEM_LINK);
 	}
@@ -38,6 +40,7 @@ static int AppendItemInstalledList_NoDate( CListViewCtrlEx &listCtrl, T_VulListI
 		CString strTitle;
 		FormatKBString(pVulItem->nID, strTitle);
 		nItem = listCtrl.Append( strTitle );
+        listCtrl.AppendSubItem(nItem, strTitle);
 		listCtrl.AppendSubItem(nItem, pVulItem->strName);
 		listCtrl.AppendSubItem(nItem, BkString::Get(IDS_VULFIX_5139), SUBITEM_LINK);
 	}
@@ -60,6 +63,7 @@ static int AppendItemIgnoredList( CListViewCtrlEx &listCtrl, T_VulListItemData *
 	}
 	
 	int nItem = listCtrl.Append( GetLevelDesc(pVulItem->nWarnLevel), LISTITEM_CHECKBOX );
+    listCtrl.AppendSubItem(nItem, GetLevelDesc(pVulItem->nWarnLevel));
 	listCtrl.AppendSubItem(nItem, pVulItem->strPubDate);
 	listCtrl.AppendSubItem(nItem, strTitle);
 	listCtrl.AppendSubItem(nItem, strSummary);
@@ -74,6 +78,7 @@ static int AppendItemReplacedList( CListViewCtrlEx &listCtrl, T_VulListItemData 
 	FormatKBString(pVulItem->nID, strTitle);
 
 	int nItem = listCtrl.Append( pVulItem->strPubDate );
+    listCtrl.AppendSubItem(nItem, pVulItem->strPubDate);
 	listCtrl.AppendSubItem(nItem, strTitle);
 	listCtrl.AppendSubItem(nItem, pVulItem->strName);
 	listCtrl.AppendSubItem(nItem, BkString::Get(IDS_VULFIX_5139), SUBITEM_LINK);
@@ -87,6 +92,7 @@ static int AppendItemInvalidList( CListViewCtrlEx &listCtrl, T_VulListItemData *
 	FormatKBString(pVulItem->nID, strTitle);
 
 	int nItem = listCtrl.Append( pVulItem->strPubDate );
+    listCtrl.AppendSubItem(nItem, pVulItem->strPubDate);
 	listCtrl.AppendSubItem(nItem, strTitle);
 	listCtrl.AppendSubItem(nItem, pVulItem->strName);
 	listCtrl.AppendSubItem(nItem, BkString::Get(IDS_VULFIX_5139), SUBITEM_LINK);
@@ -139,11 +145,11 @@ LRESULT CDlgViewDetail::OnInitDialog( HWND /*hWnd*/, LPARAM /*lParam*/ )
 		WS_CHILD | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL , 
 		0, 30010, NULL);
 	{
-		m_wndListIgnored.InsertColumn(0, BkString::Get(IDS_VULFIX_5145), LVCFMT_LEFT, 60);
+		m_wndListIgnored.InsertColumn(0, BkString::Get(IDS_VULFIX_5145), LVCFMT_LEFT, 90);
 		m_wndListIgnored.InsertColumn(1, BkString::Get(IDS_VULFIX_5146), LVCFMT_LEFT, 70);
 		m_wndListIgnored.InsertColumn(2, BkString::Get(IDS_VULFIX_5147), LVCFMT_LEFT, 70);
-		m_wndListIgnored.InsertColumn(3, BkString::Get(IDS_VULFIX_5148), LVCFMT_LEFT, 245);
-		m_wndListIgnored.InsertColumn(4, BkString::Get(IDS_VULFIX_5149), LVCFMT_LEFT, 80);
+		m_wndListIgnored.InsertColumn(3, BkString::Get(IDS_VULFIX_5148), LVCFMT_LEFT, 235);
+		m_wndListIgnored.InsertColumn(4, BkString::Get(IDS_VULFIX_5149), LVCFMT_LEFT, 60);
 	}
 	m_wndListIgnored.SetObserverWindow( m_hWnd );
 	m_wndListIgnored.SetEmptyString( BkString::Get(IDS_VULFIX_5150) );

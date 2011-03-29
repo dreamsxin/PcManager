@@ -25,6 +25,67 @@ CString g_strUrl;
 static BOOL Startup();
 static void OpenDefault();
 
+
+
+BOOL IsExtExist()
+{
+	CPath path( g_strCmd );
+
+	CString strExt;
+	strExt = path.GetExtension();
+	if( strExt == TEXT("") )
+		return FALSE;
+
+	LONG lResult = ERROR_SUCCESS;
+
+	CRegKey regExt;
+	lResult = regExt.Open( HKEY_CLASSES_ROOT, strExt );
+	if (lResult != ERROR_SUCCESS)
+		return FALSE;
+
+	CString strSoftName;
+	DWORD dwSoftNameLen = MAX_PATH + 1;
+	lResult = regExt.QueryStringValue(L"", strSoftName.GetBuffer(dwSoftNameLen), &dwSoftNameLen);
+	strSoftName.ReleaseBuffer();
+	if( strSoftName == TEXT("") )
+		return FALSE;
+
+	CRegKey regSoft;
+	CString strKey;
+	strKey.Format(L"%s\\shell\\open\\command", strSoftName);
+	lResult = regSoft.Open( HKEY_CLASSES_ROOT, strKey );
+	if (lResult != ERROR_SUCCESS)
+		return FALSE;
+
+	CString strSoftPath;
+	DWORD dwSoftPathLen = MAX_PATH + 1;
+	lResult = regSoft.QueryStringValue(L"", strSoftPath.GetBuffer(dwSoftPathLen), &dwSoftPathLen);
+	strSoftPath.ReleaseBuffer();
+	if( strSoftPath == TEXT("") )
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL IsExtExistEx()
+{
+	LONG lResult = ERROR_SUCCESS;
+
+	CRegKey regCur;
+	lResult = regCur.Open(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.mp4" );
+	if (lResult != ERROR_SUCCESS)
+		return FALSE;
+
+	CString strSoftUser;
+	DWORD dwSoftUserLen = MAX_PATH + 1;
+	lResult = regCur.QueryStringValue(L"Application", strSoftUser.GetBuffer(dwSoftUserLen), &dwSoftUserLen);
+	strSoftUser.ReleaseBuffer();
+	if( strSoftUser == TEXT("") )
+		return FALSE;
+
+	return TRUE;
+}
+
 //////////////////////////////////////////////////////////////////////////
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int /*nCmdShow*/)
 {
@@ -44,6 +105,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	else
 	{
 		g_strCmd = lpstrCmdLine;
+	}
+
+	if( IsExtExist() )
+	{
+		OpenDefault();
+		return 1;
+	}
+	else
+	{
+		if (IsExtExistEx())
+		{
+			OpenDefault();
+			return 1;
+		}
 	}
 
 	if(!Startup())

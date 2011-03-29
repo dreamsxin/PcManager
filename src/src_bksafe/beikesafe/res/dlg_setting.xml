@@ -260,57 +260,7 @@
                     </dlg>
                   </tab>
                   <tab title="软件管理" width="full" height="full">
-                    <dlg pos="0,0,-0,-0" class="settingpage">
-                      <dlg pos="0,0,-10,130">
-                        <hr pos="0,6,-0,6" class="settingline"/>
-                        <text class="settingsubtitle" pos="0,0">下载设置</text>
-                        <text pos="30,25">下载软件安装包保存的目录（</text>
-                        <text id="404" class="linktext" pos="-280,25">恢复默认目录</text>
-                        <text pos="-205,25">）:  可用磁盘空间：</text>
-                        <text pos="-90,25" id="405" class="spacetext">0 GB</text>
-                        <dlg pos="30,55,310,75" class="panel">
-                          <realwnd id="402" ctrlid="402" pos="2,2,-2,-2"/>                        
-                        </dlg>
-                        <button id="403" class="normalbtn" pos="320,55,380,75">选择目录</button>
-                        <button id="401" class="normalbtn" pos="390,55,450,75">打开目录</button>
-                        <check id="406" pos="30,85">下载前弹出窗口提示该软件是否收费、含有插件等信息</check>
-                      </dlg>
-                      <dlg pos="0,105,-10,200">
-                        <hr pos="0,6,-0,6" class="settingline"/>
-                        <text class="settingsubtitle" pos="0,0">安装设置</text>
-                        
-                        <text pos="20,25" >软件下载完成后</text>
-                        <realwnd pos="125,21,405,42" id="408" ctrlid="408"></realwnd>
-                        
-                        <text pos="20,55" >已下载的安装文件</text>
-                        <realwnd pos="125,51,405,72" id="410" ctrlid="410"></realwnd>
-                      </dlg>
-
-                      <dlg pos="0,190,-10,305">
-                        <hr pos="0,6,-0,6" class="settingline"/>
-                        <text class="settingsubtitle" pos="0,0">升级设置</text>
-
-                        <text pos="20,25" >桌面弹窗提示频率</text>
-                        <realwnd pos="125,21,405,42" id="430" ctrlid="430"></realwnd>
-                        <check id="433" pos="30,56">发现有常用软件推荐升级时，弹出通知提醒</check>
-                        <check id="407" pos="30,78">在桌面上显示软件管理快捷方式</check>
-                        <check id="413" pos="250,78">在快捷方式上显示软件升级数</check>
-                      </dlg>
-                        
-                      <dlg pos="0,292,-10,350">
-                        <hr pos="0,6,-0,6" class="settingline"/>
-                        <text class="settingsubtitle" pos="0,0">卸载设置</text>
-                        
-                        <text pos="20,25" >强力清扫到的文件</text>
-                        <realwnd pos="125,21,405,42" id="420" ctrlid="420"></realwnd>                   
-                      </dlg>
-					  <dlg pos="0,347,-10,420">
-                        <hr pos="0,6,-0,6" class="settingline"/>
-                        <text class="settingsubtitle" pos="0,0">文件关联</text>
-                        <check id="434" pos="30,25">智能识别未知文件，并推荐可打开此文件的软件</check>                 
-                      </dlg>
-                      
-                    </dlg>
+                    <dlgfile pos="0,0,-0,-0" src="603" />
                   </tab>
 					<!--
                     <tab title="修复 IE" width="full" height="full">

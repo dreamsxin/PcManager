@@ -4948,6 +4948,7 @@ _exit_:
 
 
 	m_hClean = (HANDLE)_beginthreadex(NULL, 0, CleanProc, this, 0, NULL);
+
 }
 void CUIHandlerOpt::OnBkClrReScan()
 {

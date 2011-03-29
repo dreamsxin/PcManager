@@ -12,6 +12,7 @@
 #define CFG_VALUE_SCAN_AUTO_CLEAN       L"AutoClean"
 #define CFG_VALUE_SCAN_EXT_FASTSCAN     L"ExtFastScan"
 #define CFG_VALUE_SCAN_AUTO_EXTSCAN     L"AutoExtScan"
+#define CFG_VALUE_SCAN_IS_NORMAL_COMPLETE     L"NormalComplete"
 
 #define CFG_IEFIX_SETTING       L"iefixcfg.ini"
 #define CFG_KEY_FIXLIST             L"fixlist"
@@ -70,6 +71,7 @@
 #define CFG_KEY_SOFTMGR_MAJOR_UPDATE_TIP	L"major_update_tip"
 #define CFG_KEY_SOFTMGR_UPDATE_TIP		L"update_tip"
 #define	CFG_VALUE_UPDATE_TIP			L"tip_type"
+#define	CFG_VALUE_UPDATE_RUN_TIP			L"run_tip_type"
 #define	CFG_VALUE_UPDATE_TIP_DELAY_TIME	L"tip_delay_second"
 #define	CFG_VALUE_UPDATE_TIP_DELAY_TIME_FOR_AUTORUN	L"tip_delay_second_for_autorun"
 
@@ -277,6 +279,27 @@ public:
 		return nValue;
 	}
 
+	static void SetUpdateWhenRun( int nValue )
+	{
+		/*
+		0 -- 不提醒软件更新
+		1 -- 提醒软件更新
+		*/
+		_SaveConfig( CFG_BK_SOFTMGR_SETTING, CFG_KEY_SOFTMGR_MAJOR_UPDATE_TIP, CFG_VALUE_UPDATE_RUN_TIP, nValue );
+	}
+
+	static int GetUpdateWhenRun()
+	{
+		/*
+		0 -- 不提醒软件更新
+		1 -- 提醒软件更新
+		*/
+		int nValue = 0;
+		_LoadConfig( CFG_BK_SOFTMGR_SETTING, CFG_KEY_SOFTMGR_MAJOR_UPDATE_TIP, CFG_VALUE_UPDATE_RUN_TIP, nValue, 1 );
+
+		return nValue;
+	}
+
 	static int	GetUpdatePointOut()
 	{
 		/*
@@ -450,6 +473,20 @@ public:
 	static void SetAutoExpandScan( BOOL bExt )
 	{
 		_SaveConfig(CFG_VIRSCAN_SETTING, CFG_KEY_SCAN, CFG_VALUE_SCAN_AUTO_EXTSCAN, bExt );
+	}
+
+	static BOOL GetNormalCompleteScan()//hub
+	{
+		BOOL bValue = FALSE;
+
+		_LoadConfig(CFG_VIRSCAN_SETTING, CFG_KEY_SCAN, CFG_VALUE_SCAN_IS_NORMAL_COMPLETE, bValue, FALSE);
+
+		return bValue;
+	}
+
+	static void SetNormalCompleteScan( BOOL bNormalComplete )//hub
+	{
+		_SaveConfig(CFG_VIRSCAN_SETTING, CFG_KEY_SCAN, CFG_VALUE_SCAN_IS_NORMAL_COMPLETE, bNormalComplete );
 	}
 
 	static BOOL GetAutoExpandScan()

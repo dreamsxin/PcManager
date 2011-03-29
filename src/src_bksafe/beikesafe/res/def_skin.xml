@@ -29,8 +29,10 @@
 <imghorzex name="progresssoftmgrpos" src="8020" mode="mask"/>
 
 <imghorzex name="listheaderbgnull" src="125" mode="mask" left="2"/>
+  <imghorzex name="updatetipbg" src="126" mode="mask" left="3"/>
 <imghorzex name=listheaderbg2 src=222 mode=mask left=2/>
 <imghorzex name=listheaderbg src=210 mode=mask left=2/>
+  <imghorzex name="softlistheaderbg" src="223" mode="mask" left="2"/>  
 <imghorzex name=pluglistheaderbg src=123 mode=mask left=2/>
 <png name=closebtn src=44 subwidth=43/>
 <png name=closeonlybtn src=44 subwidth=43/>
@@ -87,6 +89,8 @@
 <!-- <png name="detailback" src="29" /> -->
 <png name="refrshsoftmgr" src="8015" />
 <png name="querysoftmgr" src="8016" subwidth="20" />
+  <png name="updateverbtn" src="8054" subwidth="16" />
+  <imghorzex name="setsoftmgrtab" src="8055" mode="mask" subwidth="7" left="3"/>
 <imghorzex name="installsoftmgr" src="8017" mode="mask" subwidth="7" left="3"/><!--<png name="installsoftmgr" src="8017" subwidth="79" />-->
 <imgframe name="softtopbk" src="8001" top="29" />
 <imgframe name="softtoptabbg" src="8021" top="31" />
@@ -227,4 +231,11 @@
 <png name="btn_onekeyopt_continue" src="20026" subwidth="98"/>
 <png name="onekeyopt_scan" src="20027" subwidth="48"/>
 <png name="scanscroll" src="20028" subwidth="370"/>
+<!-- -->
+<imghorzex name="vul_head_back" src="12001"/>
+<png name="vul_repair" src="12002" subwidth="151"/>
+<png name="vul_info" src="12003" subwidth="73"/>
+<png name="vul_scan" src="12004" subwidth="73"/>
+<png name="vul_setup" src="12005" subwidth="73"/>
+<!-- -->
 </skins>

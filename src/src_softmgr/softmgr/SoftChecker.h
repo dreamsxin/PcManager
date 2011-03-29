@@ -33,6 +33,7 @@ struct Soft
 	CString last_update;
 	CString m_strCurVer;
 	CString m_strSize;
+	CString m_strMainExe;
 
 	CAtlArray<Sign*> signs;
 	

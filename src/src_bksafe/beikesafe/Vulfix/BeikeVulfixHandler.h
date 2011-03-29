@@ -9,6 +9,7 @@
 #include <vulfix/BeikeUtils.h>
 #include "../bkmsgdefine.h"
 #include "bksafeuihandlerbase.h"
+#include "DlgTipDetail.h"
 
 class CBeikeVulfixHandler;
 class CEmbeddedView;
@@ -55,13 +56,14 @@ protected:
 	CRichEditCtrlEx m_ctlRichEdit;
 	int m_nCurrentRelateInfoItem;
 	CHyperTextCtrl m_ctlNaviLink;
+    int m_nTotalVulNum;
 	
 	bool m_bScanStarted;	// 看是否正在扫描xml, 还是还在等待信息(Win7 & Vista) 
 	// scan 
 	int m_nScanState, m_nTotalItem, m_nCurrentItem;
 	DWORD m_dwScanBeginTime;
 	// Repair 
-	int m_nRepairTotal, m_nRepairInstalled, m_nRepairDownloaded, m_nRepairProcessed;
+	int m_nRepairTotal, m_nRepairInstalled, m_nRepairDownloaded, m_nRepairProcessed, m_nInstallProcessed;
 	int m_nRepairCurrentRate;
 	
 	CString m_strLastScanTime;
@@ -70,7 +72,10 @@ protected:
 	BOOL m_bScanDone;
 	// 
 	INT m_nNumMust, m_nNumOption, m_nNumSP;
-	
+    CDlgTipDetail* m_pTipDetailDlg;
+    ULONGLONG m_uDownTotalSize;
+    ULONGLONG m_uCurrentDownSize;
+    ULONGLONG m_uTempSize;
 
 	// BK HANDLER
 	void OnBkBtnSwitchRelateInfo();
@@ -118,6 +123,10 @@ public:
 
 	void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 
+    LRESULT OnVulTipDestory(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnVulTipIgnore(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnSelectedChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 protected:
 	int FindListItem( int nID );
 	void _ShutdownComputer(BOOL bReboot);
@@ -132,7 +141,7 @@ protected:
 	void _EnableSelectedOpBtn(INT nMust, INT nSP, INT nOption);
 
 	void _NotifyTrayIcon(LPCTSTR szText, INT nTimeOut, BOOL bDelayShow=TRUE);
-	void _ViewDetail(INT nSelTab);
+	void _ViewDetail(INT nSelTab = 0);
 	void _UpdateViewDetailBtnsNumber( INT nFixed, INT nIgnored, INT nReplaced, INT nInvalid );
 	void _PromptAutoShutdown();
 	void _UpdateScanResultTitle( INT nTipIcon, LPCTSTR szTips );
@@ -144,7 +153,7 @@ protected:
 public:
 	BK_NOTIFY_MAP(IDC_RICHVIEW_WIN_VULFIX)
 		// 系统漏洞 
-		BK_NOTIFY_ID_COMMAND(IDC_DIV_VULFIX_RESULT_SPLITTER, OnBkBtnSwitchRelateInfo)
+//		BK_NOTIFY_ID_COMMAND(IDC_DIV_VULFIX_RESULT_SPLITTER, OnBkBtnSwitchRelateInfo)
 		
 		BK_NOTIFY_ID_COMMAND(IDC_LBL_VULFIX_RESULT_CHECK_ALL, OnBkBtnSelectAll)
 		BK_NOTIFY_ID_COMMAND(IDC_LBL_VULFIX_RESULT_UNCHECK_ALL, OnBkBtnSelectNone)		
@@ -181,7 +190,7 @@ public:
 
 		BK_NOTIFY_REALWND_RESIZED(IDC_LST_VULFIX_RESULT_LIST, OnListReSize)
 		BK_NOTIFY_REALWND_RESIZED(IDC_LST_VULFIX_FIXING_LIST, OnDownListReSize)
-		
+		BK_NOTIFY_ID_COMMAND(1016, _ViewDetail)
 		// 查看已忽略/已安装
 		//BK_NOTIFY_ID_COMMAND(IDC_LBL_VULFIX_SHOW_IGNORED_DLG, OnBkBtnViewIgnored)	
 		//BK_NOTIFY_ID_COMMAND(IDC_LBL_VULFIX_SHOW_INSTALLED_DLG, OnBkBtnViewInstalled)	
@@ -200,9 +209,13 @@ public:
 		MESSAGE_HANDLER(WMH_LISTEX_LINK, OnListLinkClicked)
 		MESSAGE_HANDLER(MSG_APP_TRAY_CALL_FIXLEAK, OnTrayCallScanLeak)
 
-		NOTIFY_ID_HANDLER(IDC_LST_VULFIX_RESULT_LIST, OnListBoxVulFixNotify)
-		NOTIFY_HANDLER(IDC_TXT_VULFIX_VUL_DESCRIPTION, EN_LINK, OnRichEditLink)
-		COMMAND_HANDLER(1016, STN_CLICKED, OnStnClickedNavi)
+        MESSAGE_HANDLER(MSG_USER_VUL_TIP_DESTORY, OnVulTipDestory)
+        MESSAGE_HANDLER(MSG_USER_VUL_IGNORE, OnVulTipIgnore)
+        MESSAGE_HANDLER(MSG_USER_VUL_SELECT_CHANGE, OnSelectedChanged)
+
+//		NOTIFY_ID_HANDLER(IDC_LST_VULFIX_RESULT_LIST, OnListBoxVulFixNotify)
+//		NOTIFY_HANDLER(IDC_TXT_VULFIX_VUL_DESCRIPTION, EN_LINK, OnRichEditLink)
+//		COMMAND_HANDLER(1016, STN_CLICKED, OnStnClickedNavi)
 	END_MSG_MAP()
 };
 

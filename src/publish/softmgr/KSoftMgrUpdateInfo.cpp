@@ -205,8 +205,43 @@ BOOL CUpdateInfoMgr::Load(const CString &kSafePath, BOOL bOnlyMajor = FALSE, LPC
 
 		if (!bOnlyMajor && (pszMainExe && wcslen(pszMainExe)))
 		{
-			if (ui._mainexe.CompareNoCase(pszMainExe) != 0)
+			CString strSrc(pszMainExe);
+			CString strSrcFileName;
+			CString strSrcFilePath;
+			strSrc.Replace('\\', '/');
+			int nPos = strSrc.ReverseFind('/');
+			if (nPos != -1)
+			{
+				strSrcFileName = strSrc.Right(strSrc.GetLength() - nPos - 1);
+				strSrcFilePath = strSrc.Left(nPos);
+				strSrcFilePath.MakeLower();
+			}
+
+			CString strDest(ui._mainexe);
+			CString strDestFileName;
+			CString strDestFilePath;
+			nPos = strDest.Find(L"#\\|");
+			if (nPos != -1)
+			{
+				strDestFileName = strDest.Right(strDest.GetLength() - nPos - 3);
+				strDestFilePath = strDest.Left(nPos);
+				strDestFilePath.Replace('\\', '/');
+				strDestFilePath.MakeLower();
+			}
+
+			BOOL bFind = FALSE;
+			if (strDestFilePath.GetLength() && 
+				strSrcFilePath.Find(strDestFilePath) != -1 &&
+				strDestFileName.GetLength() && 
+				strSrcFileName.CompareNoCase(strDestFileName) == 0)
+			{
+				bFind = TRUE;
+			}
+
+			if (!bFind)
 				continue;
+			//if (ui._mainexe.CompareNoCase(pszMainExe) != 0)
+			//	continue;
 		}
 
 		if (!IsIgnoreItem(ui))
@@ -270,7 +305,40 @@ CString CUpdateInfoMgr::GetSoftIdByMainExe(const CString &szMainExe)
 
 	for(int i = 0; i < m_updateInfoArray.GetSize(); ++i)
 	{
-		if (m_updateInfoArray[i]._mainexe.CompareNoCase(szMainExe) == 0)
+		CString strSrc(szMainExe);
+		CString strSrcFileName;
+		CString strSrcFilePath;
+		strSrc.Replace('\\', '/');
+		int nPos = strSrc.ReverseFind('/');
+		if (nPos != -1)
+		{
+			strSrcFileName = strSrc.Right(strSrc.GetLength() - nPos - 1);
+			strSrcFilePath = strSrc.Left(nPos);
+			strSrcFilePath.MakeLower();
+		}
+
+		CString strDest(m_updateInfoArray[i]._mainexe);
+		CString strDestFileName;
+		CString strDestFilePath;
+		nPos = strDest.Find(L"#\\|");
+		if (nPos != -1)
+		{
+			strDestFileName = strDest.Right(strDest.GetLength() - nPos - 3);
+			strDestFilePath = strDest.Left(nPos);
+			strDestFilePath.Replace('\\', '/');
+			strDestFilePath.MakeLower();
+		}
+
+		BOOL bFind = FALSE;
+		if (strDestFilePath.GetLength() && 
+			strSrcFilePath.Find(strDestFilePath) != -1 &&
+			strDestFileName.GetLength() && 
+			strSrcFileName.CompareNoCase(strDestFileName) == 0)
+		{
+			bFind = TRUE;
+		}
+
+		if (bFind)
 		{
 			strResult.Format(L"%d", m_updateInfoArray[i]._id);
 			break;
@@ -284,31 +352,30 @@ BOOL CUpdateInfoMgr::Need2TipOneUpdate(const CString &kSafePath, CUpdateInfoMgr 
 {
 	// 加载提示选项，默认需要提醒，修改请同步到bksafeconfig.h
 	CString iniPath = _PathAddBackslash(kSafePath) + sIniFile;
-	int tipChoice = ::GetPrivateProfileInt(L"major_update_tip", L"tip_type", 1, iniPath);
-	if(tipChoice == 0) 
-	{
-		// 不提示
-		return FALSE;
-	}
-
 	WCHAR szMainExe[MAX_PATH] = { 0 };
-	if (!bOnlyMajor)
-	{
-		::GetPrivateProfileString(L"major_update_tip", _T("mainexe"), _T(""), szMainExe, MAX_PATH, iniPath);
-		if (wcslen(szMainExe) == 0)
-			return FALSE;
-	}
-
 	__time32_t curTime = _time32(NULL);
+
 	if (bOnlyMajor)
 	{
-		// 加载最后提示时间
+		int tipChoice = ::GetPrivateProfileInt(L"major_update_tip", L"tip_type", 1, iniPath);
+		if(tipChoice == 0) 
+			return FALSE;
+
+		// 加载最后提示时间, 小于一天不提示
 		__time32_t updateTime = static_cast<__time32_t>(
 			::GetPrivateProfileInt(L"major_update_tip", L"tip_time", 0, iniPath)
 			);
-
-		// 小于一天不提示
 		if(curTime - updateTime < 24*60*60) 
+			return FALSE;
+	}
+	else
+	{
+		int tipChoice = ::GetPrivateProfileInt(L"major_update_tip", L"run_tip_type", 1, iniPath);
+		if(tipChoice == 0) 
+			return FALSE;
+
+		::GetPrivateProfileString(L"major_update_tip", _T("mainexe"), _T(""), szMainExe, MAX_PATH, iniPath);
+		if (wcslen(szMainExe) == 0)
 			return FALSE;
 	}
 
@@ -326,12 +393,10 @@ BOOL CUpdateInfoMgr::Need2TipOneUpdate(const CString &kSafePath, CUpdateInfoMgr 
 		CString strSoftId;
 		strSoftId = updateInfoMgr.GetSoftIdByMainExe(szMainExe);
 
-		// 加载最后提示时间
+		// 加载最后提示时间, 小于一天不提示
 		__time32_t updateTime = static_cast<__time32_t>(
 			::GetPrivateProfileInt(L"major_update_tip", strSoftId, 0, iniPath)
 			);
-
-		// 小于一天不提示
 		if(curTime - updateTime < 24*60*60) 
 			return FALSE;
 

@@ -217,9 +217,9 @@ void CBKSafeWndOptdlg::UpdateInfoText()
 {
 	CString strText;
 	if( m_nPidCnt > 0 )
-		strText.Format( BkString::Get(STR_WND_NOREP_TEXT), m_nPidCnt + m_nWndCnt , m_nPidCnt );
+		strText.Format( BkString::Get(STR_WND_NOREP_TEXT), 1 + m_nWndCnt , m_nPidCnt );
 	else if( m_nWndCnt > 0 )
-		strText.Format( BkString::Get(STR_WND_NOUSER_TEXT), m_nWndCnt + m_nPidCnt , m_nWndCnt );
+		strText.Format( BkString::Get(STR_WND_NOUSER_TEXT), m_nWndCnt + 1, m_nWndCnt );
 	else
 		strText.Format( BkString::Get(STR_OPT_COMPLTE_TEXT1), TEXT("10GB") );
 
@@ -234,7 +234,7 @@ void CBKSafeWndOptdlg::AddMemoryItem( vector<KAppWndListItemData>& vecListItem )
 	m_aryListItem.Add( item );
 
 	item.m_nType = ITEM_TYPE_MEM;
-	item.m_strName = TEXT("释放跟的空闲内存给需要的程序，加速系统运行");
+	item.m_strName = TEXT("释放更多空闲内存给需要的程序，加速系统运行");
 	item.m_nCheckState = CHK_ST_CHECK;
 	item.m_nFixState = FIX_ST_UNFREE;
 	m_aryListItem.Add( item );
@@ -346,9 +346,9 @@ void CBKSafeWndOptdlg::OnBtnStartWndOpt()
 	CString strText = GetItemText( IDC_BTN_START_WND_OPT );
 	if( strText == BkString::Get(STR_BTN_EXIT_TEXT) )
 	{
+		m_pMainDlg->SetWinOptDlgHasDoModal(FALSE);
 		EndDialog( 0 );
 		return;
-
 	}
 
 	SetItemVisible( IDC_DIV_BEFORE_CHECK_WND,	FALSE );
@@ -489,7 +489,7 @@ BOOL CBKSafeWndOptdlg::CloseOneWnd( WndOptItem& item )
 
 		Sleep(100);
 		dwTimeOut++;
-		if (dwTimeOut >= 20)
+		if (dwTimeOut >= 30)
 			break;
 	}
 
@@ -860,10 +860,12 @@ LRESULT CBKSafeWndOptdlg::OnBkLvmGetDispInfo( LPNMHDR pnmh )
 
 void CBKSafeWndOptdlg::OnBkClose()
 {
+	m_pMainDlg->SetWinOptDlgHasDoModal(FALSE);
 	EndDialog(0);
 }
 
 void CBKSafeWndOptdlg::OnOk()
 {
+	m_pMainDlg->SetWinOptDlgHasDoModal(FALSE);
 	EndDialog(0);
 }

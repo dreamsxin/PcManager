@@ -261,4 +261,7 @@ public:
 
 	// 把头部信息刷新进入数据库
 	virtual void UpdateCache() = 0;
+
+	//判断库文件跟缓存文件是否版本不一样
+	virtual BOOL IsLibUpdate() = 0;
 };

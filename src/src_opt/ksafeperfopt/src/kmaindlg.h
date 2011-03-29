@@ -23,6 +23,7 @@ using namespace Wnd_LayOut_Mgr;
 #include <miniutil/fileversion.h>
 #include "appwndbasedata.h"
 #include "appwndlistitemdata.h"
+#include "perfmon/wndtimedef.h"
 
 #define ID_TIMER_UPDATE_PROCPERF_MON		2
 #define ID_TIMER_UPDATE_FLOATWND_STATE		3
@@ -30,15 +31,16 @@ using namespace Wnd_LayOut_Mgr;
 #define ID_TIMER_REFRESH_ONKEY_HISTOR		5
 #define	ID_TIMER_REFRESH_WNDPROC_DATA		6
 #define ID_TIMER_DO_ONEKEYSPEEDUP_AT_RUN    7
+#define ID_TIMER_REFRESH_TOTAL_USAGE		8
 
 #define UPDATE_PROCPERF_MON_INTERVAL		3000
 #define UPDATA_FLOATWND_STATE				2000
 #define CHECK_EXIT_EVENT_INTERVAL			500
 #define UPDATE_WNDPROC_DATA_INTERVAL		1000
+#define REFRESH_TOTAL_USAGE_INTERVAL		1000
 
 #define		HEIGHT_ITEM_MAX				100
 #define		HEIGHT_ITEM_MIN				55
-
 #define		HEIGHT_ITEM_WNDPROC_LIST	32
 
 #define		LISTBOX_COLUM_NAME			0
@@ -49,7 +51,81 @@ using namespace Wnd_LayOut_Mgr;
 
 #define		RUN_UI_ONEKEYSPEED			10
 
+#define		LIST_SORT_ASC				1	//升序
+#define		LIST_SORT_DESC				0	//降序
+
 typedef std::pair<DWORD, KProcessPerfData*> PerfDataPair;
+
+class KPerfDataSorter
+{
+public:
+	enum{
+		enum_Sort_Name = 0,
+		enum_Sort_SecLevel,
+		enum_Sort_CPU,
+		enum_Sort_Mem,
+		enum_Sort_IO
+	};
+
+	KPerfDataSorter(BOOL asc, DWORD dwSortKey = enum_Sort_CPU) 
+		: m_bAsc(asc)
+		, m_SortColum(dwSortKey) 
+	{
+	}
+
+	bool operator()(const PerfDataPair& pLeft, const PerfDataPair& pRight) const
+	{
+		bool bResult = false;
+
+		switch(m_SortColum)
+		{
+		case enum_Sort_Name:
+			{
+				CString str1 = pLeft.second->GetProcessName();
+				CString str2 = pRight.second->GetProcessName();
+				bResult = str1 > str2;
+			}
+			break;	
+		case enum_Sort_SecLevel:
+			{
+				DWORD dwLevel1 = pLeft.second->GetProcessTrustMode();
+				DWORD dwLevel2 = pRight.second->GetProcessTrustMode();
+				bResult = dwLevel1 > dwLevel2;
+			}
+			break;
+		case enum_Sort_CPU:
+			{
+				int v1 = pLeft.second->GetCpuUsage();
+				int v2 = pRight.second->GetCpuUsage();
+				bResult = v1 > v2;
+			}
+			break;
+		case enum_Sort_Mem:
+			{
+				ULONGLONG u1 = pLeft.second->GetMemUsage();
+				ULONGLONG u2 = pRight.second->GetMemUsage();
+				bResult = u1 > u2;
+			}
+			break;
+		case enum_Sort_IO:
+			{
+				ULONGLONG u1 = pLeft.second->GetIOSpeed();
+				ULONGLONG u2 = pRight.second->GetIOSpeed();
+				bResult = u1 > u2;
+			}
+			break;
+		default:
+			break;
+		}
+
+		bool bRet = m_bAsc ? bResult : !bResult;
+		return bRet;
+	}
+
+private:
+	BOOL		m_bAsc;
+	DWORD		m_SortColum;
+};
 
 class KMainDlg
     : public CBkDialogImpl<KMainDlg>,
@@ -71,10 +147,13 @@ public:
 		, m_bIsWin64(FALSE)
 		, m_pModuleMgr(NULL)
 		, m_pWndProcList(NULL)
-		, m_hActiveWnd(NULL)
+/*		, m_hActiveWnd(NULL)*/
 		, m_hThreadReport(NULL)
 		, m_hEventRptThreadExit(NULL)
 		, m_bReportThreadWorking(FALSE)
+		, m_bPerfOptDlgIsDoModal(FALSE)
+		, m_bWinOptDlgHasDoModal(FALSE)
+		/*, m_bSortAscOrDesc(FALSE)*/
     {
 		m_hEventGetNetData = CreateEvent(NULL, FALSE, TRUE, NULL);
 /*		m_nCurColum = LISTBOX_COLUM_MEM;*/
@@ -134,8 +213,9 @@ public:
 	BOOL			OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	static			bool SortPerfInfo(KProcessPerfData* ItemData1, KProcessPerfData* ItemData2, int nColum, int nState);
 	//对应每一列的排序操作
-	static			int  Compare( KProcessPerfData* ItemData1, KProcessPerfData* ItemData2, int nsubIndex = -1);
-	static			bool stl_SortPerfInfo(PerfDataPair element1,PerfDataPair element2);
+//	static			int  Compare( KProcessPerfData* ItemData1, KProcessPerfData* ItemData2, int nsubIndex = -1);
+//	static			bool stl_SortPerfInfo(PerfDataPair element1,PerfDataPair element2);
+	void			_SortListData(int nColum);
 
 	LRESULT			OnListBoxGetDispInfo(LPNMHDR pnmh);
 	LRESULT			OnListBoxGetMaxHeight(LPNMHDR pnmh);
@@ -206,6 +286,8 @@ public:
 	static DWORD WINAPI pfnThreadProcCloseWnd(__in  LPVOID lpParameter);
 	CString				FormatLongExeName(const CString& strLongName);
 	void				SetNotActiveTime(HWND);
+	void				SetPerfOptDlgHasDoModal(BOOL);
+	void				SetWinOptDlgHasDoModal(BOOL);
 
 private:
 	UINT					m_uTimer;
@@ -234,11 +316,14 @@ private:
 	CAtlMap<CString, KPerfMonListItemData>		m_mapReported;
 	CString			m_strAppFilePath;
 	CString			m_strCfgFilePath;
-	HWND			m_hActiveWnd;
+/*	HWND			m_hActiveWnd;*/
 	HANDLE			m_hEventRptThreadExit;
 	HANDLE			m_hThreadReport;
 	BOOL			m_bReportThreadWorking;
 	BOOL			m_bDoOnekeySpeedUpAtRun;
+	BOOL			m_bPerfOptDlgIsDoModal;
+	BOOL			m_bWinOptDlgHasDoModal;
+/*	BOOL			m_bSortAscOrDesc;		//标记排列时是升序还是降序*/
 
 	//  [2/25/2011 zhangbaoliang]
 	CAtlMap<DWORD, UI_Group>	m_mapUI;
@@ -249,6 +334,7 @@ private:
 	KAppWndStateDataMgr				m_appWndStateMgr;
 	vector<KAppWndListItemData>		m_vecWndListItemData;
 	map<HWND, DWORD>				m_mapNotActiveTime;
+	vector<KWndTimeItem>			m_vecWndTimeInfo;
 
 	int						_PushUIGroup(DWORD dwGroupID, UI_Group uiGroup);
 

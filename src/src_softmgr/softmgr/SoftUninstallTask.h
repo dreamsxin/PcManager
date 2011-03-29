@@ -6,6 +6,7 @@
 #include "ConewTask.h"
 #include "SoftUninstallDef.h"
 #include "SoftUninstallEnum.h"
+#include <atltime.h>
 
 namespace ksm
 {
@@ -192,6 +193,10 @@ public:
 	{ SetPriority(TASK_PRI_DATA_LAST_USE); }
 
 	virtual BOOL TaskProcess(conew::CTaskMgr *pMgr);
+
+private:
+	int	UpdateCount( LPCTSTR pszFile, LPCTSTR pszIni, CTime& tLastUse );
+	int GetDayOver( CTime& timeCur, CTime& timeLast );
 };
 
 }

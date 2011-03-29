@@ -257,7 +257,7 @@ int GetFileVersionFromReg(CString& ins_loc,CString& ver,CString path_key,CString
 	{
 		// 获取版本号失败时，认为已经安装
 		ver = L"0.0.0.0";
-		return 0;
+		return 1;
 	}
 	ver = ver2ws(dwMS, dwLS);
 

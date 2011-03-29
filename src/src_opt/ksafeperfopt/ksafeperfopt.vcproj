@@ -703,6 +703,10 @@
 					RelativePath="..\..\publish\perfmon\kperfmonmem.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\publish\perfmon\wndtimedef.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="winhttp"

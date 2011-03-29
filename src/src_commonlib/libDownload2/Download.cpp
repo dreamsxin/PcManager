@@ -183,11 +183,13 @@ unsigned int CDownload::_RunThreadFun_()
 			if (WAIT_FAILED == dwWaitRet )
 			{
 				m_state = ProcessState_Failed;
+				m_errCode = DLLER_INTERNAL_WAIT_OBJ;
 				break;
 			}
 			else if (WAIT_OBJECT_0 == dwWaitRet)
 			{
 				m_state = ProcessState_UserCanceled;
+				m_errCode = DLLER_USER_CANCEL;
 				break;
 			}
 			else if (WAIT_TIMEOUT == dwWaitRet)
@@ -231,6 +233,7 @@ unsigned int CDownload::_RunThreadFun_()
 	catch (...)
 	{
 		strCheckSum = _T("ERROR");
+		m_errCode = DLLER_INTERNAL_CHECKMD5;
 	}
 	MYTRACE(_T("DOWNLOAD %s -> %s [%s] : %d - Downloaded/Content-Length: %I64d/%I64d  AvSpeed:%I64d(CO:%d) TimeUsed:%d\r\n"), 
 		m_locationPool.m_strMainUrl, m_strFilePath, strCheckSum \
@@ -361,6 +364,7 @@ ProcessState CDownload::_StartSegments( CRequestPool &request_pool, CHttpAsyncIn
 				else if (WAIT_OBJECT_0 == dwWaitRet)
 				{
 					state = ProcessState_UserCanceled;
+					m_errCode = DLLER_USER_CANCEL;
 					break;
 				}
 				else if (WAIT_TIMEOUT == dwWaitRet)
@@ -419,6 +423,7 @@ ProcessState CDownload::_StartSegments( CRequestPool &request_pool, CHttpAsyncIn
 						if(nTriesFromNoData>DOWNLOAD_MAINURL_MAXRETYR)
 						{
 							state = ProcessState_Failed;
+							m_errCode = DLLER_SEGENT_ERROR;
 							break;
 						}
 					}

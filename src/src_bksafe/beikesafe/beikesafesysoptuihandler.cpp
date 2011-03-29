@@ -103,7 +103,7 @@ BOOL CBeikeSafeSysOptUIHandler::_FindRunItem( CKsafeRunInfo* pInfo )
 
 	m_RunList.InsertItemX(pNewInfo,hFileInfo.hIcon);
 
-	if (pInfo->bUnknown && PathFileExists(pInfo->strExePath))
+	if (pInfo->bUnknown && PathFileExists(pInfo->strExePath) && pInfo->bFileIsExist)
 	{
 		struct RUN_RPT_DATA
 		{
@@ -1319,10 +1319,9 @@ void CBeikeSafeSysOptUIHandler::SaveIgnoreID(int nNewIgnoreID)
 {
 	CIniFile ini_IgnoredList(m_strIgnoredIniPath);
 	CString strGetValue;
-	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN,KEY_IGNOREDLIST_COMMENT,strGetValue.GetBuffer(MAX_PATH),MAX_PATH);
-	strGetValue.ReleaseBuffer(MAX_PATH);
+	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN, KEY_IGNOREDLIST_COMMENT, strGetValue.GetBuffer(65536), 65536);
+	strGetValue.ReleaseBuffer(65536);
 
-	CString strId;
 	BOOL bExisted = FALSE;
 	for (int n = 0;n < m_arrayIgnoredID.GetSize();n++)
 	{
@@ -1330,10 +1329,10 @@ void CBeikeSafeSysOptUIHandler::SaveIgnoreID(int nNewIgnoreID)
 			bExisted = TRUE;
 	}
 	if (!bExisted)
-		strId.Format(_T("%d|"),nNewIgnoreID);
-
-	strGetValue.Format(_T("%s%s"),CString(strGetValue),strId);
-	ini_IgnoredList.SetStrValue(SEC_IGNOREDLIST_MAIN,KEY_IGNOREDLIST_COMMENT,strGetValue);
+	{
+		strGetValue.Format(_T("%s%d|"), CString(strGetValue), nNewIgnoreID);
+		ini_IgnoredList.SetStrValue(SEC_IGNOREDLIST_MAIN,KEY_IGNOREDLIST_COMMENT, strGetValue);
+	}
 }
 
 void CBeikeSafeSysOptUIHandler::LoadIgnoredID()
@@ -1341,8 +1340,8 @@ void CBeikeSafeSysOptUIHandler::LoadIgnoredID()
 	m_arrayIgnoredID.RemoveAll();
 	CIniFile ini_IgnoredList(m_strIgnoredIniPath);
 	CString strGetValue;
-	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN,KEY_IGNOREDLIST_COMMENT,strGetValue.GetBuffer(MAX_PATH),MAX_PATH);
-	strGetValue.ReleaseBuffer(MAX_PATH);
+	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN, KEY_IGNOREDLIST_COMMENT, strGetValue.GetBuffer(65536), 65536);
+	strGetValue.ReleaseBuffer(65536);
 
 	WCHAR *szValue;
 	WCHAR szTemp[10];

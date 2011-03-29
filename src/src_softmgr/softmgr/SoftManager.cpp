@@ -1366,6 +1366,11 @@ void CSoftManager::UpdateCache()
 		update_cache();
 }
 
+BOOL CSoftManager::IsLibUpdate()
+{
+	return _CheckCacheOutTime();
+}
+
 BOOL CSoftManager::_CheckCacheOutTime()
 {
 	if(PathFileExists(_cache_name))
@@ -1413,6 +1418,7 @@ BOOL CSoftManager::_CheckCacheOutTime()
 	else
 		return TRUE;
 }
+
 BOOL CSoftManager::GetOneKeySoftInfo( CSimpleArray<ONE_KEY_GROUP>** ppInfo )
 {
 	if ( ppInfo )

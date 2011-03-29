@@ -15,8 +15,8 @@
 !define KSAFE_PLUG_RUNONCE  "KSafeRebootPlugClean"
 
 !ifndef  PRODUCT_UPDATE
-  !define PRODUCT_VERSION     "${AUTO_FILE_VERSION} Beta版"
-  !define PRODUCT_VERSION_REG "${AUTO_FILE_VERSION} Beta版"
+  !define PRODUCT_VERSION     "${AUTO_FILE_VERSION} 正式版"
+  !define PRODUCT_VERSION_REG "${AUTO_FILE_VERSION} 正式版"
 !else
   !define PRODUCT_VERSION     "${AUTO_FILE_VERSION} 正式版升级包"
   !define PRODUCT_VERSION_REG "${AUTO_FILE_VERSION} 正式版"
@@ -296,6 +296,7 @@ lbl_del_hotfix:
 lbl_no_del_hotfix:
   pop $0
 
+	!insertmacro DeleteFileEx "$INSTDIR\KnInstAD.exe" "$INSTDIR"
   !insertmacro DeleteFileEx "$INSTDIR\KSafeTray.exe" "$INSTDIR"
   !insertmacro DeleteFileEx "$INSTDIR\KSafe.exe" "$INSTDIR"
   !insertmacro DeleteFileEx "$INSTDIR\ksafebak.dll" "$INSTDIR"

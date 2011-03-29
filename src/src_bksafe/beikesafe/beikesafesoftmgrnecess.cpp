@@ -1245,6 +1245,22 @@ VOID CBeikeSafeSoftmgrNecessHandler::OnFreeBack()
 	}
 }
 
+VOID CBeikeSafeSoftmgrNecessHandler::OnReStart()
+{
+	if (m_pSoftMgrMainUI)
+		m_pSoftMgrMainUI->OnReStart();
+}
+VOID CBeikeSafeSoftmgrNecessHandler::OnIgnoreReStartTip()
+{
+	if (m_pSoftMgrMainUI)
+		m_pSoftMgrMainUI->OnIgnoreReStartTip();
+}
+VOID CBeikeSafeSoftmgrNecessHandler::OnCloseReStartTip()
+{
+	if (m_pSoftMgrMainUI)
+		m_pSoftMgrMainUI->OnCloseReStartTip();
+}
+
 VOID CBeikeSafeSoftmgrNecessHandler::OnBtnBtmViewDown()
 {
 	m_pSoftMgrMainUI->OnDownloadMgr();

@@ -77,6 +77,7 @@
 #		define BKSFNS_SETTING_PAGE_SYSOPT		L"SysOpt"  //设置页面中的系统优化页面
 #		define BKSFNS_SETTING_PAGE_KWS			L"SysKws"
 #		define BKSFNS_SETTING_PAGE_SOFTMGR		L"SoftMgr"
+#			define BKSFNS_SETTING_PAGE_SOFTMGR_UPDATE		L"Update"
 //hub end
 #define BKSFNS_MAKE(a, b) (a L"_" b)
 #define BKSFNS_MAKE_3(a, b, c) (a L"_" b L"_" c)

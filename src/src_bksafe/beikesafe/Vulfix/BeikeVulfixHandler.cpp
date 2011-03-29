@@ -11,6 +11,7 @@
 #include "DlgViewDetail.h"
 #include "DlgShutdownPrompt.h"
 #include "../beikesafemaindlg.h"
+#include "DlgTipDetail.h"
 
 
 static bool NeedRepair( LPTUpdateItem pItem )
@@ -25,13 +26,15 @@ static bool NeedRepair( LPTVulSoft pItem )
 
 static int AppendItemSoftVulList( CListViewCtrlEx &listCtrl, T_VulListItemData * pVulItem )
 {
+    CString strSize;
 	int state = GetSoftItemState( pVulItem );
 	LPCTSTR lpszWarnDesc = GetLevelDesc(pVulItem->nWarnLevel);
 	int nItem = listCtrl.Append( lpszWarnDesc, LISTITEM_CHECKBOX );	
 	listCtrl.AppendSubItem(nItem, pVulItem->strName);
-	listCtrl.AppendSubItem(nItem, pVulItem->strDesc);
+    FormatSizeString(pVulItem->nFileSize, strSize);    
+	listCtrl.AppendSubItem(nItem, strSize);
 	listCtrl.AppendSubItem(nItem, pVulItem->strPubDate);
-	listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5016) );
+//	listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5016) );
 
 	if(pVulItem->nWarnLevel>=EWarn_Serious)
 		listCtrl.SetSubItemColor(nItem, 0, red, false);
@@ -55,16 +58,20 @@ static int AppendItem2VulList( CListViewCtrlEx &listCtrl, T_VulListItemData * pV
 	BOOL bUseRadio = pVulItem->nWarnLevel==0 && IsFlagOn( VFLAG_SERVICE_PATCH, pVulItem->dwFlags );	// SP 
 	LPCTSTR lpszWarnDesc = GetLevelDesc(pVulItem->nWarnLevel);
 	int nItem = listCtrl.Append(lpszWarnDesc, bUseRadio ? LISTITEM_RADIOBOX : LISTITEM_CHECKBOX );
+    listCtrl.AppendSubItem(nItem, pVulItem->strName, SUBITEM_TEXT, ST_LEFT, TRUE);
 	listCtrl.AppendSubItem(nItem, strTitle);
-	listCtrl.AppendSubItem(nItem, pVulItem->strName);
-	listCtrl.AppendSubItem(nItem, pVulItem->strPubDate);
+    CString strSize;
+    FormatSizeString(pVulItem->nFileSize, strSize);
+    listCtrl.AppendSubItem(nItem, strSize, SUBITEM_TEXT, ST_RIGHT);	
+    listCtrl.AppendSubItem(nItem, pVulItem->strPubDate, SUBITEM_TEXT, ST_RIGHT);
 
-	if ( pVulItem->nWarnLevel == -1 )
-		listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5017) );
-	else if ( pVulItem->nWarnLevel == 0 )
-		listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5016) );
-	else if ( pVulItem->nWarnLevel > 0 )
-		listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5016) );
+
+// 	if ( pVulItem->nWarnLevel == -1 )
+// 		listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5017) );
+// 	else if ( pVulItem->nWarnLevel == 0 )
+// 		listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5016) );
+// 	else if ( pVulItem->nWarnLevel > 0 )
+// 		listCtrl.AppendSubItem(nItem,BkString::Get(IDS_VULFIX_5016) );
 	
 	if(pVulItem->nWarnLevel>=EWarn_Serious)
 		listCtrl.SetSubItemColor(nItem, 0, red, false);
@@ -82,24 +89,24 @@ static int AppendItem2RepairList( CListViewCtrlEx &listCtrl, T_VulListItemData *
 	CString strFileSize;
 	FormatSizeString(pVulItem->nFileSize, strFileSize);
 	
-	CString strTitle, strSummary;
+	CString strTitle, strSummary = L"   ";
 	if(pVulItem->nType==VTYPE_SOFTLEAK)
 	{
 		strTitle = pVulItem->strName;
-		strSummary = pVulItem->strDesc;
+		strSummary += pVulItem->strDesc;
 	}
 	else
 	{
 		FormatKBString(pVulItem->nID, strTitle);
-		strSummary = pVulItem->strName;
+		strSummary += pVulItem->strName;
 	}
 	
 	int nItem = listCtrl.Append( GetLevelDesc(pVulItem->nWarnLevel) );
-	listCtrl.AppendSubItem(nItem, strTitle);
 	listCtrl.AppendSubItem(nItem, strSummary);
-	listCtrl.AppendSubItem(nItem, strFileSize);
-    listCtrl.AppendSubItem(nItem, BkString::Get(IDS_VULFIX_5164));
-	listCtrl.AppendSubItem(nItem, _T(""));
+	listCtrl.AppendSubItem(nItem, strTitle, SUBITEM_TEXT, ST_CENTER);
+	listCtrl.AppendSubItem(nItem, strFileSize, SUBITEM_TEXT, ST_CENTER);
+//  listCtrl.AppendSubItem(nItem, BkString::Get(IDS_VULFIX_5164));
+// 	listCtrl.AppendSubItem(nItem, _T(""));
 	/*listCtrl.SetItemData(nItem, (DWORD_PTR)pVulItem);*/
 	listCtrl.SetItemData(nItem, (DWORD)pVulItem);
 	return nItem;
@@ -171,8 +178,10 @@ CBeikeVulfixHandler::CBeikeVulfixHandler( CEmbeddedView &mainDlg )
 	m_nTotalItem = 0;
 	m_nCurrentItem = 0;
 	m_nRepairTotal = m_nRepairInstalled = m_nRepairDownloaded = m_nRepairProcessed = 0;
+    m_nInstallProcessed = 0;
 	m_nNumMust = m_nNumOption = m_nNumSP = 0;
 	m_MainDlg = NULL;
+    m_pTipDetailDlg = NULL;
 }
 
 CBeikeVulfixHandler::~CBeikeVulfixHandler(void)
@@ -197,11 +206,11 @@ BOOL CBeikeVulfixHandler::Init(HWND hMainWnd, HWND hWndParent)
 		0, IDC_LST_VULFIX_RESULT_LIST, NULL);
 	{
 //		m_wndListCtrlVul.InsertColumn(0, _T("选"), LVCFMT_LEFT, 26);
-        m_wndListCtrlVul.InsertColumn(0, BkString::Get(IDS_VULFIX_5018), LVCFMT_LEFT, 80);
-        m_wndListCtrlVul.InsertColumn(1, BkString::Get(IDS_VULFIX_5019), LVCFMT_LEFT, 65);
-        m_wndListCtrlVul.InsertColumn(2, BkString::Get(IDS_VULFIX_5020), LVCFMT_LEFT, 230);
-        m_wndListCtrlVul.InsertColumn(3, BkString::Get(IDS_VULFIX_5021), LVCFMT_LEFT, 75);
-		m_wndListCtrlVul.InsertColumn(4, BkString::Get(IDS_VULFIX_5022), LVCFMT_LEFT, 70);
+        m_wndListCtrlVul.InsertColumn(0, BkString::Get(IDS_VULFIX_5020), LVCFMT_CENTER, 460);
+        m_wndListCtrlVul.InsertColumn(1, BkString::Get(IDS_VULFIX_5019), LVCFMT_LEFT, 100);
+        m_wndListCtrlVul.InsertColumn(2, BkString::Get(IDS_VULFIX_5017), LVCFMT_RIGHT, 100);
+        m_wndListCtrlVul.InsertColumn(3, BkString::Get(IDS_VULFIX_5021), LVCFMT_RIGHT, 100);
+//		m_wndListCtrlVul.InsertColumn(4, BkString::Get(IDS_VULFIX_5022), LVCFMT_LEFT, 70);
 		m_wndListCtrlVul.SetItemHeight(30);
 	}
 		
@@ -212,21 +221,21 @@ BOOL CBeikeVulfixHandler::Init(HWND hMainWnd, HWND hWndParent)
 		WS_VISIBLE | WS_CHILD | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL , 
 		0, IDC_LST_VULFIX_FIXING_LIST, NULL);
 	{
-        m_wndListCtrlVulFixing.InsertColumn(0, BkString::Get(IDS_VULFIX_5018), LVCFMT_LEFT, 60);
-        m_wndListCtrlVulFixing.InsertColumn(1, BkString::Get(IDS_VULFIX_5019), LVCFMT_LEFT, 65);
-        m_wndListCtrlVulFixing.InsertColumn(2, BkString::Get(IDS_VULFIX_5020), LVCFMT_LEFT, 300);
-        m_wndListCtrlVulFixing.InsertColumn(3, BkString::Get(IDS_VULFIX_5023), LVCFMT_LEFT, 140);
-        m_wndListCtrlVulFixing.InsertColumn(4, BkString::Get(IDS_VULFIX_5022), LVCFMT_LEFT, 80);
-		m_wndListCtrlVulFixing.InsertColumn(5, BkString::Get(IDS_VULFIX_5024), LVCFMT_CENTER, 60);
+        m_wndListCtrlVulFixing.InsertColumn(0, BkString::Get(IDS_VULFIX_5020), LVCFMT_CENTER, 480);
+        m_wndListCtrlVulFixing.InsertColumn(1, BkString::Get(IDS_VULFIX_5019), LVCFMT_CENTER, 130);
+        m_wndListCtrlVulFixing.InsertColumn(2, BkString::Get(IDS_VULFIX_5022), LVCFMT_CENTER, 155);
+//         m_wndListCtrlVulFixing.InsertColumn(3, BkString::Get(IDS_VULFIX_5023), LVCFMT_LEFT, 140);
+//         m_wndListCtrlVulFixing.InsertColumn(4, BkString::Get(IDS_VULFIX_5022), LVCFMT_LEFT, 80);
+// 		m_wndListCtrlVulFixing.InsertColumn(5, BkString::Get(IDS_VULFIX_5024), LVCFMT_CENTER, 60);
 		m_wndListCtrlVulFixing.SetItemHeight(30);
 	}
 	
-	m_ctlRichEdit.FirstInitialize( hWndParent, IDC_TXT_VULFIX_VUL_DESCRIPTION );
-	m_ctlRichEdit.SetBackgroundColor( BACKGROUND_COLOR );
+// 	m_ctlRichEdit.FirstInitialize( hWndParent, IDC_TXT_VULFIX_VUL_DESCRIPTION );
+// 	m_ctlRichEdit.SetBackgroundColor( BACKGROUND_COLOR );
 	
-	m_ctlNaviLink.Create(hWndParent, NULL, NULL, WS_VISIBLE|WS_CHILD|SS_NOTIFY, 0, 1016, NULL);
-	m_ctlNaviLink.SetFlags( DT_RIGHT );
-	m_ctlNaviLink.SetMText( BkString::Get(IDS_VULFIX_5014) );
+// 	m_ctlNaviLink.Create(hWndParent, NULL, NULL, WS_VISIBLE|WS_CHILD|SS_NOTIFY, 0, 1016, NULL);
+// 	m_ctlNaviLink.SetFlags( DT_RIGHT );
+// 	m_ctlNaviLink.SetMText( BkString::Get(IDS_VULFIX_5014) );
 	return TRUE;
 }
 
@@ -297,6 +306,8 @@ void CBeikeVulfixHandler::OnBkBtnCancelScan()
 	m_RefWin.StopIconAnimate();
 	m_wndListCtrlVul.SetEmptyString(BkString::Get(IDS_VULFIX_5028));
 	_SetDisplayState(SCANSTATE_DISPLAY);
+    SetItemText(IDC_TXT_VULFIX_SELECT_NUM, BkString::Get(IDS_VULFIX_5176));
+    SetItemText(IDC_TXT_VULFIX_SELCET_SIZE, _T(""));
 }
 
 STATE_CLOSE_CHECK CBeikeVulfixHandler::CloseCheck()
@@ -408,10 +419,10 @@ void CBeikeVulfixHandler::_SetDisplayState( TScanSoftState st, TRepairSubState s
 		}
 	}
     
-	if (SCANSTATE_DISPLAY == st)
-    {
-        SetPanelXml(IDC_DIV_VULFIX_DISPLAY_LIST_AND_DETAIL, IDR_BK_VUL_DISPLAY_SHOW_DETAIL);
-    }
+// 	if (SCANSTATE_DISPLAY == st)
+//     {
+//         SetPanelXml(IDC_DIV_VULFIX_DISPLAY_LIST_AND_DETAIL, IDR_BK_VUL_DISPLAY_SHOW_DETAIL);
+//     }
 
     Redraw();
 }
@@ -438,32 +449,43 @@ void CBeikeVulfixHandler::OnBkBtnSwitchRelateInfo()
 
 void CBeikeVulfixHandler::OnBkBtnSelectAll()
 {
-	BOOL bSelectAll = TRUE;
-	if(m_nNumMust>0 && m_nNumOption>0)
-	{
-		LPCTSTR szMsg = BkString::Get(IDS_VULFIX_5032);
-		LPCTSTR szBtnYes = BkString::Get(IDS_VULFIX_5033);
-		LPCTSTR szBtnNo = BkString::Get(IDS_VULFIX_5034);
-		
-		CBkSafeMsgBox dlg;		
-		dlg.AddButton( szBtnYes, IDYES);
-		dlg.AddButton( szBtnNo, IDCANCEL);
-		UINT nRet = dlg.ShowMsg(szMsg, NULL, MB_BK_CUSTOM_BUTTON|MB_ICONQUESTION, NULL);
-		if(nRet==IDYES)
-		{
-			bSelectAll = FALSE;
-		}
-	}
-	
-	if(bSelectAll)
-		m_wndListCtrlVul.CheckAll();
-	else
-		m_wndListCtrlVul.CheckAll( std::ptr_fun(SelectMustOnly) );
+    BOOL bChecked = GetItemCheck(IDC_LBL_VULFIX_RESULT_CHECK_ALL);
+    
+    if (bChecked)
+    {
+	    BOOL bSelectAll = TRUE;
+	    if(m_nNumMust>0 && m_nNumOption>0)
+	    {
+		    LPCTSTR szMsg = BkString::Get(IDS_VULFIX_5032);
+		    LPCTSTR szBtnYes = BkString::Get(IDS_VULFIX_5033);
+		    LPCTSTR szBtnNo = BkString::Get(IDS_VULFIX_5034);
+    		
+		    CBkSafeMsgBox dlg;		
+		    dlg.AddButton( szBtnYes, IDYES);
+		    dlg.AddButton( szBtnNo, IDCANCEL);
+		    UINT nRet = dlg.ShowMsg(szMsg, NULL, MB_BK_CUSTOM_BUTTON|MB_ICONQUESTION, NULL);
+		    if(nRet==IDYES)
+		    {
+			    bSelectAll = FALSE;
+		    }
+	    }
+    	
+	    if(bSelectAll)
+		    m_wndListCtrlVul.CheckAll();
+	    else
+		    m_wndListCtrlVul.CheckAll( std::ptr_fun(SelectMustOnly) );
+    }
+    else
+    {
+        m_wndListCtrlVul.CleanCheck();
+    }
+    PostMessage(MSG_USER_VUL_SELECT_CHANGE,NULL, NULL);
 }
 
 void CBeikeVulfixHandler::OnBkBtnSelectNone()
 {
-	m_wndListCtrlVul.CleanCheck();
+	m_wndListCtrlVul.CheckAll( std::ptr_fun(SelectSuggest) );
+    PostMessage(MSG_USER_VUL_SELECT_CHANGE,NULL, NULL);
 }
 
 void CBeikeVulfixHandler::OnBkBtnSelectAllSuggested()
@@ -493,6 +515,7 @@ bool CBeikeVulfixHandler::_RepairSingle( int arrVulIds, T_VulListItemData* pItem
 	m_nRepairInstalled = 0;
 	m_nRepairDownloaded = 0;
 	m_nRepairProcessed = 0;
+    m_nInstallProcessed = 0;
 	m_nRepairCurrentRate = 0;
 
 	m_RefWin.StartIconAnimate(30100);
@@ -561,7 +584,10 @@ void CBeikeVulfixHandler::OnBkBtnBeginRepair()
 		m_nRepairInstalled = 0;
 		m_nRepairDownloaded = 0;
 		m_nRepairProcessed = 0;
+        m_nInstallProcessed = 0;
 		m_nRepairCurrentRate=0;
+        m_uCurrentDownSize = 0;
+        m_uTempSize = 0;
 
 		m_RefWin.StartIconAnimate(30100);
 
@@ -835,8 +861,15 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 					SysFreeString(bstr);
 				}
 			}
+
+            if (EVulfix_DownloadProcess!=evt && EVulfix_DownloadBegin!=evt)
+            {
+                T_VulListItemData *pItemData = (T_VulListItemData*)m_wndListCtrlVulFixing.GetItemData( nIndex );
+                ATLASSERT(pItemData);
+                m_uCurrentDownSize += pItemData->nFileSize;
+            }
 			
-			nSubitem = 3;
+			//nSubitem = 3;
 			if( EVulfix_DownloadProcess==evt )
 			{
 				T_VulListItemData *pItemData = (T_VulListItemData*)m_wndListCtrlVulFixing.GetItemData( nIndex );
@@ -846,11 +879,13 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 					CString strFileSize, strDownloadedSize;
 					FormatSizeString(lParam, strDownloadedSize);
 					FormatSizeString(pItemData->nFileSize, strFileSize);
+                    m_uTempSize = lParam;
 					strTitle.Format(_T("%s/%s"), strDownloadedSize, strFileSize);
-					nSubitem2 = 4;
+					nSubitem2 = 2;
 					nDownloadPercent = GetPercent(lParam, pItemData->nFileSize);
 					strTitle2.Format(BkString::Get(IDS_VULFIX_5038), nDownloadPercent );
 					m_nRepairCurrentRate=nDownloadPercent;
+
 				}
 			}
 			else if(EVulfix_DownloadEnd==evt)
@@ -859,8 +894,9 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 				strTitle = BkString::Get(IDS_VULFIX_5039);
 				++m_nRepairDownloaded;
 
-				nSubitem2 = 4;
+				nSubitem2 = 2;
 				strTitle2 = BkString::Get(IDS_VULFIX_5040);
+                ++ m_nRepairProcessed;
 			}
 			else if(EVulfix_DownloadError==evt)
 			{
@@ -877,7 +913,7 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 				}
 				++ m_nRepairProcessed;
 
-				nSubitem2 = 4;
+				nSubitem2 = 2;
 				clr2 = clr;
 				strTitle2 = strTitle;
 			}
@@ -896,7 +932,7 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 			{
 				theEngine->m_fixLog.UpdateInstalled( nKbId, EVulfix_InstallEnd==evt );
 			}
-			nSubitem = 4;
+			nSubitem = 2;
 			if(EVulfix_InstallBegin==evt)
 			{
 				clr = black;
@@ -947,7 +983,7 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 				}
 			}
 			if(EVulfix_InstallError==evt || EVulfix_InstallEnd==evt)
-				++ m_nRepairProcessed;
+				++ m_nInstallProcessed;
 			break;
 	
 		case EVulfix_Task_Complete:
@@ -979,14 +1015,14 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 			else
 			{
 				float fProc= (float)m_nRepairCurrentRate*0.9f;
-				fProc+=((m_nRepairDownloaded-m_nRepairProcessed)*90);
-				fProc+=(m_nRepairProcessed*100);
+				fProc+=((m_nRepairDownloaded-m_nInstallProcessed)*90);
+				fProc+=(m_nInstallProcessed*100);
 				fProc/=(m_nRepairTotal);
 				nProgerss=(DWORD)fProc;
 			}
 
-			if(evt!=EVulfix_DownloadProcess)
-				_UpdateRepairTitle();
+//			if(evt!=EVulfix_DownloadProcess)
+			_UpdateRepairTitle();
 			_SetRepairProgress( nProgerss );
 
 			if( (evt==EVulfix_InstallEnd || evt==EVulfix_InstallError )
@@ -996,7 +1032,7 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 				CString str;
 				if( m_nRepairProcessed==m_nRepairTotal )
 				{
-					if( m_nRepairProcessed==m_nRepairInstalled )
+					if( m_nInstallProcessed==m_nRepairInstalled )
 					{
 						str.Format(BkString::Get(IDS_VULFIX_5053));
 					}
@@ -1010,7 +1046,7 @@ LRESULT CBeikeVulfixHandler::OnVulFixEventHandle( UINT uMsg, WPARAM wParam, LPAR
 				}
 				else
 				{
-					if( m_nRepairProcessed==m_nRepairInstalled  )
+					if( m_nInstallProcessed==m_nRepairInstalled  )
 					{
 						str.AppendFormat(BkString::Get(IDS_VULFIX_5056), m_nRepairTotal, m_nRepairInstalled);
 					}
@@ -1057,8 +1093,21 @@ void CBeikeVulfixHandler::_ShutdownComputer( BOOL bReboot )
 void CBeikeVulfixHandler::_UpdateRepairTitle()
 {
 	CString strTitle;
-	strTitle.Format(BkString::Get(IDS_VULFIX_5058), m_nRepairProcessed, m_nRepairTotal );
-	SetItemText(30101, strTitle);
+    if (m_nRepairProcessed != m_nRepairTotal)
+    {
+        CString strTotalSize;
+        CString strCurrentSize;
+        CString strFormat;
+        FormatSizeString(m_uTempSize + m_uCurrentDownSize, strCurrentSize);
+        FormatSizeString(m_uDownTotalSize, strTotalSize);
+        strFormat.Format(L"%s/%s", strCurrentSize, strTotalSize);
+	    strTitle.Format(BkString::Get(IDS_VULFIX_5058), m_nRepairProcessed + 1, m_nRepairTotal , strFormat);
+    }
+    else
+    {
+        strTitle.Format(BkString::Get(IDS_VULFIX_5175), m_nInstallProcessed + 1, m_nRepairTotal );
+    }
+    SetItemText(30101, strTitle);
 }
 
 void CBeikeVulfixHandler::_SetScanProgress( int nPos )
@@ -1105,7 +1154,7 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 			strErrMsg = FormatErrorMessage( lParam );
 		m_wndListCtrlVul.SetEmptyString( strErrMsg );
 		_UpdateScanResultTitle(0, strErrMsg);
-		_UpdateViewDetailBtnsNumber(0, 0, 0, 0);
+//		_UpdateViewDetailBtnsNumber(0, 0, 0, 0);
 	}
 	else if(wParam==0)
 	{
@@ -1143,7 +1192,8 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 			else
 			{
 				nTipIcon = 3;
-				strTips.Format(BkString::Get(IDS_VULFIX_5061), m_nNumOption+m_nNumSP);
+				//strTips.Format(BkString::Get(IDS_VULFIX_5061), m_nNumOption+m_nNumSP);
+                strTips.Format(BkString::Get(IDS_VULFIX_5061));
 			}
 		}
 		else
@@ -1153,39 +1203,39 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 		}
 		_UpdateScanResultTitle(nTipIcon, strTips);
 		
-		if(m_nNumMust==0)
-		{
-			E_TitleType emTitle;
-			emTitle = TITLE_MUST;
-			int	i=m_wndListCtrlVul.AppendTitle(_T(""), RGB(0,0,0), 0, emTitle);
-			CListViewCtrlEx::TListItem*	pItem=m_wndListCtrlVul._GetItemData(i);
-			if (pItem)
-			{
-				pItem->clrBg=BACKGROUND_COLOR;
-				pItem->clrBtmGapLine=BACKGROUND_COLOR;
-			}			
-			i=m_wndListCtrlVul.AppendTitle(BkString::Get(IDS_VULFIX_5063), RGB(0,115,0), 0, emTitle);
-			pItem=m_wndListCtrlVul._GetItemData(i);
-			if (pItem)
-			{
-				pItem->nLeftmargin=120;
-				pItem->clrBg=BACKGROUND_COLOR;
-				pItem->clrBtmGapLine=BACKGROUND_COLOR;
-				pItem->bBold=TRUE;
-				pItem->nHeightAdd=3;
-			}
-
-			CString strNote;
-			strNote.Format( BkString::Get(IDS_VULFIX_5064), m_strLastScanTime );
-			i=m_wndListCtrlVul.AppendTitle(strNote, RGB(0,0,0));
-			pItem=m_wndListCtrlVul._GetItemData(i);
-			if (pItem)
-			{
-				pItem->nLeftmargin=120;
-				pItem->clrBg=BACKGROUND_COLOR;
-				pItem->nTopMargin=1;
-			}
-		}
+// 		if(m_nNumMust==0)
+// 		{
+// 			E_TitleType emTitle;
+// 			emTitle = TITLE_MUST;
+// 			int	i=m_wndListCtrlVul.AppendTitle(_T(""), RGB(0,0,0), 0, emTitle);
+// 			CListViewCtrlEx::TListItem*	pItem=m_wndListCtrlVul._GetItemData(i);
+// 			if (pItem)
+// 			{
+// 				pItem->clrBg=BACKGROUND_COLOR;
+// 				pItem->clrBtmGapLine=BACKGROUND_COLOR;
+// 			}			
+// 			i=m_wndListCtrlVul.AppendTitle(BkString::Get(IDS_VULFIX_5063), RGB(0,115,0), 0, emTitle);
+// 			pItem=m_wndListCtrlVul._GetItemData(i);
+// 			if (pItem)
+// 			{
+// 				pItem->nLeftmargin=120;
+// 				pItem->clrBg=BACKGROUND_COLOR;
+// 				pItem->clrBtmGapLine=BACKGROUND_COLOR;
+// 				pItem->bBold=TRUE;
+// 				pItem->nHeightAdd=3;
+// 			}
+// 
+// 			CString strNote;
+// 			strNote.Format( BkString::Get(IDS_VULFIX_5064), m_strLastScanTime );
+// 			i=m_wndListCtrlVul.AppendTitle(strNote, RGB(0,0,0));
+// 			pItem=m_wndListCtrlVul._GetItemData(i);
+// 			if (pItem)
+// 			{
+// 				pItem->nLeftmargin=120;
+// 				pItem->clrBg=BACKGROUND_COLOR;
+// 				pItem->nTopMargin=1;
+// 			}
+// 		}
 		
 		CString strTitle;
 		if(m_nNumMust)
@@ -1204,7 +1254,7 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 			COLORREF clr = RGB(255,0,0);
 			
 			INT i = m_wndListCtrlVul.AppendTitle( strTitle, clr, LISTITEM_BOLD, emTitle );
-			m_wndListCtrlVul.AppendTitleItem(i, BkString::Get(IDS_VULFIX_5066), CRect(nLeft,0,-20,28),SUBITEM_TEXT, clr, NULL );//第一个栏目  高危补丁
+			m_wndListCtrlVul.AppendTitleItem(i, _T("")/*BkString::Get(IDS_VULFIX_5066)*/, CRect(nLeft,0,-20,28),SUBITEM_TEXT, clr, NULL );//第一个栏目  高危补丁
 			AppendVuls(m_wndListCtrlVul, arr, std::ptr_fun(IsSoftVulInstallable) );
 			AppendVuls(m_wndListCtrlVul, arr2, std::ptr_fun(IsMustWindowsVul) );
 		}
@@ -1224,7 +1274,7 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 			COLORREF clr = RGB(0,128,0);
 			strTitle.Format(BkString::Get(IDS_VULFIX_5067), m_nNumOption);
 			int i = m_wndListCtrlVul.AppendTitle( strTitle, clr, LISTITEM_BOLD, emTitle );
-			m_wndListCtrlVul.AppendTitleItem(i, BkString::Get(IDS_VULFIX_5068), CRect(nLeft,0,-20,28),SUBITEM_TEXT, clr, NULL );
+			m_wndListCtrlVul.AppendTitleItem(i, _T("")/*BkString::Get(IDS_VULFIX_5068)*/, CRect(nLeft,0,-20,28),SUBITEM_TEXT, clr, NULL );
 			AppendVuls(m_wndListCtrlVul, arr2, std::ptr_fun(IsOptionVul) );
 			
 // 			if(m_nNumMust>0)
@@ -1238,13 +1288,13 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 			COLORREF clr = RGB(0,128,0);
 			strTitle.Format(BkString::Get(IDS_VULFIX_5069), m_nNumSP);
 			int i = m_wndListCtrlVul.AppendTitle( strTitle, clr, LISTITEM_BOLD, emTitle );
-			m_wndListCtrlVul.AppendTitleItem(i, BkString::Get(IDS_VULFIX_5070), CRect(105,0,-20,28),SUBITEM_TEXT, clr, NULL );
+			m_wndListCtrlVul.AppendTitleItem(i, _T("")/*BkString::Get(IDS_VULFIX_5070)*/, CRect(105,0,-20,28),SUBITEM_TEXT, clr, NULL );
 			AppendVuls(m_wndListCtrlVul, arr2, std::ptr_fun(IsSPVul) );
 // 			if(m_nNumMust>0)
 // 				m_wndListCtrlVul.ExpandGroup( i, FALSE);
 			m_wndListCtrlVul.ExpandGroup( i, FALSE);				
 		}
-		_DisplayRelateVulFixInfo(-1);
+//		_DisplayRelateVulFixInfo(-1);
 		
 		{
 			INT nFixed=0, nIgnored=0, nReplaced=0, nInvalid=0;
@@ -1256,13 +1306,32 @@ LRESULT CBeikeVulfixHandler::OnScanDone( UINT uMsg, WPARAM wParam, LPARAM lParam
 				nReplaced = theEngine->m_pVulScan->GetReplacedVuls().GetSize();
 				nInvalid = theEngine->m_pVulScan->GetInvalidVuls().GetSize();
 			}
-			_UpdateViewDetailBtnsNumber(nFixed, nIgnored, nReplaced, nInvalid);
+//			_UpdateViewDetailBtnsNumber(nFixed, nIgnored, nReplaced, nInvalid);
 		}
 		
 		// Notify the dashboard 
 		if(m_nNumMust==0 && m_MainDlg)
 			m_MainDlg->RemoveFromTodoList(BkSafeExamItem::SystemLeakScan);
-	}
+        
+        if (m_wndListCtrlVul.GetItemCount() > 0)
+            m_wndListCtrlVul.SelectItem(1);
+
+        if (nAll)
+        {
+            CString str;
+            str.Format(BkString::Get(IDS_VULFIX_5177), nAll);
+            SetItemText(IDC_TXT_VULFIX_SELECT_NUM, str);
+            SetItemText(IDC_TXT_VULFIX_SELCET_SIZE, _T(""));
+        }
+        else
+        {
+            SetItemText(IDC_TXT_VULFIX_SELECT_NUM, _T(""));
+            SetItemText(IDC_TXT_VULFIX_SELCET_SIZE, _T(""));
+        }
+
+        m_nTotalVulNum = m_nNumMust + m_nNumOption;
+        PostMessage(MSG_USER_VUL_SELECT_CHANGE,NULL, NULL);
+    }
 	_EnableSelectedOpBtn( m_nNumMust, m_nNumSP, m_nNumOption );
 	m_RefWin.StopIconAnimate();
 	
@@ -1464,6 +1533,7 @@ LRESULT CBeikeVulfixHandler::OnListLinkClicked( UINT uMsg, WPARAM wParam, LPARAM
 				T_VulListItemData *pItem = (T_VulListItemData *)m_wndListCtrlVul.GetItemData(iItem);
 				if ( pItem )
 				{
+                    const CListViewCtrlEx::TListSubItem* pSubItem = m_wndListCtrlVul._GetSubItemData(iItem,iSubItem);
 					if ( pItem->nType == VTYPE_SOFTLEAK )
 					{
 						int state = GetSoftItemState( pItem );
@@ -1477,6 +1547,24 @@ LRESULT CBeikeVulfixHandler::OnListLinkClicked( UINT uMsg, WPARAM wParam, LPARAM
 							_RepairSingle(pItem->nID,pItem);
 						}
 					}
+                    else if (pSubItem->bCheckDetail)
+                    {
+                        //MessageBox(NULL, L"123", NULL, NULL);
+                        //::PostMessage(m_wndListCtrlVul.m_hWnd, )
+                        CPoint pt;
+                        GetCursorPos(&pt);
+                        if (m_pTipDetailDlg)
+                        {
+                            m_pTipDetailDlg->DestroyWindow();
+                            m_pTipDetailDlg = NULL;
+                        }
+                        m_pTipDetailDlg = new CDlgTipDetail();
+                        m_pTipDetailDlg->Create(NULL, CWindow::rcDefault, _T(""),
+                            WS_POPUP);
+                        m_pTipDetailDlg->Initilize(m_hMainWnd, pItem, pt);
+                        
+                        m_pTipDetailDlg->ShowWindow(SW_SHOW);
+                    }
 					else
 					{
 						// 可选补丁安装
@@ -1578,23 +1666,28 @@ void CBeikeVulfixHandler::OnBkBtnExport()
 
 void CBeikeVulfixHandler::OnListReSize( CRect rcWnd )
 {
-	int iWidth = rcWnd.Width()-60-80-70-60-20;
-	m_wndListCtrlVul.SetColumnWidth(0, 60);
-	m_wndListCtrlVul.SetColumnWidth(1, 80);
-	m_wndListCtrlVul.SetColumnWidth(2, iWidth);
-	m_wndListCtrlVul.SetColumnWidth(3, 70);
-	m_wndListCtrlVul.SetColumnWidth(4, 60);
+	int iWidth = rcWnd.Width()-100-100-100-20;
+// 	m_wndListCtrlVul.SetColumnWidth(0, 60);
+// 	m_wndListCtrlVul.SetColumnWidth(1, 80);
+// 	m_wndListCtrlVul.SetColumnWidth(2, iWidth);
+// 	m_wndListCtrlVul.SetColumnWidth(3, 70);
+// 	m_wndListCtrlVul.SetColumnWidth(4, 60);
+	m_wndListCtrlVul.SetColumnWidth(0, iWidth);
+	m_wndListCtrlVul.SetColumnWidth(1, 100);
+	m_wndListCtrlVul.SetColumnWidth(2, 100);
+	m_wndListCtrlVul.SetColumnWidth(3, 100);
+// 	m_wndListCtrlVul.SetColumnWidth(4, 60);
 }
 
 void CBeikeVulfixHandler::OnDownListReSize( CRect rcWnd )
 {
-	int iWidth = rcWnd.Width()-60-80-120-100-60-20;
-	m_wndListCtrlVulFixing.SetColumnWidth(0, 60);
-	m_wndListCtrlVulFixing.SetColumnWidth(1, 80);
-	m_wndListCtrlVulFixing.SetColumnWidth(2, iWidth);
-	m_wndListCtrlVulFixing.SetColumnWidth(3, 120);
-	m_wndListCtrlVulFixing.SetColumnWidth(4, 100);
-	m_wndListCtrlVulFixing.SetColumnWidth(5, 60);
+	int iWidth = rcWnd.Width()-130-150-20;
+	m_wndListCtrlVulFixing.SetColumnWidth(0, iWidth);
+	m_wndListCtrlVulFixing.SetColumnWidth(1, 130);
+	m_wndListCtrlVulFixing.SetColumnWidth(2, 150);
+// 	m_wndListCtrlVulFixing.SetColumnWidth(3, 120);
+// 	m_wndListCtrlVulFixing.SetColumnWidth(4, 100);
+// 	m_wndListCtrlVulFixing.SetColumnWidth(5, 60);
 }
 
 void CBeikeVulfixHandler::_EnableSelectedOpBtn( INT nMust, INT nSP, INT nOption )
@@ -1630,7 +1723,7 @@ void CBeikeVulfixHandler::_UpdateViewDetailBtnsNumber( INT nFixed, INT nIgnored,
 {
 	CString strNavi;
 	strNavi.Format( BkString::Get(IDS_VULFIX_5015), nFixed, nIgnored, nReplaced, nInvalid );
-	m_ctlNaviLink.SetMText( strNavi );
+//	m_ctlNaviLink.SetMText( strNavi );
 }
 
 void CBeikeVulfixHandler::_PromptAutoShutdown()
@@ -1850,3 +1943,61 @@ VOID CBeikeVulfixHandler::CloseSuccess( BOOL bSucClose )
 		}
 	}
 }
+//////////////////////////////////////////////////////////////////////////
+LRESULT CBeikeVulfixHandler::OnVulTipDestory(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (m_pTipDetailDlg != NULL)
+    {
+        m_pTipDetailDlg->DestroyWindow();
+        m_pTipDetailDlg = NULL;
+    }
+    return TRUE;
+}
+LRESULT CBeikeVulfixHandler::OnVulTipIgnore(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    int nID = (int)wParam;
+    theEngine->IgnoreVuls(nID, true);
+    OnBkBtnScan();
+    return TRUE;
+}
+LRESULT CBeikeVulfixHandler::OnSelectedChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    int nCount;
+    CString strSize;
+    CString strFSize;
+    CString strCount;
+    int total = m_wndListCtrlVul.GetItemCount(); 
+
+    nCount = 0;
+    m_uDownTotalSize = 0;
+    m_uCurrentDownSize = 0;
+
+    for (int i = 0; i < total; ++i)
+    {
+        if (m_wndListCtrlVul.GetCheckState(i) &&
+            !(m_wndListCtrlVul._GetItemData(i)->dwFlags & (LISTITEM_TITLE|LISTITEM_RADIOBOX)))
+        {
+            T_VulListItemData* pItem = (T_VulListItemData*)m_wndListCtrlVul.GetItemData(i);
+            m_uDownTotalSize += pItem->nFileSize;
+            nCount ++;
+        }
+//         else if (m_wndListCtrlVul._GetItemData(i)->dwFlags & (LISTITEM_TITLE|LISTITEM_RADIOBOX))
+//         {
+//             total--;
+//         }
+    }
+    if (nCount == m_nTotalVulNum && m_nTotalVulNum != 0)
+        SetItemCheck(IDC_LBL_VULFIX_RESULT_CHECK_ALL, TRUE);
+    else
+        SetItemCheck(IDC_LBL_VULFIX_RESULT_CHECK_ALL, FALSE);
+
+    strCount.Format(BkString::Get(IDS_VULFIX_5173), nCount);
+    FormatSizeString(m_uDownTotalSize, strFSize);
+    strSize.Format(BkString::Get(IDS_VULFIX_5174), strFSize);
+
+    SetItemText(IDC_TXT_VULFIX_SELECT_NUM, strCount);
+    SetItemText(IDC_TXT_VULFIX_SELCET_SIZE, strSize);
+
+    return TRUE;
+}
+//////////////////////////////////////////////////////////////////////////

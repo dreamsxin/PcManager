@@ -42,6 +42,13 @@ enum E_SubItemType
 	SUBITEM_LINK,
 };
 
+enum E_SubTextType
+{
+    ST_CENTER,
+    ST_RIGHT,
+    ST_LEFT
+};
+
 enum E_ListItemType
 {
 	LISTITEM_TITLE		= 1,
@@ -83,20 +90,21 @@ public:
 	typedef std::vector<TListSubItem> TListSubItems;
 	struct TListSubItem
 	{
-		TListSubItem() : type(SUBITEM_TEXT)
+		TListSubItem() : type(SUBITEM_TEXT), tType(ST_LEFT)
 		{
 			nMarginLeft = 2;
 			clr = RGB(0,0,0);
-			rcOffset = CRect(0,0,0,0);			
+			rcOffset = CRect(0,0,0,0);	
+            bCheckDetail = FALSE;
 		}
 
-		TListSubItem(LPCTSTR szText, CRect rc, E_SubItemType aType=SUBITEM_TEXT)
-			: str(szText), type(aType), rcOffset(rc)
+		TListSubItem(LPCTSTR szText, CRect rc, E_SubItemType aType=SUBITEM_TEXT, E_SubTextType textType=ST_LEFT, BOOL bDetail=FALSE)
+			: str(szText), type(aType), rcOffset(rc), tType(textType), bCheckDetail(bDetail)
 		{
 		}
 
-		TListSubItem(LPCTSTR szText, E_SubItemType aType=SUBITEM_TEXT)
-			: str(szText), type(aType)
+		TListSubItem(LPCTSTR szText, E_SubItemType aType=SUBITEM_TEXT, E_SubTextType textType=ST_LEFT, BOOL bDetail=FALSE)
+			: str(szText), type(aType), tType(textType) , bCheckDetail(bDetail)
 		{
 			rcOffset = CRect(0,0,0,0);
 			nMarginLeft = 2;
@@ -104,11 +112,13 @@ public:
 			ATLASSERT(szText);
 		}
 		E_SubItemType type;
+        E_SubTextType tType;
 		CString str;
 		COLORREF clr;
 		int	nMarginLeft;
 		CRect	rcOffset;
-		CString	strUrl;		
+		CString	strUrl;	
+        BOOL bCheckDetail;
 	};
 	
 	struct TListItem
@@ -220,7 +230,7 @@ public:
 	int AppendTitle(LPCTSTR strItem, COLORREF clr, UINT uFlags=0, E_TitleType emTitle = TITLE_MUST);	
 	int AppendTitleItem(int nItem, LPCTSTR strItem, CRect rc, E_SubItemType itemType, COLORREF clr, LPCTSTR szURL);
 	int Append(LPCTSTR strItem, DWORD dwFlags=0, E_SubItemType itemType=SUBITEM_TEXT);	
-	int AppendSubItem(int nItem, LPCTSTR strItem, E_SubItemType itemType=SUBITEM_TEXT);	
+	int AppendSubItem(int nItem, LPCTSTR strItem, E_SubItemType itemType=SUBITEM_TEXT, E_SubTextType iTextType=ST_LEFT, BOOL bDetail=FALSE);	
 	bool SetSubItem(int nItem, int nSubItem, LPCTSTR lpszItem, E_SubItemType itemType=SUBITEM_TEXT, BOOL bRedraw=TRUE);
 	bool GetSubItemText(int nItem, int nSubItem, CString &str);
 	bool SetSubItemColor(int nItem, int nSubItem, COLORREF clr, BOOL bRedraw=TRUE);

@@ -1,5 +1,5 @@
 ﻿<icon src="101" pos="5,4"/>
-<text class="dlgtitle" pos="25,6">%str1% 2.6Beta</text>
+<text class="dlgtitle" pos="25,6">%str1% 2.6</text>
 <imgbtn id="60011" class="linkimage" skin="setbtn" pos="-136,0"/>
 <imgbtn id="60003" class="linkimage" skin="minbtn" pos="-105,0"/>
 <imgbtn id="60002" class="linkimage" skin="maxbtn" pos="-73,0"/>

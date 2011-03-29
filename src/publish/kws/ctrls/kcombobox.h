@@ -662,7 +662,39 @@ public:
 		m_vecItem.clear();
 	}
 
+    int Count()
+    {
+        return m_vecItem.size();
+    }
 
+    BOOL GetExistIndex(LPCTSTR pszWeb, int& nIndex)
+    {
+        if (NULL == pszWeb)
+        {
+            return FALSE;
+        }
+
+        for ( int i = 0; i < m_vecItem.size(); i++ )
+        {
+            COMBOITEM * pItem = m_vecItem[i];
+            if( pItem )
+            {
+                if( _tcsicmp( pszWeb, pItem->strWebUrl ) == 0 )
+                {
+                    nIndex = i;
+                    return TRUE;
+                }
+
+                if( _tcsicmp( pszWeb, pItem->strWebName ) == 0 )
+                {
+                    nIndex = i;
+                    return TRUE;
+                }
+            }
+        }
+
+        return FALSE;
+    }
 protected:
 
 	HWND					m_hParent;

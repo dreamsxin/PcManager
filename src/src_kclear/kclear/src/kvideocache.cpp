@@ -201,7 +201,6 @@ clean0:
 
 BOOL _ScanQvodCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
 {
-	
 	BOOL bRet = FALSE;
 	WCHAR szLongPathBuffer[MAX_PATH] = {0};
 	DWORD len = sizeof(szLongPathBuffer);
@@ -234,16 +233,23 @@ BOOL _ScanQvodCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
 		pXmlGeneral = pXmlQvodPlayer->FirstChildElement("General");
 		if (pXmlGeneral)
 		{
-			std::string strTmp(pXmlGeneral->Attribute("Defaultsavepath"));
-			if(strTmp.length() == 0)
+			const char* szTmp = pXmlGeneral->Attribute("Defaultsavepath");
+            if(!szTmp)
 			{
 				bRet = FALSE;
 				goto clean0;
 			}
-			else strResult = Utf8ToUnicode(strTmp).c_str();
-		}
+			else 
+            {
+                strResult = Utf8ToUnicode(szTmp).c_str();
+            }
+        }
 	}
-	ScanFileBasedPathAndName(L"Qvod",pTF, strResult, L"*.!mv", 0);
+
+//    if (strResult.GetLength() > 3)
+    {
+	    bRet = ScanFileBasedPathAndName(L"Qvod",pTF, strResult, L"*.!mv", 0);
+    }
 clean0:
 	return bRet;
 }
@@ -1065,13 +1071,13 @@ BOOL _ScanKuGooCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
     pXmlGeneral = pXmlKugoo->FirstChildElement("Misc");
     if (pXmlGeneral)
     {
-        std::string strTmp(pXmlGeneral->Attribute("DefaultDownPath"));
-        if(strTmp.length() == 0)
+        const char* szTmp = pXmlGeneral->Attribute("DefaultDownPath");
+        if(szTmp == NULL)
         {
             bRet = FALSE;
             goto Clear0;
         }
-        else strResult = Utf8ToUnicode(strTmp).c_str();
+        else strResult = Utf8ToUnicode(szTmp).c_str();
     }
     else
     {
@@ -1097,12 +1103,18 @@ BOOL _ScanKuGooCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
 
     if (!strScanPath.IsEmpty())
     {
+        strScanPath += L"Temp";
         ScanFileBasedPathAndName(L"KuGoo", pTF, strScanPath,  L"*.kg!", nStopIndex);
         ScanFileBasedPathAndName(L"KuGoo", pTF, strScanPath,  L"*.cfg", nStopIndex);
     }
 
-    strTmp = pXmlGeneral->Attribute("DefaultMVDownPath");
+    const char* szTmp = pXmlGeneral->Attribute("DefaultMVDownPath");
     
+    if (!szTmp)
+        goto Clear0;
+
+    strTmp = szTmp;
+
     if (strTmp.length() > 0)
     {
         strScanPath = Utf8ToUnicode(strTmp).c_str();

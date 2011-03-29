@@ -16,7 +16,7 @@
                 <img pos="0,0" skin=stat15 sub=2/>
                 <text pos="20,1" class=safetext crtext=FFFFFF>已是最新版</text>
             </dlg-->
-	<dlg id="260" pos="0,0,-0,-0" show="0">
+	<dlg id="260" pos="0,3,-0,-0" show="0">
 		<img pos="0,0" skin="stat15" sub="4"/>
 		<text pos="20,1" crtext="FFFFFF">正在升级</text>
 		<progress id="261" pos="70,1,-0,14" min="0" max="100" value="0" showpercent="1"/>

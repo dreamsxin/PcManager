@@ -6,6 +6,7 @@
 #include <wtlhelper/whwindow.h>
 #include <common/utility.h>
 #include "perfmon/kperfmonmem.h"
+#include "kmaindlg.h"
 
 #define MSG_PROGRESS		WM_APP+0x400
 #define MSG_FINISHED		WM_APP+0x401
@@ -18,6 +19,7 @@ class CBKSafeSysPerfOpt
 {
 public:
 	CBKSafeSysPerfOpt(){}
+	CBKSafeSysPerfOpt(KMainDlg* pMainDlg){m_pMainDlg = pMainDlg;}
 
 	CBKSafeSysPerfOpt(HWND hNotifyWnd, DWORD dwNotifyMsg)
 	{
@@ -58,6 +60,6 @@ protected:
 		void FreeMemFinished(ULONGLONG uSize);
 private:
 	HWND		m_hWndNotify;
-
+	KMainDlg*	m_pMainDlg;
 //	CSysPerfOpt	m_sysPerf;
 };

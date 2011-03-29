@@ -54,6 +54,7 @@ private:
 		pData->_lastUse			= it->_lastUse;
 		pData->_id				= it->_id;
 		pData->_type			= it->_type;
+		pData->_count			= it->_count;
 
 		// 当描述字符串为空时，使用注册表中的“Comments”字段
 		if(pData->_pcDescript == NULL && !it->_descriptReg.empty())

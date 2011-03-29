@@ -10,7 +10,7 @@
 #include "bkcmdline.h"
 
 #define LIST_URL_FORMAT L"http://rm.yx.keniu.com/partner_request.php?appid=%d"
-#define POST_URL_FORMAT L"http://rm.yx.keniu.com/partner_checked.php?appid=%d&id=%d&check=%d"
+#define POST_URL_FORMAT L"http://stat.ijinshan.com/partner_checked.htm?appid=%d&id=%d&check=%d"
 
 BOOL CMainDlg::_DownloadInfo()
 {
@@ -121,8 +121,8 @@ INT_PTR CMainDlg::DoModal(HWND hWndParent, LPARAM dwInitParam)
     SoftInfoKSafe.lID           = -1;
     SoftInfoKSafe.lType         = _SoftInfo::TypeSoftware;
     SoftInfoKSafe.strCondition  = L"exist_regv(HKLM,SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Maxthon3,DisplayName)";
-    SoftInfoKSafe.strName       = L"推荐安装全新傲游双核浏览器";
-    SoftInfoKSafe.strDesc1      = L"全新傲游双核浏览器，更简易、更高效、更安全。\r\n带给你完美互联网极速体验！";
+    SoftInfoKSafe.strName       = L"推荐安装傲游3双核浏览器,并设为默认浏览器";
+    SoftInfoKSafe.strDesc1      = L"搭载独立浏览核心，上网速度全面提升。\r\n专为国人习惯优化，更高效，更安全，更私密。";
     SoftInfoKSafe.strDesc2      = L"上网从傲游开始！";
     SoftInfoKSafe.strParam      = L"";
 // #ifdef _SHANDIAN_VERSION
@@ -201,7 +201,7 @@ BOOL CMainDlg::OnInitDialog(HWND hWndFocus, LPARAM lInitParam)
     LOGFONT logFont;
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &logFont);
 
-    logFont.lfHeight = -14;
+    //logFont.lfHeight = -14;
 
     CFontHandle font;
     font.CreateFontIndirect(&logFont);

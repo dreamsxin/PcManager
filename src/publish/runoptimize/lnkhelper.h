@@ -19,14 +19,19 @@ public:
 	}
 	static BOOL QueryLnk(LPCTSTR lpLinkPath,CString & strExePath,CString &strExeParam)
 	{
-		IShellLink*	pShellLink;
-		LPCTSTR		lpPostFix = GetFilePostFix(lpLinkPath);
+		IShellLink*	pShellLink = NULL;
+//		LPCTSTR		lpPostFix = GetFilePostFix(lpLinkPath);
 		BOOL bReturn = FALSE;
-		TCHAR szProductCode[MAX_GUID_CHARS + 1];
-		TCHAR szFeatureId[MAX_FEATURE_CHARS + 1];
-		TCHAR szComponentCode[MAX_GUID_CHARS + 1];
-		TCHAR szPath[MAX_PATH + 1];
+		TCHAR szProductCode[MAX_GUID_CHARS + 1] = {0};
+		TCHAR szFeatureId[MAX_FEATURE_CHARS + 1] = {0};
+		TCHAR szComponentCode[MAX_GUID_CHARS + 1] = {0};
+		TCHAR szPath[MAX_PATH + 1] = {0};
 		DWORD dwLen = MAX_PATH;
+		
+		if (lpLinkPath == NULL)
+			return FALSE;
+		if (PathFileExists(lpLinkPath) == FALSE)
+			return FALSE;
 
 		if (ERROR_SUCCESS == MsiGetShortcutTarget(lpLinkPath, szProductCode, szFeatureId, szComponentCode))
 		{
@@ -41,9 +46,9 @@ public:
 			{
 				bReturn = ::CoCreateInstance (CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
 					IID_IShellLink, (void **)&pShellLink) >= 0;
-				if(bReturn)
+				if(bReturn && pShellLink)
 				{
-					IPersistFile *ppf;
+					IPersistFile *ppf = NULL;
 					bReturn = pShellLink->QueryInterface(IID_IPersistFile, (void **)&ppf) >= 0;
 					if(bReturn && ppf)
 					{
@@ -69,9 +74,17 @@ public:
 							else
 								bReturn = FALSE;
 						}
-						ppf->Release();
+						if (ppf)
+						{
+							ppf->Release();
+							ppf = NULL;
+						}
 					}
-					pShellLink->Release();
+					if (pShellLink)
+					{
+						pShellLink->Release();
+						pShellLink = NULL;
+					}
 				}
 				::CoUninitialize();
 			}

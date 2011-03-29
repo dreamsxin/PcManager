@@ -42,6 +42,7 @@ public:
 	{
 		nSize = 0;
 		nLastTime = 0;
+		nRunCount = 0;
 		bEnable = FALSE;
 		bMouseDown = FALSE;
 		bMouseOn = FALSE;
@@ -51,6 +52,7 @@ public:
 		hIcon = NULL;
 		//nType = 0;
 
+		strRunFrequency = L"未知";
 		strSize = L"未知";
 		strLastTime = L"未知";
 		strType = L"未知";
@@ -78,6 +80,8 @@ public:
 	ULONGLONG	nSize;			//大小，用于排序
 	CString		strLastTime;	//最后使用时间
 	LONG		nLastTime;		//最后使用时间, 用于排序
+	CString		strRunFrequency;//最近一个月的使用频率
+	LONG		nRunCount;		//最近一个月的使用次数
 	//LONG		nType;			//软件类型
 	CString		strType;		//软件类型
 	CString		strInfoUrl;		//详情连接
@@ -928,7 +932,7 @@ public:
 					rcState.OffsetRect(17, 0);
 				pItem->rcRate = rcState;
 				pItem->rcRate.OffsetRect(-rcItemX.left,-rcItemX.top);
-				dcx.DrawText(pInfo->strLastTime, -1, &rcState, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
+				dcx.DrawText(pInfo->strRunFrequency, -1, &rcState, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
 
 				//////////////////////////////////////////////////////////////////////////
 				////画评分

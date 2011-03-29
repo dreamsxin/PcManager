@@ -105,6 +105,9 @@ protected:
 
 	int				CloseCheck();
 
+	void			OnReStart();
+	void			OnIgnoreReStartTip();
+	void			OnCloseReStartTip();
 public:
 	CSoftMgrQueryEdit	m_editQuery;
 
@@ -141,6 +144,9 @@ public:
 		BK_NOTIFY_ID_COMMAND(IDC_SOFT_NECESS_SHOW_NOPLUG_SOFT, OnShowNoPlugSoft)
 		BK_NOTIFY_ID_COMMAND(IDC_SOFT_NECESS_SHOW_FREE_SOFT, OnShowFreeSoft)
 		BK_NOTIFY_ID_COMMAND(IDC_SOFT_NECESS_ONE_KEY_INST,OnOneKeyInstall)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_NECESS_LEFT_RESTART,OnReStart)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_NECESS_LEFT_IGNORE_VER_TIP,OnIgnoreReStartTip)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_NECESS_LEFT_CLOSE_VER_TIP,OnCloseReStartTip)
 	BK_NOTIFY_MAP_END()
 
 	BEGIN_MSG_MAP_EX(CBeikeSafeSoftmgrNecessHandler)

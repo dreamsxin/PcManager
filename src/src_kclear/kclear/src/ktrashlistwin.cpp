@@ -431,7 +431,7 @@ void CTrashCleanCtrl::OnPaint(CDCHandle /*dcHandle*/)
 //	dc.FillSolidRect(m_rcRealClient, RGB(255, 255, 255));
     if (m_vecTrashItems.size() <= 0)
     {
-        CString strWait = L"正在加载，请稍后...";
+        CString strWait = L"正在加载，请稍候...";
         HFONT hFont = KuiFontPool::GetFont(FALSE, FALSE, FALSE);
         HFONT oldFont = dc.SelectFont(hFont);
         CRect rcDraw(m_rcClient);

@@ -194,17 +194,12 @@ private:
 	KAppWndListItemData							m_AppWndData;
 
 	CListBoxItemData(){
-		m_arrColumState.SetCount(10);
+		m_arrColumState.SetCount(5);
 		m_arrColumState[0] = -1;
 		m_arrColumState[1] = -1;
 		m_arrColumState[2] = -1;
 		m_arrColumState[3] = -1;
 		m_arrColumState[4] = -1;
-		m_arrColumState[5] = -1;
-		m_arrColumState[6] = -1;
-		m_arrColumState[7] = -1;
-		m_arrColumState[8] = -1;
-		m_arrColumState[9] = -1;
 
 
 		m_nProcID				= -1;

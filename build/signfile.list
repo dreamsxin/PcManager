@@ -50,3 +50,4 @@ ksshield.dll,dll
 kmodurl64.sys,vsa
 ksfmonsys64.sys,vsa
 perfopt.exe,exe
+KnInstAD.exe,exe

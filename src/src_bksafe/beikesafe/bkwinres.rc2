@@ -15,7 +15,7 @@ DEFINE_XML(IDR_BK_QUARANTINE_DLG,           			108, 					"res\\dlg_quarantine.xm
 DEFINE_XML(IDR_BK_PLUG_UPLOAD_DLG,          			109, 					"res\\dlg_plug_upload.xml")
 DEFINE_XML(IDR_BK_PLUG_LOG_DLG,							110, 					"res\\dlg_plug_viewlog.xml")
 DEFINE_XML(IDR_BK_PLUG_RPTQQ_DLG,						111, 					"res\\dlg_plug_rptQQ.xml")
-DEFINE_XML(IDR_BK_VULDLG_MAIN,              			112, 					"res\\dlg_vul_main.xml")
+DEFINE_XML(IDR_BK_VULDLG_MAIN,              			112, 					"res\\dlg_vul_main_new.xml")
 /*
 DEFINE_XML(IDR_BK_VULDLG_INSTALLED,         			113, 					"res\\dlg_vul_Installed.xml")
 DEFINE_XML(IDR_BK_VULDLG_IGNORED,           			114, 					"res\\dlg_vul_Ignored.xml")
@@ -117,6 +117,7 @@ DEFINE_XML(IDR_BK_DLGFILE_FOOT,					 	    508, 					"res\\dlgfile_foot.xml")
 DEFINE_XML(IDR_BK_DLGFILE_HEADER,				 	    509, 					"res\\dlgfile_header.xml")
 DEFINE_XML(IDR_BK_DLGFILE_SYSFIX,				 	    510, 					"res\\dlgfile_sysfix.xml")
 
+DEFINE_XML(IDR_BK_SETTING_DLG_SOFTMGR,			        603, 					"res\\dlg_setting_softmgr.xml")
 DEFINE_XML(IDR_DLG_ARP_INSTALL,			                602, 					"res\\dlg_install_arp.xml")
 DEFINE_XML(IDR_BK_SYS_FIX_SCAN_LIST_TEMPLATE,			601, 					"res\\list_template_sysfix_scan.xml")
 
@@ -298,6 +299,7 @@ DEFINE_BMP(IDB_PLUG_LISTHEADER_BG,			123, "res\\plug_list_header.bmp")
 DEFINE_PNG(IDB_BITMAP_LISTCTRL_HEADER_ARROW_UP,			220, 					"res\\listctrl_header_arrow_up.png")
 DEFINE_PNG(IDB_BITMAP_LISTCTRL_HEADER_ARROW_DOWN,		221, 					"res\\listctrl_header_arrow_down.png")
 
+DEFINE_BMP(IDB_BITMAP_SOFT_LISTCTRL_HEADER,				223, 					"res\\soft_listctrl_header.bmp")
 DEFINE_BMP(IDB_BITMAP_LISTCTRL_HEADER,					210, 					"res\\listctrl_header.bmp")
 DEFINE_BMP(IDB_BITMAP_LISTCTRL_CHECK,					211, 					"res\\listctrl_check.bmp")
 DEFINE_BMP(IDB_BITMAP_MINUS_PLUS,						212, 					"res\\minus_plus.bmp")
@@ -316,6 +318,7 @@ DEFINE_PNG(IDB_MAINUI_BWS_ICON,							219, 					"res\\mainui_bws_icon.png")
 */
 DEFINE_BMP(IDB_BITMAP_LISTCTRL_HEADER2,					222, 					"res\\listctrl_header2.bmp")
 DEFINE_BMP(IDB_BITMAP_LISTCTRL_HEADER_NULL,				125, 					"res\\listctrl_header_null.bmp")
+DEFINE_BMP(IDB_BITMAP_UPDATE_VER_BK,					126, 					"res\\soft_update_ver_bk.bmp")
 
 //Ìå¼ì
 DEFINE_BMP(IDB_EXAM_TITLE_BG,							500,					"res\\exam_title_bg.bmp")
@@ -418,6 +421,8 @@ DEFINE_PNG(IDP_SOFTMGR_ONE_KEY_INST_BTN,	8048,   "res\\softmgr_one_key_inst_butt
 DEFINE_PNG(IDP_SOFTMGR_IGNORE_ICON,			8050,	"res\\ignore_icon.png")
 DEFINE_PNG(IDP_SOFTMGR_QUERY_RETURN,		8052,	"res\\query_return.png")
 DEFINE_PNG(IDP_SOFTMGR_SEL_TYPE_BK,			8053,	"res\\sel_type_bk.png")
+DEFINE_PNG(IDP_SOFTMGR_UPDATE_VER_BTN,		8054,   "res\\soft_update_ver_btn.png") 
+DEFINE_BMP(IDP_SET_SOFTMGR_TAB,				8055,   "res\\set_softmgr_tab.bmp")
 
 // Ìí¼Ó
 DEFINE_BMP(IDB_SOFTMGR_BMP_CLEAN, 						20001, 					 "res\\clean.bmp")
@@ -459,3 +464,16 @@ DEFINE_PNG(IDP_RUNOPT_ONEKEYOPT_SCROLL,					20028,					"res\\scanscroll.png")
 //DEFINE_PNG(IDP_RULE_MORE,                               20104,                  "res\\more_rule.png")
 //DEFINE_PNG(IDP_RULE_SET,                                20105,                  "res\\set_rule.png")
 //DEFINE_PNG(IDP_RULE_RENAME,                             20106,                  "res\\adrule_rename.png")
+
+/* 2011 ÐÂ°æ Â©¶´ÐÞ¸´ */
+DEFINE_BMP(IDB_VUL_HEAD_BACK,				  12001,	          "res\\vul_head_back.bmp")
+DEFINE_PNG(IDP_VUL_REPAIR,			          12002,	          "res\\vul_repair.png")
+DEFINE_PNG(IDP_VUL_IMFORMATION,				  12003,		  "res\\vul_info.png")
+DEFINE_PNG(IDP_VUL_SCAN,				  12004,		  "res\\vul_scan.png")
+DEFINE_PNG(IDP_VUL_SETUP,				  12005,		  "res\\vul_setup.png")
+DEFINE_BMP(IDB_VUL_LIST_HEADER,				  12006,		  "res\\listctrl_vul_header.bmp")
+DEFINE_PNG(IDP_VUL_TIP_HEAD,			 	  12007, 	          "res\\vul_tip_head.png")
+DEFINE_PNG(IDP_VUL_TIP_DOWN,				  12008,		  "res\\vul_tip_down.png")
+DEFINE_PNG(IDP_VUL_TIP_POINT,				  12009,		  "res\\vul_tip_point.png")
+DEFINE_PNG(IDP_VUL_TIP_CLOSE,				  12010,		  "res\\vul_tip_close.png")
+/* END Â©¶´ÐÞ¸´ */

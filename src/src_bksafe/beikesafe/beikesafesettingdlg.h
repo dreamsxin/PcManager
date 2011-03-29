@@ -97,17 +97,19 @@ public:
 		,m_bBkSafeKwsSettingChanged(FALSE)
 		,m_bProxChanged(FALSE)
     {
+		m_nSubPage = -1;
     }
 	
 	~CBeikeSafeSettingDlg();
 
-    UINT_PTR DoModal(int nPage, HWND hWndParent);
+    UINT_PTR DoModal(int nPage, HWND hWndParent,  CBeikeSafeMainDlg *pDialog, int nSubPage = -1);
     BOOL BkSafeSettingChanged();
 
 protected:
 
     int m_nPage;
-
+	CBeikeSafeMainDlg* m_dlg;
+	int m_nSubPage;
     BOOL m_bBkSafeSettingChanged;
     BOOL m_bTraySettingChanged;
     BOOL m_bSvcSettingChanged;
@@ -120,11 +122,6 @@ protected:
 	BOOL m_bC2Checked;
 	BOOL m_bR2Checked;
 	BOOL m_bR3Checked;
-	//软件管理
-	CComboBox m_comBoUpdatSoft;
-	CComboBox m_comBoAutoInstall;
-	CComboBox m_comBoPowerSweepFile;
-	CComboBox m_comBoDelFile;
 
 	CEdit	m_ctlEditStorePath;		// 保存安装文件的目录
 	BOOL	m_bBkSoftMgrSettingChanged;	
@@ -139,10 +136,6 @@ protected:
 
     BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam);
 	LRESULT OnAppProxyChange( UINT uMsg, WPARAM wParam, LPARAM lParam );
-	LRESULT OnBkSafeSoftMgrUpdateSoftSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	LRESULT OnBkSafeSoftMgrAutoInstallSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	LRESULT OnBkSafeSoftMgrDelFile(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-	LRESULT OnBkSafeSoftMgrPowerSweepFile(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 
     void OnBkBtnOK();
     void OnBkBtnClose();
@@ -224,8 +217,6 @@ protected:
 	void OnSelDir();//选择目录
 	void OnBkSafeSoftMgrSettingChanged();//设置是否存在变更	
 	void OnBkSafeSoftMgrCreateDesktopIcoChanged();
-	void OnMajorPointOutCheckChanged();
-
 	void _LoadBkSafeKwsSettings();//网盾设置
 	void OnBkSafeKwsAdRuleSet();//   广告规则
 	void OnBkSafeKwsAdFilterSet();//广告过滤白名单
@@ -333,11 +324,24 @@ public:
 	   BK_NOTIFY_ID_COMMAND( IDC_LINKTEXT_DEFAULT_DIR, OnRestoreDefaultDir )
 	   BK_NOTIFY_ID_COMMAND(IDC_LINKTEXT_OPEN_DIR, OnOpenStoreDir)
 	   BK_NOTIFY_ID_COMMAND( IDC_IMGBTN_SELECT_DIR, OnSelDir )
-	   BK_NOTIFY_ID_COMMAND( IDC_CHECK_SHOWHINT, OnBkSafeSoftMgrSettingChanged )
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_SHOW_PLUGIN_TIP,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_IGNORE_PLUGIN_TIP,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_DELETE_SETUP_WEEK,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_DELETE_SETUP_NOW,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_DELETE_SETUP_NEVER,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_RUN_SETUP_AUTO,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_RUN_SETUP_HAND,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_UPDATE_TIP_DAY,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_UPDATE_TIP_WEEK,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_UPDATE_TIP_NEVER,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_DELETE_TO_RECYCLE,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_DELETE_TO_DIRECT,	OnBkSafeSoftMgrSettingChanged)
+
 	   BK_NOTIFY_ID_COMMAND( IDC_CHECK_NO_HINT, OnBkSafeSoftMgrCreateDesktopIcoChanged )
 	   BK_NOTIFY_ID_COMMAND( IDC_CHECK_SHOW_ICO_NUM, OnBkSafeSoftMgrSettingChanged )
 	   BK_NOTIFY_ID_COMMAND( IDC_CHECK_UNKNOWN_FILE_OPEN, OnBkSafeSoftMgrSettingChanged )
-	   BK_NOTIFY_ID_COMMAND(IDC_CHECK_MAJOR_POINT_OUT,	OnMajorPointOutCheckChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_CHECK_MAJOR_POINT_OUT,	OnBkSafeSoftMgrSettingChanged)
+	   BK_NOTIFY_ID_COMMAND(IDC_RADIO_UPDATE_WHEN_RUN,	OnBkSafeSoftMgrSettingChanged)
 
 	   //hub  网盾设置 
 	   BK_NOTIFY_ID_COMMAND( IDC_LINKTEXT_ADRULE_SET,   OnBkSafeKwsAdRuleSet )
@@ -367,10 +371,6 @@ public:
         MSG_WM_INITDIALOG(OnInitDialog)
 		MSG_WM_TIMER(OnTimer)
 		MESSAGE_HANDLER_EX( MSG_PROXY_CHANGE, OnAppProxyChange )
-		COMMAND_HANDLER_EX(IDC_CHECK_DAY_POINT_OUT, CBN_SELCHANGE, OnBkSafeSoftMgrUpdateSoftSelect)
-		COMMAND_HANDLER_EX(IDC_CHECK_AUTO_INSTALL, CBN_SELCHANGE, OnBkSafeSoftMgrAutoInstallSelect)
-		COMMAND_HANDLER_EX(IDC_CHECK_DEL_WEEK, CBN_SELCHANGE, OnBkSafeSoftMgrDelFile)
-		COMMAND_HANDLER_EX(IDC_CHECK_DEL_TO_RECY, CBN_SELCHANGE, OnBkSafeSoftMgrPowerSweepFile)
         REFLECT_NOTIFICATIONS_EX()
     END_MSG_MAP()
 };
@@ -381,14 +381,16 @@ class CBeikeSafeSettingNavigator
 public:
     CBeikeSafeSettingNavigator(CBeikeSafeMainDlg *pDialog)
         : m_pDlg(pDialog)
+		, m_bHasDoModal(FALSE)
     {
 
     }
 
     CBkNavigator* OnNavigate(CString &strChildName);
-    UINT_PTR DoModal(int nPage = SettingPageCommon, HWND hWndParent = ::GetActiveWindow());
+    UINT_PTR DoModal(int nPage = SettingPageCommon, HWND hWndParent = ::GetActiveWindow(), int nSubPage = -1);
 
 protected:
 
-    CBeikeSafeMainDlg *m_pDlg;
+    CBeikeSafeMainDlg*		m_pDlg;
+	BOOL					m_bHasDoModal;
 };

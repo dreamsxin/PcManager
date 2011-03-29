@@ -459,6 +459,10 @@ public:
 	void GetConfig();	//下载卸载详情需要的INI文件
 	void CheckDownloadState(); //检测下载连接的状态
 
+	void OnReStart();	//重启卫士
+	void OnIgnoreReStartTip();	// 设置不再提醒软件库更新需要重启卫士并关闭tip
+	void OnCloseReStartTip();   // 关闭软件库更新需要重启卫士的tip
+
 	void ShowPicSoftMgr();	//在加载信息的时候展示图片
 	void OnBtnSwitchWatch(); //开关监控
 	void OnLnkCurrentBack();
@@ -820,6 +824,13 @@ public:
 		BK_NOTIFY_ID_COMMAND( IDC_DLG_RESIDUAL_CLEAR, OnBtnResidualClear)
 		BK_NOTIFY_ID_COMMAND( IDC_LINK_RUBBISH_CLEAR, OnBtnRubbishClear)
 		BK_NOTIFY_ID_COMMAND( IDC_LINK_SYSTEM_SLIM, OnBtnSystemSlim)
+
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_DAQUAN_LEFT_RESTART,OnReStart)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_DAQUAN_LEFT_IGNORE_VER_TIP,OnIgnoreReStartTip)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_DAQUAN_LEFT_CLOSE_VER_TIP,OnCloseReStartTip)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_UPDATE_LEFT_RESTART,OnReStart)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_UPDATE_LEFT_IGNORE_VER_TIP,OnIgnoreReStartTip)
+		BK_NOTIFY_ID_COMMAND(IDC_SOFT_UPDATE_LEFT_CLOSE_VER_TIP,OnCloseReStartTip)
 
 		BK_NOTIFY_ID_COMMAND_EX(IDC_SOFTMGR_DAQUAN_TYPE_FIRST, IDC_SOFTMGR_DAQUAN_TYPE_LAST, OnClickDaquanType)
 		BK_NOTIFY_ID_COMMAND_EX(IDC_SOFTMGR_XIEZAI_TYPE_FIRST, IDC_SOFTMGR_XIEZAI_TYPE_LAST, OnClickXiezaiType)

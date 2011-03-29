@@ -6,6 +6,7 @@
 #define IDB_LEFT                        201
 #define IDI_ICON1                       202
 #define IDR_MAINFRAME                   202
+#define IDB_THUMBNAILS                  203
 #define IDC_CHK_SOFT_1                  1000
 #define IDC_CHK_SOFT_2                  1001
 #define IDC_LBL_SOFT_2_DESCRIPTION_1    1002
@@ -17,7 +18,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        203
+#define _APS_NEXT_RESOURCE_VALUE        204
 #define _APS_NEXT_COMMAND_VALUE         32772
 #define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           101

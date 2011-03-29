@@ -104,7 +104,6 @@ protected:
 
     CString m_strDefaultNavigate;
 
-    void OnBkBtnClose();
     void OnBkBtnMax();
     void OnBkBtnMin();
 	void OnBkLblTitleSetting();
@@ -160,7 +159,7 @@ protected:
 	CLocker			m_LockRemoveTodoList2;
 
 public:
-
+	void OnBkBtnClose();
     CBkNavigator* OnNavigate(CString &strChildName);
 
     BK_NOTIFY_MAP(IDC_RICHVIEW_WIN)

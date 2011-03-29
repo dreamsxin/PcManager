@@ -108,6 +108,12 @@ enum STATE_CLOSE_CHECK
 #define MSG_USER_LDLISTVIEWCTRL_NOTIFY	  MSG_USER_LDLISTVIEWCTRL_BEGIN+5//LISTVIEW中需要回调给主窗口的消息
 #define MSG_USER_LDLISTVIEWCTRL_END MSG_USER_LDLISTVIEWCTRL_BEGIN+999
 
+// vul tip
+#define MSG_USER_VUL_TIP_BEGIN              WM_APP+2200
+#define MSG_USER_VUL_TIP_DESTORY            (MSG_USER_VUL_TIP_BEGIN+1)
+#define MSG_USER_VUL_IGNORE                 (MSG_USER_VUL_TIP_BEGIN+2)
+#define MSG_USER_VUL_SELECT_CHANGE          (MSG_USER_VUL_TIP_BEGIN+3)
+
 //////////////////////////////////////////////////////////////////////////
 // system optimizie
 

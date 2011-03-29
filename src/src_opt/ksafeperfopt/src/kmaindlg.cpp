@@ -6,7 +6,7 @@
 #include "kpfw/netflowformat.h"
 #include "resource.h"
 #include <algorithm>
-#include "kcompare.h"
+
 #include "src/beikesafemsgbox.h"
 #include "communits/VerifyFileFunc.h"
 #include "softmgr/URLEncode.h"
@@ -70,16 +70,18 @@ BOOL KMainDlg::OnInitDialog( CWindow /*wndFocus*/, LPARAM /*lInitParam*/ )
 	m_strCfgFilePath = m_strAppFilePath;
 	m_strCfgFilePath.Append(FLOAT_WND_CFG_FILE);
 
+	CListBoxItemData::GetDataPtr()->GetStateArray()[m_nCurColum] = 0;	//_SetColumState()会自动+1
+	_SetColumState(m_nCurColum);	//默认按内存降序排列
+
 	_GetProcPerfData(m_processInfoList);
-	_SetColumState(m_nCurColum);
 	_InitPerfMonList();
 	m_uTimer = SetTimer(ID_TIMER_UPDATE_PROCPERF_MON, UPDATE_PROCPERF_MON_INTERVAL);
+/*	SetTimer(ID_TIMER_REFRESH_TOTAL_USAGE, REFRESH_TOTAL_USAGE_INTERVAL);*/
 
 	m_bFloatWndIsOpen = GetFloatWndDisplayStatus();
 	_HideOrShowTip(m_bFloatWndIsOpen, FALSE);
 	SetTimer(ID_TIMER_UPDATE_FLOATWND_STATE, UPDATA_FLOATWND_STATE);
 	SetTimer(ID_TIMER_CHECK_EXIT, CHECK_EXIT_EVENT_INTERVAL);
-	_SetColumState(m_nCurColum);
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -173,19 +175,31 @@ LRESULT KMainDlg::OnTimer( UINT timerId )
 		}
 	}
 
+// 	if (timerId == ID_TIMER_REFRESH_TOTAL_USAGE)
+// 	{
+// 		_RefreshSysCpu_Mem_IO_Usage();
+// 	}
+
 	return TRUE;
 }
 
 void KMainDlg::SetNotActiveTime(HWND hWnd)
 {
-	std::map<HWND, DWORD>::iterator it = m_mapNotActiveTime.find(hWnd);
-	if (hWnd == GetForegroundWindow())
-		m_mapNotActiveTime[hWnd] = 0;
+/*	std::map<HWND, DWORD>::iterator it = m_mapNotActiveTime.find(hWnd);*/
+	std::vector<KWndTimeItem>::iterator it;
+	BOOL bFind = FALSE;
+	for(it = m_vecWndTimeInfo.begin(); it != m_vecWndTimeInfo.end() ;it++ )
+	{
+		if (it->hWnd == hWnd)
+		{
+			m_mapNotActiveTime[hWnd] = it->dwUnActiveTime;
+			bFind = TRUE;
+			break;
+		}
+	}
 
-	if (it == m_mapNotActiveTime.end())
+	if (!bFind)
 		m_mapNotActiveTime[hWnd] = 0;
-	else
-		m_mapNotActiveTime[hWnd] = m_mapNotActiveTime[hWnd] + 1;
 }
 
 LRESULT KMainDlg::OnDestroy()
@@ -364,8 +378,7 @@ void KMainDlg::_GetProcPerfData(vector<PerfDataPair>& vetPerfData)
 		}
 	}
 
-
-	std::sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(m_nCurColum);
 }
 
 void KMainDlg::_InitPerfMonList()
@@ -405,7 +418,21 @@ LRESULT KMainDlg::ShowUI( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	::SetForegroundWindow(m_hWnd);         
 	::AttachThreadInput(dwCurID, dwForeID, FALSE);
 
-	if (wParam == 1003)
+	if (wParam == 1001)	//按cpu降序
+	{
+		CListBoxItemData::GetDataPtr()->GetStateArray()[LISTBOX_COLUM_CPU] = 0;
+		_SetColumState(LISTBOX_COLUM_CPU);
+		_SortListData(LISTBOX_COLUM_CPU);
+		_RefreshListBoxData(m_processInfoList);
+	}
+	if (wParam == 1002)	//按mem降序
+	{
+		CListBoxItemData::GetDataPtr()->GetStateArray()[LISTBOX_COLUM_MEM] = 0;
+		_SetColumState(LISTBOX_COLUM_MEM);
+		_SortListData(LISTBOX_COLUM_MEM);
+		_RefreshListBoxData(m_processInfoList);
+	}
+	if (wParam == 1003)	//一键优化
 	{
 		OnOneKeySpeedUp();
 	}
@@ -844,10 +871,8 @@ LRESULT KMainDlg::OnPerfMonCommand(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-
 void KMainDlg::_RefreshListBoxData(vector<PerfDataPair>& vetPerfData)
 {
-
 	CAutoLocker locker(m_locker);
 
 	//更新列表
@@ -868,109 +893,11 @@ void KMainDlg::_RefreshListBoxData(vector<PerfDataPair>& vetPerfData)
 	SetEvent(m_hEventGetNetData);
 }
 
-int KMainDlg::Compare( KProcessPerfData* ItemData1, KProcessPerfData* ItemData2, int nsubIndex/* = -1*/ )
+void KMainDlg::_SortListData(int nColum)
 {
-	int nCmpResult = KPFW_COMPARE_RESULT_ERROR;
-
-	if (nsubIndex < 0)
-	{
-		return nCmpResult;
-	}
-
-	//KNetFlowMonListItemData* pNetFlowMonItem = (KNetFlowMonListItemData*)piTreeItem;
-
-	CString str1 = L"", str2 = L"";
-	LONGLONG num1 = 0, num2 = 0;
-
-	switch(nsubIndex)
-	{
-	case LISTBOX_COLUM_NAME:
-		{
-			str1 = ItemData1->GetProcessName();
-			str2 = ItemData2->GetProcessName();
-			nCmpResult = KCompare::StringNoCase(str1, str2);
-		}
-		break;	
-	case LISTBOX_COLUM_LEVEL:
-		{
-			DWORD dwLevel1 = ItemData1->GetProcessTrustMode();
-			DWORD dwLevel2 = ItemData2->GetProcessTrustMode();
-			nCmpResult = KCompare::Compare<DWORD>(dwLevel1, dwLevel2);
-		}
-		break;
-	case LISTBOX_COLUM_CPU:
-		{
-			int v1 = ItemData1->GetCpuUsage();
-			int v2 = ItemData2->GetCpuUsage();
-			nCmpResult = KCompare::Compare<int>(v1,v2);
-		}
-		break;
-	case LISTBOX_COLUM_MEM:
-		{
-			ULONGLONG u1 = ItemData1->GetMemUsage();
-			ULONGLONG u2 = ItemData2->GetMemUsage();
-			nCmpResult = KCompare::Compare<ULONGLONG>(u1, u2);
-		}
-		break;
-	case LISTBOX_COLUM_IO:
-		{
-			ULONGLONG u1 = ItemData1->GetIOSpeed();
-			ULONGLONG u2 = ItemData2->GetIOSpeed();
-			nCmpResult = KCompare::Compare<ULONGLONG>(u1, u2);
-		}
-		break;
-	default:
-		break;
-	}
-
-	return nCmpResult;
-}
-
-bool KMainDlg::SortPerfInfo(KProcessPerfData* ItemData1, KProcessPerfData* ItemData2, int nColum, int nState)
-{
-	if (-1 == nColum ||
-		-1 == nState)
-		return false;
-
-	//CListBoxData::GetDataPtr()->GetLogModule().WriteLog(L"SortNetInfo:Colum = %d, State = %d", nColum, nState);
-	int nRet = Compare(ItemData1, ItemData2, nColum);
-	if (0 == nState)
-	{//升序
-		if (nRet > 0)
-			return true;
-	}else if (1 == nState)
-	{//降序
-		if (nRet < 0)
-			return true;
-	}
-	return false;
-}
-
-bool KMainDlg::stl_SortPerfInfo(PerfDataPair element1,PerfDataPair element2)
-{
-	int nColum = -1, nState = -1;
-	CListBoxItemData::GetDataPtr()->IsNeedSort(nColum, nState);
-
-	if (-1 == nColum ||
-		-1 == nState)
-	{
-		//return false;
-		//默认按上传下载量之和排序
-		nColum = LISTBOX_COLUM_MEM;
-		nState = 1;
-	}
-
-	int nRet = Compare(element1.second, element2.second, nColum);
-	if (0 == nState)
-	{//升序
-		if (nRet < 0)
-			return true;
-	}else if (1 == nState)
-	{//降序
-		if (nRet > 0)
-			return true;
-	}
-	return false;
+	int nColumSortAsc = CListBoxItemData::GetDataPtr()->GetStateArray()[m_nCurColum];
+	if (m_processInfoList.size() >0 )
+		std::sort(m_processInfoList.begin(), m_processInfoList.end(), KPerfDataSorter(nColumSortAsc, nColum));
 }
 
 void KMainDlg::_CreateCacheData(vector<KProcInfoItem>& vetNetData, CAtlMap<DWORD, CPerfMonitorCacheData>& mapCacheData)
@@ -1342,7 +1269,7 @@ void KMainDlg::_SetColumState(int nColum)
 void KMainDlg::OnBkClickListSortImg()
 {
 	_SetColumState(m_nCurColum);
-	sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(m_nCurColum);
 }
 
 void KMainDlg::OnClickPerfOptMenuBtn()
@@ -1377,35 +1304,35 @@ void KMainDlg::OnClickKillProcess(KPerfMonListItemData ItemData)
 void KMainDlg::OnClickColumTitle()
 {
 	_SetColumState(0);
-	sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(KPerfDataSorter::enum_Sort_Name);
 	_RefreshListBoxData(m_processInfoList);
 }
 
 void KMainDlg::OnClickColumLevel()
 {
 	_SetColumState(1);
-	sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(KPerfDataSorter::enum_Sort_SecLevel);
 	_RefreshListBoxData(m_processInfoList);
 }
 
 void KMainDlg::OnClickColumCPU()
 {
 	_SetColumState(2);
-	sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(KPerfDataSorter::enum_Sort_CPU);
 	_RefreshListBoxData(m_processInfoList);
 }
 
 void KMainDlg::OnClickColumMEM()
 {
 	_SetColumState(3);
-	sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(KPerfDataSorter::enum_Sort_Mem);
 	_RefreshListBoxData(m_processInfoList);
 }
 
 void KMainDlg::OnClickColumIO()
 {
 	_SetColumState(4);
-	sort(m_processInfoList.begin(), m_processInfoList.end(), stl_SortPerfInfo);
+	_SortListData(KPerfDataSorter::enum_Sort_IO);
 	_RefreshListBoxData(m_processInfoList);
 }
 
@@ -1689,31 +1616,43 @@ void KMainDlg::OnOneKeySpeedUp()
 	{
 		if( HasWndNeedClose() )
 		{
-			CBKSafeWndOptdlg wndOptDlg;
-			wndOptDlg.UpdateWndOptInfo( m_vecWndListItemData );
-			wndOptDlg.Load( IDR_BK_WND_OPT_DLG );
-			wndOptDlg.DoModal();
+			if (!m_bWinOptDlgHasDoModal)
+			{
+				m_bWinOptDlgHasDoModal = TRUE;
+				CBKSafeWndOptdlg wndOptDlg(this);
+				wndOptDlg.UpdateWndOptInfo( m_vecWndListItemData );
+				wndOptDlg.Load( IDR_BK_WND_OPT_DLG );
+				wndOptDlg.DoModal();
 
-			UpDateOneKeyFreeMemHistory();
+				UpDateOneKeyFreeMemHistory();
+			}
 		}
 		else
 		{
-			CBKSafeSysPerfOpt PerfOpt;
-			PerfOpt.Load(IDR_BK_SYSPERF_DLG);
-			PerfOpt.DoModal();
+			if (!m_bPerfOptDlgIsDoModal)
+			{
+				m_bPerfOptDlgIsDoModal = TRUE;
+				CBKSafeSysPerfOpt PerfOpt(this);
+				PerfOpt.Load(IDR_BK_SYSPERF_DLG);
+				PerfOpt.DoModal();
 
-			UpDateOneKeyFreeMemHistory();
+				UpDateOneKeyFreeMemHistory();
+			}
 		}
 	}
 	else
 	{
 		if( IsLongTimeUse() )
 		{
-			CBKSafeSysPerfOpt PerfOpt;
-			PerfOpt.Load(IDR_BK_SYSPERF_DLG);
-			PerfOpt.DoModal();
+			if (!m_bPerfOptDlgIsDoModal)
+			{
+				m_bPerfOptDlgIsDoModal = TRUE;
+				CBKSafeSysPerfOpt PerfOpt(this);
+				PerfOpt.Load(IDR_BK_SYSPERF_DLG);
+				PerfOpt.DoModal();
 
-			UpDateOneKeyFreeMemHistory();
+				UpDateOneKeyFreeMemHistory();
+			}
 		}
 		else
 		{
@@ -1721,6 +1660,16 @@ void KMainDlg::OnOneKeySpeedUp()
 			msgBox.ShowMutlLineMsg( BkString::Get(STR_MSG_NO_OPT), BkString::Get(7), MB_OK | MB_ICONEXCLAMATION );
 		}
 	}
+}
+
+void KMainDlg::SetPerfOptDlgHasDoModal(BOOL bDoModal)
+{
+	m_bPerfOptDlgIsDoModal = bDoModal;
+}
+
+void KMainDlg::SetWinOptDlgHasDoModal(BOOL bDoModal)
+{
+	m_bWinOptDlgHasDoModal = bDoModal;
 }
 
 void KMainDlg::OnChangeSetting()
@@ -1756,7 +1705,11 @@ int KMainDlg::UpDateAppWndListData()
 	m_vecWndListItemData.clear();
 	m_appWndStateMgr.UpdateAppWndState();
 	m_appWndStateMgr.GetAppWndStateData(m_vecAppWndStateData);
-	
+	m_vecWndTimeInfo.clear();
+	KWndTimeCacheReader cacheReader;
+	if (SUCCEEDED(cacheReader.Init()))
+		cacheReader.GetWndTimeInfo(&m_vecWndTimeInfo);
+
 	std::vector<LPAPP_WND_STATE_ITEM>::iterator it;
 	for (it = m_vecAppWndStateData.begin(); it != m_vecAppWndStateData.end(); it++)
 	{
@@ -1779,7 +1732,7 @@ int KMainDlg::UpDateAppWndListData()
 
 		ItemData.SetItemExePath(strExePath);
 
-		m_hActiveWnd = GetForegroundWindow();
+/*		m_hActiveWnd = GetForegroundWindow();*/
 		
 		HWND hCurWnd = ItemData.GetItemHwnd();
 

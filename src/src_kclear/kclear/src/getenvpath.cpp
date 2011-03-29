@@ -618,7 +618,7 @@ CString CGetEnvPath::GetEnvVariable(LPCTSTR pszName)
              IniEditor IniEdit;
              IniEdit.SetFile(szLongPathBuffer);
              std::wstring tmpPath = IniEdit.ReadString(L"public",L"savedirectory");
-             if(tmpPath.length() == 0)
+             if(tmpPath.length() <= 3)
                  strResult = L"%tudou%";
              else 
                  strResult = tmpPath.c_str();
@@ -654,10 +654,11 @@ CString CGetEnvPath::GetEnvVariable(LPCTSTR pszName)
             pXmlGeneral = pXmlQvodPlayer->FirstChildElement("General");
             if (pXmlGeneral)
             {
-                std::string strTmp(pXmlGeneral->Attribute("Defaultsavepath"));
-                if(strTmp.length() == 0)
+                const char* szTmp = pXmlGeneral->Attribute("Defaultsavepath");
+                if(!szTmp)
                     strResult = L"%qvod%";
-                else strResult = Utf8ToUnicode(strTmp).c_str();
+                else 
+                    strResult = Utf8ToUnicode(szTmp).c_str();
             }
 
         }
@@ -869,12 +870,15 @@ CString CGetEnvPath::GetEnvVariable(LPCTSTR pszName)
         pXmlGeneral = pXmlSogou->FirstChildElement("Item");
         if (pXmlGeneral && pXmlGeneral->Attribute("videoacccachepath"))
         {
-            std::string strTmp(pXmlGeneral->Attribute("videoacccachepath"));
-            if(strTmp.length() == 0)
+            const char* szTmp = pXmlGeneral->Attribute("videoacccachepath");
+            if(!szTmp)
                 strResult = L"%sogou%";
             else 
-                strResult = Utf8ToUnicode(strTmp).c_str();
+                strResult = Utf8ToUnicode(szTmp).c_str();
         }
+        // ¹ýÂË¸ùÄ¿Â¼
+        if (strResult.GetLength() <= 3)
+            strResult = L"%sogou%";
         goto Exit0;
     }
     else if (CString("usertemp").CompareNoCase(pszName) == 0)
@@ -1039,7 +1043,8 @@ CString CGetEnvPath::GetEnvVariable(LPCTSTR pszName)
                 strResult = strPath;
                 break;
             }
-        }  
+        }
+        goto Exit0;
     }
     else if (CString("qqmusic").CompareNoCase(pszName) == 0)
     {
@@ -1137,16 +1142,16 @@ CString CGetEnvPath::GetEnvVariable(LPCTSTR pszName)
             pXmlGeneral = pXmlTTPlayer->FirstChildElement("Network");
             if (pXmlGeneral)
             {
-                std::string strTmp(pXmlGeneral->Attribute("CacheFolder"));
-                if(strTmp.length() <= 3)
+                const char* szTmp = pXmlGeneral->Attribute("CacheFolder");
+                if(!szTmp)
                     strResult = L"%ttplayer%";
                 else 
-                    strResult = Utf8ToUnicode(strTmp).c_str();
+                    strResult = Utf8ToUnicode(szTmp).c_str();
             }
             
         }
 
-        if (strResult.Find(szDefault) != -1)
+        if (strResult.Find(szDefault) != -1 || strResult.GetLength() <= 3)
             strResult = L"%ttplayer%";
 
         goto Exit0;

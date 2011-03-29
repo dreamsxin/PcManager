@@ -31,9 +31,10 @@ typedef struct SoftData2
 	std::wstring _uninstString;
 	std::wstring _logoUrl;
 	ULONGLONG _size;
-	LONG _lastUse;
+	ULONG _lastUse;
 	LONG _type;
 	LONG _id;
+	LONG _count;
 
 	SoftData2()
 	{
@@ -42,6 +43,7 @@ typedef struct SoftData2
 		_lastUse = 0;
 		_type = 0;
 		_id = 0;
+		_count = -1;
 	}
 } *PSoftData2;
 typedef const SoftData2* PCSoftData2;
