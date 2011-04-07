@@ -88,7 +88,7 @@ BOOL IsFileTimeInner(FILETIME tCurFile, int nDays = 1);
 
  BOOL IsItemProcessRunning(int nCurIndex);
 
- BOOL GetPorcessNameByID(UINT nCurIndex, std::vector<CString>& vecPro);
+ BOOL GetProcessNamesByID(UINT nCurIndex, std::vector<CString>& vecPro);
 
 //  HRESULT FindLinkArgument(const WCHAR *pLnkFilePath, 
 // 	 BOOL &bHave);

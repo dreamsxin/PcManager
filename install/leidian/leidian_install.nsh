@@ -135,10 +135,14 @@ SectionEnd
   FindWindow $0 "{5469F950-888A-4bc1-B0B4-72F0159D7ACD}" ""
 
   ${if} $0 != 0
-    SendMessage $0 16 0 0 /TIMEOUT=5000
+    SendMessage $0 1131 0 0 /TIMEOUT=5000
   ${endif}
   pop $0
-  KillProcDLL::KillProc "KSafeTray.exe"
+  ;KillProcDLL::KillProc "KSafeTray.exe"
+!macroend
+
+!macro KillLeidianMain
+  ExecWait "$INSTDIR\KSafe.exe -do:{B2C96360-9354-4686-A04B-0F9870D892C9}"
 !macroend
 
 !macro FileVirusDat FileDst DirLocal FileLocal KeyData RepFile
@@ -234,9 +238,9 @@ Section Uninstall
   KillProcDLL::KillProc "netmon.exe"
   KillProcDLL::KillProc "kmspeed.exe"
 
-  KillProcDLL::KillProc "KSafe.exe"
+  !insertmacro KillLeidianMain
   !insertmacro KillLeidianTray
-  KillProcDLL::KillProc "KSafeSvc.exe"
+  ExecWait "$INSTDIR\KSafeSvc.exe /stop"
   ;»Ö¸´Æô¶¯ÏîÄ¿
 	ExecWait "$INSTDIR\KSafe.exe -uninstall"
   ExecWait "$INSTDIR\KSafeSvc.exe /uninstall"
@@ -245,9 +249,9 @@ Section Uninstall
   
   KillProcDLL::KillProc "KSafe.exe"
   !insertmacro KillLeidianTray
-  KillProcDLL::KillProc "KSafeSvc.exe"
-  KillProcDLL::KillProc "KSafeSvc.exe"
-  KillProcDLL::KillProc "KSafeSvc.exe"
+  ExecWait "$INSTDIR\KSafeSvc.exe /stop"
+  ExecWait "$INSTDIR\KSafeSvc.exe /stop"
+  ExecWait "$INSTDIR\KSafeSvc.exe /stop"
 
   KillProcDLL::KillProc "KClear.exe"
   KillProcDLL::KillProc "kpcfileopen.exe"
@@ -295,8 +299,9 @@ lbl_del_hotfix:
   RMDir /r "$INSTDIR\hotfix"
 lbl_no_del_hotfix:
   pop $0
-
+!ifndef PRODUCT_UPDATE
 	!insertmacro DeleteFileEx "$INSTDIR\KnInstAD.exe" "$INSTDIR"
+!endif
   !insertmacro DeleteFileEx "$INSTDIR\KSafeTray.exe" "$INSTDIR"
   !insertmacro DeleteFileEx "$INSTDIR\KSafe.exe" "$INSTDIR"
   !insertmacro DeleteFileEx "$INSTDIR\ksafebak.dll" "$INSTDIR"

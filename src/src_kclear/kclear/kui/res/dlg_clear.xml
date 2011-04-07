@@ -44,108 +44,111 @@
             </tab>
             <tab title="清理垃圾" width="full" height="full"><!-- 第二版垃圾清理 -->
             	<!-- 数据列表窗口 -->
-            	<dlg id="7001" pos="0,77,-183,-35" crbg="FFFFFF">
+            	<dlg id="7001" pos="0,92,-0,-35" crbg="FFFFFF">
             		<realwnd id="7002" ctrlid="7002" pos="0,0,-0,-0"/>
             	</dlg>
             	<!-- 当前状态提示栏 -->
-            	<dlg id="7015" pos="0,0,-183,75" crbg="FFFFFF">
+            	<dlg id="7015" pos="0,0,-0,90" crbg="FFFFFF">
             		<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<img pos="12,19" skin="begin_scan_icon"/>
-            		<text pos="72,23" class="bigboldtext">垃圾文件过多会拖慢系统速度，建议定期清理！</text>
-            		<text id="7016" pos="72,47" crtext="676765"><!--您上次清理是nnn天前，清理***GB垃圾。--></text>
-            		<imgbtn id="7017" pos="-111,23" class="linkimage" skin="begin_scan_btn"/>
+            		<img pos="20,19" skin="begin_scan_icon"/>
+            		<text pos="110,|-20" class="bigboldtext">垃圾文件过多会拖慢系统速度，建议定期清理！</text>
+            		<text id="7016" pos="110,|9" crtext="676765"><!--您上次清理是nnn天前，清理***GB垃圾。--></text>
+            		<imgbtn id="7017" pos="-172,|-23" class="linkimage" skin="begin_scan_btn"/>
             	</dlg>
             	<!-- 正在清理/扫描 -->
-            	<dlg id="7023" pos="0,0,-183,75" crbg="FFFFFF">
+            	<dlg id="7023" pos="0,0,-0,90" crbg="FFFFFF">
             		<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<img id="7024" pos="12,17" skin="trash_scanning" sub="0"/>
-            		<img id="7036" pos="4,17" skin="trash_cleaning" sub="0"/>
-            		<text id="7025" pos="72,23">正在清理/正在扫描“%sssssssssss”</text>
-            		<img id="7026" pos="72,45,470,61" skin="flash_progress" sub="0"/>
-            		<progress id="7039" pos="72,45,470,61" min="0" max="100" value="0" showpercent="1" bgskin="progressbg" posskin="progresspos" show="1" />
-            		<imgbtn id="7027" pos="-111,23" class="linkimage" skin="cancel_btn"/>
+            		<img id="7024" pos="20,19" skin="trash_scanning" sub="0"/>
+            		<img id="7036" pos="20,19" skin="trash_cleaning" sub="0"/>
+            		<text id="7025" pos="110,|-16">正在清理/正在扫描“%sssssssssss”</text>
+            		<img id="7026" pos="110,|1,570,|17" skin="flash_progress" sub="0"/>
+            		<progress id="7039" pos="110,|1,570,|17" min="0" max="100" value="0" showpercent="1" bgskin="progressbg" posskin="progresspos" show="1" />
+            		<button id="7027" pos="-136,|-14,-55,|15" class="normalbtn">取消</button>
             	</dlg>
             	<!-- finish scan -->
-            	<dlg id="7028" pos="-355,0,-183,75" crbg="FFFFFF">
+            	<dlg id="7028" pos="-355,0,-0,90" crbg="FFFFFF">
             		<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<text id="7029" pos="-172,47" class="linktext">重新扫描</text>
-            		<imgbtn id="7030" pos="-111,23" skin="begin_clean_btn"/>
-            		<imgbtn id="7043" pos="-111,23" skin="trash_rescan"/>
+            		<text id="7029" pos="-232,|9" class="linktext">重新扫描</text>
+            		<imgbtn id="7030" pos="-172,|-23" skin="begin_clean_btn"/>
+            		<imgbtn id="7043" pos="-172,|-23" skin="trash_rescan"/>
             	</dlg>
-            	<dlg id="7031" pos="0,0,-355,75" crbg="FFFFFF">
+            	<dlg id="7031" pos="0,0,-355,90" crbg="FFFFFF">
             		<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<img pos="12,12" skin="trash_ok"/>
-            		<text pos="72,16" class="bigboldtext">未发现垃圾</text>
-            		<text pos="72,40" crtext="676767">您指定的清理项中未发现垃圾文件。</text>
+            		<img pos="20,19" skin="trash_ok"/>
+            		<text pos="110,|-20" class="bigboldtext">未发现垃圾</text>
+            		<text pos="110,|9" crtext="676767">您指定的清理项中未发现垃圾文件。</text>
             	</dlg>
-            	<dlg id="7032" pos="0,0,-355,75" crbg="FFFFFF">
+            	<dlg id="7032" pos="0,0,-355,90" crbg="FFFFFF">
             		<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<img pos="12,19" skin="trash_has"/>
-            		<text pos="72,23" class="bigboldtext">扫描被取消，建议您重新扫描</text>
+            		<img pos="20,19" skin="trash_has"/>
+            		<text pos="110,|-20" class="bigboldtext">扫描被取消，建议您重新扫描</text>
             		<!--<text pos="170,36">()</text>-->
-            		<richtext id="7033" pos="72,47,-0,63" crtext="676767"></richtext>
+            		<richtext id="7033" pos="110,|9,-0,|25" crtext="676767"></richtext>
             	</dlg>
-            	<dlg id="7034" pos="0,0,-355,75" crbg="FFFFFF">
+            	<dlg id="7034" pos="0,0,-355,90" crbg="FFFFFF">
             		<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<img pos="12,19" skin="trash_has"/>
-            		<richtext id="7037" pos="72,23,-0,63" defaultfont="0204">共检测到**GB可清理垃圾文件</richtext>
-            		<richtext id="7035" pos="72,47,-0,63">共12345个文件</richtext>
+            		<img pos="20,19" skin="trash_has"/>
+            		<richtext id="7037" pos="110,|-20,-0,|-1" defaultfont="0204">共检测到**GB可清理垃圾文件</richtext>
+            		<richtext id="7035" pos="110,|9,-0,|25">共12345个文件</richtext>
             	</dlg>
             	<!-- finish clear trash -->
-       			<dlg id="7018" pos="0,0,-183,75" crbg="FFFFFF">
+       			<dlg id="7018" pos="0,0,-0,90" crbg="FFFFFF">
        				<img pos="0,0,-0,-1" skin="trashheadbkg"/>
             		<hr pos="0,-0,-0,-0" crbg="96AECA"/>
-            		<img id="7019" pos="12,19" skin="trash_ok"/>
-            		<img id="7038" pos="12,19" skin="trash_has"/>
-            		<richtext id="7020" pos="72,23,-0,41" defaultfont="0204">完成或失败</richtext>
-            		<richtext id="7021" pos="72,47,-0,63" crtext="676765">请利用时：5.23秒   垃圾文件数：1,234,578个</richtext>
-            		<!--
-            		<text id="7020" pos="82,47" class="bigboldtext">完成或失败</text>
-            		<text id="7021" pos="182,47" class="bigboldtext" crtext="ff0000">**MB</text>
-            		-->
-            		<text id="7042" pos="-89,47" class="linktext">查看详情</text>
-            		<text id="7022" pos="-65,25" class="linktext">返回</text>
+            		<img id="7019" pos="20,19" skin="trash_ok"/>
+            		<img id="7038" pos="20,19" skin="trash_has"/>
+            		<img id="7048" pos="20,19" skin="trash_rish"/>
+            		<richtext id="7020" pos="110,|-20,-0,|-1" defaultfont="0204">完成或失败</richtext>
+            		<richtext id="7021" pos="110,|9,-0,|25" crtext="676765">请利用时：5.23秒   垃圾文件数：1,234,578个</richtext>
+            		<!--<text id="7042" pos="-89,47" class="linktext">查看详情</text>-->
+            		<button id="7044" pos="-245,|-14,-164,|15" class="normalbtn">重新扫描</button>
+            		<button id="7022" pos="-136,|-14,-55,|15" class="normalbtn">返回</button>
        			</dlg>
-       			<dlg id="7040" pos="0,77,-183,-35" crbg="FFFFFF">
+       			<dlg id="7040" pos="0,92,-0,-35" crbg="FFFFFF">
        				<realwnd id="7041" ctrlid="7041" pos="0,0,-0,-0"/>
        			</dlg>
             	<!-- 完成清理窗口 -->
-            	<dlg id="7005" pos="0,96,-183,-35" crbg="FFFFFF">
+            	<dlg id="7005" pos="0,92,-0,-35" crbg="FFFFFF">
+            	<!--
             		<img id="7006" pos="|-171,|-84"/>
             		<text pos="|-116,|-76">垃圾文件过多会拖慢您的系统速度，建议您每周</text>
             		<text pos="|-116,|-54">进行一次清理。</text>
             		<img pos="|-250,|-30" skin="spacing_shadow"/>
             		<text pos="|-116,|-12" class="boldtext">本次释放空间：</text>
-            		<text id="7007" pos="|-21,|-10" class="text_color_red">MB</text>
+            		<text id="7007" pos="|-20,|-10" class="text_color_red">MB</text>
             		<text pos="|-116,|12" class="boldtext">累计释放空间：</text>
             		<text id="7008" pos="|-21,|12" class="text_color_red">GB</text>
+            	-->
+            		<img pos="0,0,-0,32" skin="trash_skip_head"/>
+            		<text pos="24,10">进一步优化电脑，你还可以尝试以下功能：</text>
+            		<imgbtn id="7012" pos="25,175" skin="plusapp1" class="linkimage"/>
+            		<imgbtn id="7013" pos="25,52" skin="plusapp2" class="linkimage"/>
+            		<imgbtn id="7014" pos="156,52" skin="plusapp3" class="linkimage"/>
+            		<imgbtn id="7045" pos="156,175" skin="plusapp4" class="linkimage"/>
+            		<imgbtn id="7046" pos="287,175" skin="plusapp5" class="linkimage"/>
+            		<imgbtn id="7047" pos="418,175" skin="plusapp6" class="linkimage"/>
             	</dlg>
             	<!-- 清理提示 -->
-            	<hr pos="0,-35,-183,-35" crbg="96AECA"/>
-            	<dlg pos="1,-33,-183,-1" crbg="EEF7FF">
+            	<hr pos="0,-35,-0,-35" crbg="96AECA"/>
+            	<dlg pos="1,-33,-0,-1" crbg="EEF7FF">
             		<check id="7009" pos="18,10">全选</check>
             		<text id="7010" pos="75,10" class="linktext">推荐选项</text>
             		<text id="7011" pos="-350,10,-0,23" class="righttext"><!--自0000年00月00日至今,累计已经帮您节省了25GB空间。--></text>
             	</dlg>
             	<!-- 链接表 -->
+            	<!--
             	<dlg pos="-182,0,-0,-0" crbg="F5FAFE">
             		<img  pos="0,0,8,-0" skin="shadow_vert"/>
             		<img  pos="22,35" skin="right_triangle"/>
             		<text pos="35,35" class="boldtext">希望进一步优化电脑</text>
             		<text pos="35,50" class="boldtext">您可以试试以下功能</text>
             		<imgbtn id="7012" pos="19,78" class="linkimage" skin="soft_uninstall"/>
-            		<!--
-            		<dlg id="7012" pos="19,78,-10,120" class="btnexamright" onlydrawchild="1" crbg="FF0000">
-            			<img  pos="12,4" skin="soft_uninstall"/>
-            			<text pos="52,14" crtext="000000">软件卸载</text>
-            		</dlg>
-            		-->
             		<text pos="35,122" crtext="676765">卸载不常用的软件</text>
             		<text pos="35,140" crtext="676765">只需一键干净彻底</text>
             		<hr pos="12,170,-10,170" crbg="B7BCC0" style="dot"/>
@@ -157,13 +160,15 @@
             		<text pos="35,340" crtext="676765">提高电脑开机速度</text>
             		<text pos="35,358" crtext="676765">自动手动随心所欲</text>
             	</dlg>
-            	<!-- 提示栏 -->
+            	-->
+         		<!-- 提示栏
             	<dlg id="7003" pos="0,0,-0,30" crbg="FFFFFF">
             		<img pos="0,0,-0,-0" skin="trashtipsbkg"/>
             		<img pos="20,7" skin="stat15" sub="1"/>
             		<text pos="40,9" crtext="A29060">扫描时已为您跳过正在运行的程序...</text>
             		<imgbtn id="7004" pos="-32,7" skin="tips_close"/>
             	</dlg>
+            	 -->
             </tab>
             <!--
             <tab title="清理垃圾" width="full" height="full">

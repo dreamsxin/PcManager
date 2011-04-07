@@ -69,6 +69,7 @@ enum STATE_CLOSE_CHECK
 #define MSG_APP_ADDTRUST_SCRIPT				(WM_APP + 52)//脚本信任添加
 #define MSG_APP_DEF_BROWSER_CHANGE			(WM_APP + 53)
 #define MSG_APP_UPDATE_UNI_TYPE				(WM_APP + 54)
+#define MSG_APP_PLUG_UNTRUST				(WM_APP + 62)
 
 //木马查杀 dll剥离 trojan hub
 #define MSG_VIRS_SETTING_CHANGE				(WM_APP + 55)//设置消息
@@ -82,7 +83,8 @@ enum STATE_CLOSE_CHECK
 
 
 #define MSG_KWS_SETTING_CHANGE				(WM_APP + 60)//设置消息
-#define MSG_KSWEB_SYS_FIX				    (WM_APP + 61)
+#define MSG_KSWEB_FULL_SCAN				    (WM_APP + 61)
+#define MSG_KSWEB_FAST_SCAN                 (WM_APP + 62)
 
 //plug
 #define MSG_PLUG_SCAN_BEGIN				(WM_APP+1000)
@@ -113,6 +115,8 @@ enum STATE_CLOSE_CHECK
 #define MSG_USER_VUL_TIP_DESTORY            (MSG_USER_VUL_TIP_BEGIN+1)
 #define MSG_USER_VUL_IGNORE                 (MSG_USER_VUL_TIP_BEGIN+2)
 #define MSG_USER_VUL_SELECT_CHANGE          (MSG_USER_VUL_TIP_BEGIN+3)
+
+#define MSG_USER_VUL_EXPORT                 (WM_APP+2300)
 
 //////////////////////////////////////////////////////////////////////////
 // system optimizie
@@ -157,6 +161,7 @@ enum STATE_CLOSE_CHECK
 #define TIMER_ID_PRE_LOAD_PHONE				1023
 #define TIMER_ID_ONEKEYOPT_SCAN				1024
 #define TIMER_ID_AUTORUN_HIT                1026
+#define TIMER_ID_PLUG_LOADING               1027
 
 #define MSG_KSWEB_IEFIX				(WM_APP+4000)
 #define MSG_KSWEB_IEFIX_PROGRESS			(MSG_KSWEB_IEFIX+1)
@@ -208,5 +213,6 @@ enum STATE_CLOSE_CHECK
 #define  MSG_TROHAN_VIRS_LASTSCAN			 5003
 #define  MSG_TROHAN_VIRS_SHOWLOG			 5004
 #define  MSG_TROHAN_VIRS_UNKNOWNLOG			 5005
+#define  MSG_TROHAN_VIRS_SHOWTRUST_LIST		 5006
 //plug
 #define  MSG_TROHAN_PLUG_SHOWCLEAN			 5100

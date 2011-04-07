@@ -32,15 +32,15 @@
 					<realwnd id="600" ctrlid="600" pos="0,0,-0,-0" />
 				</dlg>
 			</tab>
-			<tab title="网盾" width="full" height="full" crtext="000000">
+			<tab title="监控防御" width="full" height="full" crtext="000000">
          <!--<dlgfile pos="0,0,-0,-0" src="503" />-->
          <dlg pos="0,6,-0,-0">
             <realwnd id="602" ctrlid="602" pos="0,0,-0,-0" />
          </dlg>       
 			</tab>
-			<tab title="实时保护" width="full" height="full" crtext="000000">
+      <!--<tab title="实时保护" width="full" height="full" crtext="000000">
 				<dlgfile pos="0,0,-0,-0" src="502"/>
-			</tab>
+			</tab>-->
 			<tab title="软件管理" width="full" height="full" crtext="000000">
 				<dlgfile pos="0,0,-0,-0" src="501" />
 			</tab>

@@ -13,6 +13,18 @@ BOOL IsDownLoadTitle( CString& strTitle )
 	else
 		return FALSE;
 }
+//如果是金山卫士的主程序或对话框，就过滤掉
+BOOL IsKSafeWindow(KAppWndListItemData itemData)
+{
+	CString strFileName = PathFindFileName(itemData.GetItemExePath());
+	CString strWndTitle = itemData.GetItemWndTitle();
+	if (strWndTitle.Find(TEXT("金山卫士")) != -1)
+	{
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
 LRESULT	CBKSafeWndOptdlg::OnStartFixItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle )
 {
@@ -247,7 +259,9 @@ int CBKSafeWndOptdlg::GetWndCnt( vector<KAppWndListItemData>& vecListItem )
 	for ( int i = 0; i < vecListItem.size(); i++ )
 	{
 		if( vecListItem[i].GetItemState() == 1 || 
-			( vecListItem[i].GetItemState() == 3 && !IsDownLoadTitle(vecListItem[i].GetItemExePath())) )
+			( vecListItem[i].GetItemState() == 3 && 
+			  !IsDownLoadTitle(vecListItem[i].GetItemWndTitle()) && 
+			  !IsKSafeWindow(vecListItem[i])) )
 		{
 			nCnt++;
 		}
@@ -287,7 +301,8 @@ void CBKSafeWndOptdlg::AddWndItem(vector<KAppWndListItemData>& vecListItem)
 	{
 		KAppWndListItemData& item = vecListItem[i];
 		if( item.GetItemState() == 3 && 
-			!IsDownLoadTitle( item.GetItemWndTitle()))
+			!IsDownLoadTitle( item.GetItemWndTitle()) && 
+			!IsKSafeWindow(item))
 		{
 			WndOptItem optItem;
 			optItem.m_dwPId = item.GetItemPID();

@@ -36,7 +36,8 @@
 				<dlg pos="0,-30,-0,-0" crbg="EEF7FF">
 					<check id="1008" pos="24,10"> 全选</check>
 					<text id="1009" pos="90,10" class="linktext">推荐选项</text>
-					<text id="2001" pos="-185,10" class="linktext">导出漏洞信息</text>
+					<!--<text id="2001" pos="-185,10" class="linktext">导出漏洞信息</text>-->
+					<text id="1012" pos="-185,10" class="linktext">忽略选中补丁</text>
 					<text id="1016" pos="-65,10" class="linktext">补丁管理</text>
 				</dlg>
 			</dlg>

@@ -52,6 +52,7 @@ interface IKSafePopParam
     virtual BOOL	__stdcall IsArcEncrypt() = 0;
 	virtual DWORD	__stdcall GetBindSetupType() = 0;
 	virtual DWORD	__stdcall GetDownloadToolID() = 0;
+	virtual LPCWSTR __stdcall GetFileMD5() = 0;
 };
 
 interface IKSafeDownPopInfo

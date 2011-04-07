@@ -241,6 +241,9 @@ BOOL CFindFileTraverse::RunVideoCacheFile(int id, CString& strPath)
     case VIDEO_KUWO:
         bRet = _ScanKuwoCache(m_piTraverseFile, strPath, 0);
         break;
+    case SOFT_KSAFE:
+        bRet = _ScanKSafeVulCache(m_piTraverseFile, strPath, 0);
+        break;
 	default:
         {
             bRet = FALSE;

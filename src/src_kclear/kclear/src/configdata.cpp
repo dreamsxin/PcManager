@@ -616,6 +616,22 @@ int CConfigData::_ReadConfigFile()
         workItem.bIsLeaf = FALSE;
         m_ConfigData.push_back(workItem);
     }
+
+    {
+        DIRECTORYWORK workItem;
+        workItem.bRecursive = TRUE;
+        workItem.bDefaultSelect = FALSE;
+        workItem.bRSelect = workItem.bDefaultSelect;
+        workItem.strDirectory.push_back(L"%CSIDL_LOCAL_APPDATA%\\Microsoft\\Media Player\\Transcoded Files Cache");
+        workItem.strFriendName = L"windows media player";
+        workItem.strExtArray.push_back(L"*");
+        workItem.strFilt.push_back(L"%specfiles%");
+        workItem.iconindex = 0;
+        workItem.id = VIDEO_MEDIA_PALYER;
+        workItem.parent = VIDEO_TRASH;
+        workItem.bIsLeaf = TRUE;
+        m_ConfigData.push_back(workItem);
+    }
 	{
 		DIRECTORYWORK workItem;
 		workItem.bRecursive = TRUE;
@@ -1102,6 +1118,21 @@ int CConfigData::_ReadConfigFile()
         workItem.bIsLeaf = TRUE;
         m_ConfigData.push_back(workItem);
 
+    }
+
+    {
+        DIRECTORYWORK workItem;
+        workItem.bRecursive = TRUE;
+        workItem.bDefaultSelect = FALSE;
+        workItem.bRSelect = workItem.bDefaultSelect;
+        workItem.strDirectory.push_back(L"%ksafe%");
+        workItem.strFriendName = L"Œ¿ øª∫¥Ê";
+        workItem.strFilt.push_back(L"%specfiles%");
+        workItem.iconindex = 0;
+        workItem.id = SOFT_KSAFE;
+        workItem.parent = COMMON_SOFTWARE;
+        workItem.bIsLeaf = TRUE;
+        m_ConfigData.push_back(workItem);
     }
 
     {

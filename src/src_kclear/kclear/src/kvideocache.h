@@ -49,4 +49,8 @@ void _GetPIPIFilterPaths(LPCTSTR szPath, std::vector<CString>& vecFilter);
 
 BOOL _ScanKuwoCache(ITraverseFile *pTF, CString& strPath, int nStopIndex);
 
+
+BOOL _ScanKSafeVulCache(ITraverseFile *pTF, CString& strPath, int nStopIndex);
+BOOL _ScanKSafeVulCacheEx(ITraverseFile *pTF, CString& strPath, int nStopIndex);
+
 #endif

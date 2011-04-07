@@ -97,6 +97,14 @@
 	<image id="IDP_TRASH_RESCAN" path="images/trash/re_scan.png" />
 	<image id="IDI_UNKNOW_BROWER" path="images/trash/system_help.ico" />
 	<image id="IDI_BROWER_IE" path="images/trash/ie.ico"/>
+	<image id="IDB_SKIP_HEAD_BACK" path="images/trash/skip_head_back.bmp"/>
+	<image id="IDP_SKIP_SOFT_OFF" path="images/trash/skip_soft_off.png"/>
+	<image id="IDP_TRASH_RISK" path="images/trash/risk.png"/>
+	<image id="IDP_PLUS_APP4" path="images/trash/plus_app4.png"/>
+	<image id="IDP_PLUS_APP5" path="images/trash/plus_app5.png"/>
+	<image id="IDP_PLUS_APP6" path="images/trash/plus_app6.png"/>
+	<image id="IDP_PLUS_APP1" path="images/trash/plus_app1.png"/>
+	
 	
 	<image id="IDP_QUESTION" path="images/question.png" />
 	<image id="IDB_SLIM_HEAD_BK" path="images/slim_head_bk.bmp" />

@@ -31,6 +31,11 @@ CBkNavigator* CKWebShieldUIHandler::OnNavigate(CString &strChildName)
         m_piWebShieldUI->Navigate(strChildName);
     }
 
+	if (m_dlg && (0 == strChildName.CompareNoCase(L"IEFix1")))
+	{
+		m_dlg->OnNavigate(strChildName);
+	}
+
     return NULL;
 }
 

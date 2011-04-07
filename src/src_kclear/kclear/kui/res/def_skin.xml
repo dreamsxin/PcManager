@@ -61,9 +61,14 @@
 
 <imghorzex name="trashtipsbkg" src="IDB_TRASH_TIPS_BKG"/>
 <imghorzex name="trashheadbkg" src="IDB_TRASH_HEAD"/>
-<png name="bootspeed" src="IDB_BOOT_SPEED" subwidth="141" mode="mask"/>
-<png name="plugclear" src="IDB_PLUG_CLEAR" subwidth="141" mode="mask"/>
-<png name="soft_uninstall" src="IDB_SOFT_UNINSTALL" subwidth="141" mode="mask"/>
+<png name="plusapp3" src="IDB_BOOT_SPEED" subwidth="83" mode="mask"/>
+<png name="plusapp2" src="IDB_PLUG_CLEAR" subwidth="83" mode="mask"/>
+<png name="soft_uninstall" src="IDB_SOFT_UNINSTALL" subwidth="83" mode="mask"/>
+<png name="plusapp4" src="IDP_PLUS_APP4" subwidth="83" mode="mask"/>
+<png name="plusapp5" src="IDP_PLUS_APP5" subwidth="83" mode="mask"/>
+<png name="plusapp6" src="IDP_PLUS_APP6" subwidth="83" mode="mask"/>
+<png name="plusapp1" src="IDP_PLUS_APP1" subwidth="83" mode="mask"/>
+
 <imghorzex name="btnexamrightbg" src="IDB_EXAM_RIGHT_BG" mode="mask" subwidth="11" left="5"/>
 <imglst name="right_triangle" src="IDB_RIGHT_TRANGLE"/>
 <imgframe name="shadow_vert" src="IDB_SHADOW_VERT" top="0" left="8" part="middle"/>
@@ -71,20 +76,22 @@
 <imglst name="trash_finish_success_r" src="IDB_FINISH_SUCCESS_R"/>
 <imglst name="trash_finish_cancel_r" src="IDB_FINISH_CANCEL_R"/>
 <png name="begin_scan_icon" src="IDP_TRASH_BEGIN_ICON"/>
-<png name="begin_scan_btn" src="IDP_TRASH_BEGIN_SCAN" subwidth="98" mode="mask"/>
+<png name="begin_scan_btn" src="IDP_TRASH_BEGIN_SCAN" subwidth="151" mode="mask"/>
 <png name="cancel_btn" src="IDP_TRASH_CANCEL" subwidth="98" mode="mask"/>
-<png name="trash_rescan" src="IDP_TRASH_RESCAN" subwidth="98" mode="mask"/>
+<png name="trash_rescan" src="IDP_TRASH_RESCAN" subwidth="151" mode="mask"/>
 <!--
 <png name="finish_head_s" src="IDP_TRASH_FINISH_HEAD_S"/>
 <png name="finish_head_f" src="IDP_TRASH_FINISH_HEAD_F"/>
 -->
-<png name="trash_cleaning" src="IDP_TRASH_CLEANING" mode="mask" subwidth="65" />
-<png name="trash_scanning" src="IDP_TRASH_SCANING" mode="mask" subwidth="48" />
+<png name="trash_cleaning" src="IDP_TRASH_CLEANING" mode="mask" subwidth="73" />
+<png name="trash_scanning" src="IDP_TRASH_SCANING" mode="mask" subwidth="73" />
+<imghorzex name="trash_skip_head" src="IDB_SKIP_HEAD_BACK" mode="mask"/>
 
 <imglst name="spacing_shadow" src="IDB_TRASH_SHADOW" />
-<png name="begin_clean_btn" src="IDP_TRASH_CLEAN" mode="mask" subwidth="98" />
+<png name="begin_clean_btn" src="IDP_TRASH_CLEAN" mode="mask" subwidth="151" />
 <png name="trash_ok" src="IDP_TRASH_OK"/>
 <png name="trash_has" src="IDP_TRASH_HAS"/>
+<png name="trash_rish" src="IDP_TRASH_RISK"/>
 <png name="flash_progress" src="IDP_FLASH_PROGRESS" mode="mask" subwidth="387"/>
 
 <png name="setting_icon" src="IDP_SETTING_ICON" />

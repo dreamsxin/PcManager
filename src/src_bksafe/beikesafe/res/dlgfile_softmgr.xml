@@ -44,11 +44,12 @@
           </dlg>
           <dlg id="8435" pos="118,0,-0,-0">
             <dlg id="8410" pos="0,0,-0,-0">
-              <dlg id="8405" pos="0,0,-0,27" class="softmgrdetailheader" show="0">
-                <imgbtn	id="8406" pos="14,3" class="linkimage" skin="btnbackquery" />
-                <richtext id="8407" pos="88,8,-0,27"  class="addspace"></richtext>
+              <dlg id="8405" pos="0,0,-0,24" class="listheadernull" show="0">
+                <imgbtn id="8176" pos="5,4" skin="query_return" class="linkimage"/>
+                <text	id="8406" pos="30,5" class="linkblue">返回</text>
+                <richtext id="8407" pos="78,5,-0,17"  class="addspace"></richtext>
               </dlg>
-              <dlg id="8408" pos="0,27,-0,-0" show="0">
+              <dlg id="8408" pos="0,24,-0,-0" show="0">
                 <text id="8409" pos="0,30,-0,-60" class="centertext" font="0200" >没有找到相关软件，请重新输入关键词搜索</text>
               </dlg>
               <realwnd pos="0,0,-0,-0" id="8402" ctrlid="8402"  />

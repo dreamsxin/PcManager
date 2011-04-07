@@ -259,6 +259,121 @@ BOOL CUpdateInfoMgr::Load(const CString &kSafePath, BOOL bOnlyMajor = FALSE, LPC
 	return TRUE;
 }
 
+//判断软件是否安装的回调函数
+int CheckSetupCallBack(CString id, CString name, CString ver, CString curver, CString published, CString filename, void* param)
+{
+	int _nRet = 0;
+	CUpdateInfoMgr *pDlg = (CUpdateInfoMgr *)param;
+
+	if (pDlg)
+	{
+		for(int i = 0; i < pDlg->m_updateInfoArray.GetSize(); ++i)
+		{
+			CString strSoftId;
+			strSoftId.Format(L"%d", pDlg->m_updateInfoArray[i]._id);
+			if (strSoftId.CompareNoCase(id) == 0)
+			{
+				pDlg->m_updateInfoArray[i]._upVer = ver;
+				pDlg->m_updateInfoArray[i]._curVer = curver;
+
+				break;
+			}
+		}
+	}
+
+	return _nRet;
+}
+static inline void ver4ws(const TCHAR* ver,DWORD& dwMS,DWORD& dwLS)
+{
+	static const size_t size = 20+1+20+1+20+1+10+1;
+	TCHAR buff[size]={0};
+
+	wcscpy_s(buff,size,ver);
+
+	TCHAR* next_tok = NULL;
+	TCHAR* tok=wcstok_s( buff, _T("."), &next_tok );
+
+	WORD wVer[4] = {0};
+	for ( int i = 0 ; tok ; i++ )
+	{
+		wVer[i]=_wtoi(tok);
+		tok=wcstok_s( NULL, _T("."), &next_tok );
+	}
+	dwMS=(DWORD)MAKELONG( wVer[1], wVer[0] );
+	dwLS=(DWORD)MAKELONG( wVer[3], wVer[2] );
+}
+
+BOOL IsNeedUpdate(CString strCurVer, CString strNewVer)
+{
+	if ( strNewVer.IsEmpty() || strCurVer.IsEmpty())
+		return FALSE;
+
+	DWORD dwNewMS = 0, dwNewLS = 0, dwCurMS = 0, dwCurLS = 0;
+	ver4ws(strNewVer, dwNewMS, dwNewLS);
+	ver4ws(strCurVer, dwCurMS, dwCurLS);
+
+	if((dwNewMS > dwCurMS) || ((dwNewMS == dwCurMS) && (dwNewLS > dwCurLS)))
+	{
+		return TRUE;
+	}
+
+	return FALSE;
+}
+BOOL CUpdateInfoMgr::CheckUpdateStatus(const CString &kSafePath)
+{
+	BOOL bResult = FALSE;
+
+	CString strDll;
+	CString strDat;
+
+	HINSTANCE hInstance = NULL;
+	typedef BOOL (*pCreateObject)( REFIID , void** );
+	pCreateObject CreateObject = NULL;
+	ISoftCheckerEx* pSoftChecker = NULL;
+
+	if (m_updateInfoArray.GetSize() == 0)
+		goto Exit0;
+
+	strDll = _PathAddBackslash(kSafePath);
+	strDll.Append(_T("KSoft\\softmgr.dll"));
+
+	if(!PathFileExists(strDll))
+		goto Exit0;
+
+	strDat = _PathAddBackslash(kSafePath);
+	strDat.Append(_T("KSoft\\data\\softmgrup.dat"));
+	if(!PathFileExists(strDat))
+		goto Exit0;
+
+	hInstance = LoadLibrary(strDll);
+	if (hInstance == NULL)
+		goto Exit0;
+
+	CreateObject = (pCreateObject)GetProcAddress(hInstance, "CreateSoftMgrObject");
+	CreateObject( __uuidof(ISoftCheckerEx), ( void ** ) &pSoftChecker );
+	pSoftChecker->Load(strDat);
+
+	for(int i = 0; i < m_updateInfoArray.GetSize(); ++i)
+	{
+		CString strSoftId;
+		strSoftId.Format(L"%d", m_updateInfoArray[i]._id);
+
+		pSoftChecker->CheckOneInstalled(strSoftId, CheckSetupCallBack, this);
+		if (!IsNeedUpdate(m_updateInfoArray[i]._curVer, m_updateInfoArray[i]._upVer))
+			goto Exit0;
+	}
+
+	bResult = TRUE;
+Exit0:
+	if (hInstance)
+	{
+		::FreeLibrary(hInstance);
+		hInstance = NULL;
+	}
+
+	return bResult;
+}
+
 BOOL CUpdateInfoMgr::Save(const CString &kSafePath)
 {
 	if(kSafePath.IsEmpty()) return FALSE;
@@ -381,6 +496,9 @@ BOOL CUpdateInfoMgr::Need2TipOneUpdate(const CString &kSafePath, CUpdateInfoMgr 
 
 	// 加载更新列表
 	if(!updateInfoMgr.Load(kSafePath, bOnlyMajor, szMainExe)) return FALSE;
+
+	// 实时检查一下
+	if (!updateInfoMgr.CheckUpdateStatus(kSafePath)) return FALSE;
 
 	if (bOnlyMajor)
 	{

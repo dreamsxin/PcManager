@@ -30,13 +30,12 @@ static void OpenDefault();
 BOOL IsExtExist()
 {
 	CPath path( g_strCmd );
-
 	CString strExt;
+	LONG lResult = ERROR_SUCCESS;
+
 	strExt = path.GetExtension();
 	if( strExt == TEXT("") )
 		return FALSE;
-
-	LONG lResult = ERROR_SUCCESS;
 
 	CRegKey regExt;
 	lResult = regExt.Open( HKEY_CLASSES_ROOT, strExt );
@@ -47,7 +46,7 @@ BOOL IsExtExist()
 	DWORD dwSoftNameLen = MAX_PATH + 1;
 	lResult = regExt.QueryStringValue(L"", strSoftName.GetBuffer(dwSoftNameLen), &dwSoftNameLen);
 	strSoftName.ReleaseBuffer();
-	if( strSoftName == TEXT("") )
+	if( strSoftName == L"" )
 		return FALSE;
 
 	CRegKey regSoft;
@@ -61,18 +60,29 @@ BOOL IsExtExist()
 	DWORD dwSoftPathLen = MAX_PATH + 1;
 	lResult = regSoft.QueryStringValue(L"", strSoftPath.GetBuffer(dwSoftPathLen), &dwSoftPathLen);
 	strSoftPath.ReleaseBuffer();
-	if( strSoftPath == TEXT("") )
-		return FALSE;
+	if( strSoftPath != L"" )
+		return TRUE;
 
-	return TRUE;
+	return FALSE;
 }
 
 BOOL IsExtExistEx()
 {
 	LONG lResult = ERROR_SUCCESS;
 
+	CPath path( g_strCmd );
+	CString strExt;
+
+	strExt = path.GetExtension();
+	if( strExt == TEXT("") )
+		return FALSE;
+
 	CRegKey regCur;
-	lResult = regCur.Open(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.mp4" );
+	CString strKey;
+
+	// for XP Current UserChoice
+	strKey.Format(L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\%s", strExt);
+	lResult = regCur.Open(HKEY_CURRENT_USER, strKey );
 	if (lResult != ERROR_SUCCESS)
 		return FALSE;
 
@@ -80,10 +90,24 @@ BOOL IsExtExistEx()
 	DWORD dwSoftUserLen = MAX_PATH + 1;
 	lResult = regCur.QueryStringValue(L"Application", strSoftUser.GetBuffer(dwSoftUserLen), &dwSoftUserLen);
 	strSoftUser.ReleaseBuffer();
-	if( strSoftUser == TEXT("") )
+	if( strSoftUser != L"" )
+		return TRUE;
+
+	// for Win7 Current UserChoice
+	regCur.Close();
+	strKey.Format(L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\%s\\UserChoice", strExt);
+	lResult = regCur.Open(HKEY_CURRENT_USER, strKey );
+	if (lResult != ERROR_SUCCESS)
 		return FALSE;
 
-	return TRUE;
+	CString strSoftUser2;
+	DWORD dwSoftUserLen2 = MAX_PATH + 1;
+	lResult = regCur.QueryStringValue(L"Progid", strSoftUser2.GetBuffer(dwSoftUserLen2), &dwSoftUserLen2);
+	strSoftUser2.ReleaseBuffer();
+	if( strSoftUser2 != L"" )
+		return TRUE;
+
+	return FALSE;
 }
 
 //////////////////////////////////////////////////////////////////////////

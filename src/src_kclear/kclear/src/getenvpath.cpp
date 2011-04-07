@@ -1156,6 +1156,38 @@ CString CGetEnvPath::GetEnvVariable(LPCTSTR pszName)
 
         goto Exit0;
     }
+    else if (CString("ksafe").CompareNoCase(pszName) == 0)
+    {
+//         WCHAR szPath[MAX_PATH] = { 0 };
+//         WCHAR szCmdline[MAX_PATH * 2] = { 0 };
+//         ::GetModuleFileName(NULL, szPath, MAX_PATH);
+// 
+//         ::PathRemoveFileSpec(szPath);
+//         std::wstring strIniPath = szPath;
+//         std::wstring strTemp;
+// 
+//         strIniPath += L"\\cfg\\vulfix.ini";
+// 
+// //         IniEditor inif;
+// // 
+// //         inif.SetFile(strIniPath.c_str());
+// //         strTemp = inif.ReadString(L"Main", L"downpath");
+// //         if(strTemp.find(L"//") != -1)
+// //         {
+// //             strTemp.replace(strTemp.find(L"//"), 1, L"\\");
+// //         }
+// 
+//         if (strTemp.length() == 0)
+//         {
+//             strResult = szPath;
+//             strResult += L"\\hotfix";
+//         }
+//         else
+//         {
+//             strResult = strTemp.c_str();
+//         }
+        goto Exit0;
+    }
     DWORD dwResult = GetEnvironmentVariable(pszName, szBuffer, MAX_PATH);
     if (dwResult > 0)
     {

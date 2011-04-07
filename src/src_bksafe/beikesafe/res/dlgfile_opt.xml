@@ -95,58 +95,60 @@
 		</dlg>
 	</dlg>
 	<dlg id="4084" pos="147,0,-1,56" show="0">
-		<dlg id="4067" pos="10,8,457,60" show="1">
+		<dlg id="4067" pos="5,20,470,60" show="1">
 			<img id="4009" pos="0,0" skin="onekeyopt_scan" sub="0"/>
-			<richtext id="4086" pos="60,10,390,22" class=addspace>正在扫描，已经发现<b><c color="cd0000"> 0 </c></b>个可优化项目。</richtext>
-			<img id="4057" pos="60,30" skin="scanscroll" sub="0"/>
+			<richtext id="4086" pos="90,10,490,36" class=addspace defaultfont="0204">正在扫描，已经发现<b><c color="cd0000"> 0 </c></b>个可优化项目。</richtext>
+			<img id="4057" pos="90,36" skin="scanscroll" sub="0"/>
 		</dlg>
-		<dlg id="4056" pos="10,8,456,60" show="0">
-			<img pos="0,0" skin="examstatus48" sub="2"/>
-			<richtext id="4076" pos="60,10,390,22" class=addspace>扫描完成，共发现<b><c color="cd0000"> 0 </c></b>个可优化项目。</richtext>
-			<richtext pos="60,30,390,42" class=addspace>定时进行系统优化，可以有效加速开机，提升系统性能！</richtext>
+		<dlg id="4056" pos="5,20,470,80" show="0">
+			<img pos="0,0" skin="onekeyopt_status" sub="3"/>
+			<richtext id="4076" pos="90,10,490,36" class=addspace defaultfont="0204">扫描完成，共发现<b><c color="cd0000"> 0 </c></b>个可优化项目。</richtext>
+			<richtext pos="90,36,390,48" class=addspace><c color="7a7a7a">进行系统优化可加快程序运行，提升开机速度。</c></richtext>
 		</dlg>
-		<dlg id="4073" pos="10,8,457,60" show="0">
+		<dlg id="4073" pos="5,20,470,80" show="0">
 			<img id="4063" pos="0,0" skin="onekeyopt_scan" sub="0"/>
-			<text id="4058" class="endellipsistext" pos="60,10,390,22"/>
-			<img id="4007" pos="60,30" skin="scanscroll" sub="0"/>
+			<text id="4058" class="endellipsistext" pos="90,10,390,22"/>
+			<img id="4007" pos="90,36" skin="scanscroll" sub="0"/>
 		</dlg>
-		<dlg id="4074" pos="10,8,457,60" show="0">
-			<img pos="0,0" skin="examstatus48" sub="0"/>
-			<richtext id="4077" pos="60,10,390,22" class=addspace>优化完成，本次共优化<b><c color="3064A5"> 0 </c></b>项。</richtext>
-			<richtext pos="60,30,390,42" class=addspace>定时进行系统优化，可以有效加速开机，提升系统性能！</richtext>
+		<dlg id="4074" pos="5,20,470,80" show="0">
+			<img pos="0,0" skin="onekeyopt_status" sub="2"/>
+			<richtext id="4077" pos="90,10,490,36" class=addspace defaultfont="0204">优化完成，本次共优化<b><c color="3064A5"> 0 </c></b>项。</richtext>
+			<richtext pos="90,36,390,48" class=addspace><c color="7a7a7a">进行系统优化可加快程序运行，提升开机速度。</c></richtext>
 		</dlg>
-		<dlg id="4075" pos="10,8,457,60" show="0">
-			<img pos="0,0" skin="examstatus48" sub="0"/>
-			<richtext id="4078" pos="60,10,390,22" class=addspace>优化完成，本次共优化<b><c color="3064A5"> 0 </c></b>项，尚有<b><c color="FF7F24"> 0 </c></b>项待优化。</richtext>
-			<richtext pos="60,30,390,42" class=addspace>定时进行系统优化，可以有效加速开机，提升系统性能！</richtext>
+		<dlg id="4075" pos="5,20,470,80" show="0">
+			<img pos="0,0" skin="onekeyopt_status" sub="2"/>
+			<richtext id="4078" pos="90,10,490,36" class=addspace defaultfont="0204">优化完成，本次共优化<b><c color="3064A5"> 0 </c></b>项，尚有<b><c color="FF7F24"> 0 </c></b>项待优化。</richtext>
+			<richtext pos="90,36,390,48" class=addspace><c color="7a7a7a">进行系统优化可加快程序运行，提升开机速度。</c></richtext>
 		</dlg>
-		<dlg id="4083" pos="10,8,457,60" show="0">
-			<img pos="0,0" skin="examstatus48" sub="0"/>
-			<richtext pos="60,10,390,22" class=addspace>所有项目已经优化完毕！</richtext>
-			<richtext pos="60,30,390,42" class=addspace>定时进行系统优化，可以有效加速开机，提升系统性能！</richtext>
+		<dlg id="4083" pos="5,20,470,80" show="0">
+			<img pos="0,0" skin="onekeyopt_status" sub="2"/>
+			<richtext pos="90,10,390,36" class=addspace defaultfont="0204">优化完成，系统中已无可优化项目。</richtext>
+			<richtext pos="90,36,390,48" class=addspace><c color="7a7a7a">进行系统优化可加快程序运行，提升开机速度。</c></richtext>
 		</dlg>
-		<imgbtn id="4053" pos="-120,15" skin="btn_onekeyopt" show="0"/>
-		<text id="4085" pos="-195,16" class="linktext">已忽略</text>
-		<text id="4062" pos="-195,38" class="linktext">重新扫描</text>
+	</dlg>
+	<dlg id="4061" pos="147,0,-1,68">
+		<text id="4062" pos="-225,56" class="linktext" show="0">重新扫描</text>
+		<imgbtn id="4053" pos="-170,25" skin="btn_onekeyopt" show="0"/>
 	</dlg>
 	<dlg id="4006" pos="160,-40,-7,-0" show="0">
 		<check pos="5,-26" id="4027">全选</check>
+		<text id="4085" pos="-170,-26" class="linktext">已忽略</text>
 		<text id="4087" pos="-80,-26" class="linktext">撤销全部更改</text>
 	</dlg>
 	<!--一键优化列表-->
-	<dlg pos="150,60,-6,-40" id="4055" class="panelgray" show="0">
-		<dlg pos="|-324,|-165,|324,|165" id="4059">
-			<img pos="111,62" skin="autoopt_noitem"/>
-			<text pos="174,116" class="centertext">您还可以使用以下功能，手动进行系统优化：</text>
-			<img pos="170,145" skin="stat_runopt" sub="2"/>
-			<text id="4066" pos="185,145" class="linktext">垃圾清理</text>
-			<text pos="255,145">清理系统垃圾文件，加速系统运行</text>
-			<img pos="170,182" skin="stat_runopt" sub="2"/>
-			<text id="4064" pos="185,182" class="linktext">开机加速</text>
-			<text pos="255,182">禁止或者延迟不必要的启动项，加速开机</text>
-			<img pos="170,219" skin="stat_runopt" sub="2"/>
-			<text id="4065" pos="185,219" class="linktext">流量监控</text>
-			<text pos="255,219">对占用带宽高的程序限速，加速上网</text>
+	<dlg pos="150,95,-6,-40" id="4055" class="panelgray" show="0">
+		<dlg pos="|-324,|-148,|324,|148" id="4059">
+			<img pos="111,45" skin="autoopt_noitem"/>
+			<text pos="174,100" class="centertext">您还可以使用以下功能，手动进行系统优化：</text>
+			<img pos="170,128" skin="stat_runopt" sub="2"/>
+			<text id="4066" pos="185,128" class="linktext">垃圾清理</text>
+			<text pos="255,128">清理系统垃圾文件，加速系统运行</text>
+			<img pos="170,165" skin="stat_runopt" sub="2"/>
+			<text id="4064" pos="185,165" class="linktext">开机加速</text>
+			<text pos="255,165">禁止或者延迟不必要的启动项，加速开机</text>
+			<img pos="170,202" skin="stat_runopt" sub="2"/>
+			<text id="4065" pos="185,202" class="linktext">流量监控</text>
+			<text pos="255,202">对占用带宽高的程序限速，加速上网</text>
 		</dlg>
 		<realwnd id="4054" pos="2,1,-1,-2" ctrlid="4054" />
 	</dlg>

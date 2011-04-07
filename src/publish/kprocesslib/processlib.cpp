@@ -1318,33 +1318,6 @@ BOOL ProcessLib::FindInfo( LPCTSTR szFilePath,  KProcessItem& pInfo/*= NULL*/ )
 
     int itemsCount = 0;
 
-  //  for (iter = queryRange.first; iter != queryRange.second; iter++)
-  //  {
-		//if (iter == queryRange.first)
-		//{
-		//	wTest = queryRange.first->second.Desc();
-		//	itemsCount++;
-		//}
-		//else
-		//{
-		//	if (wTest != queryRange.first->second.Desc())
-		//		itemsCount ++;
-		//}
-  //  }
-
-  //  // 没有找到记录，返回
-  //  if (0 == itemsCount)
-  //  {
-  //      return FALSE;
-  //  }
-
-  //  // 如果只有一条记录，则直接返回
-  //  if (1 == itemsCount)
-  //  {
-  //      pInfo = queryRange.first->second;
-  //      return TRUE;
-  //  }
-
     // 多条记录先按路径筛选
     vector<KProcessItem> processItemsFound;
 
@@ -1364,17 +1337,14 @@ BOOL ProcessLib::FindInfo( LPCTSTR szFilePath,  KProcessItem& pInfo/*= NULL*/ )
             filePath = twoLevelPath;
 		}
 
-        //if (iter->second.PathLevel() == 1)
-        //{
-        //    filePath = oneLevelPath;
-        //}
-        //else if (iter->second.PathLevel() == 2)
-        //{
-        //    filePath = twoLevelPath;
-        //}
-
-        if (_wcsicmp(GetPath(iter->second.PathIndex()).c_str(),
-                     filePath.c_str()) == 0)
+        if (-1 == iter->second.PathIndex())
+        {
+			if (_wcsicmp(iter->first.c_str(), fileName.c_str()) == 0)
+			{
+				processItemsFound.push_back(iter->second);
+			}
+        }
+        else if (_wcsicmp(GetPath(iter->second.PathIndex()).c_str(), filePath.c_str()) == 0)
         {
             processItemsFound.push_back(iter->second);
         }

@@ -54,6 +54,7 @@ enum{
 };
 
 BOOL IsDownLoadTitle( CString& strTitle );
+BOOL IsKSafeWindow(KAppWndListItemData);
 
 class WndOptItem
 {

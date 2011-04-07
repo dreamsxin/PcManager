@@ -33,7 +33,6 @@ LRESULT CDlgTipDetail::OnInitDialog(HWND /*hWnd*/, LPARAM /*lParam*/)
 }
 LRESULT CDlgTipDetail::OnEraseBkgnd(CDCHandle dc)
 {
-    dc.FillSolidRect(m_rcClient, RGB(123,123,123));
     return TRUE;
 }
 void CDlgTipDetail::OnPaint(CDCHandle dc)

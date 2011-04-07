@@ -185,7 +185,7 @@ public:
 
 	LPCTSTR	GetCmd()
 	{
-		if (m_Parser.GetCmd() == NULL )
+		if (m_Parser.GetCmd() == NULL && _tcslen(m_lpCmdLine) > 0)
 		{
 			m_bFileExist = FALSE;
 			int nArgCount = 0;

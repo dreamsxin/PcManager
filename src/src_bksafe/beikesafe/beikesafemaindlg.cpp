@@ -18,7 +18,6 @@
 #include "beikesafesoftmgrHeader.h"
 #include "kclearuihandler.h"
 #include "bksafetabctrl.h"
-#include "beikesafemonitordlg.h"
 #include "beikesafefreevirusuihandler.h"
 #include <Psapi.h>
 #pragma comment(lib, "psapi.lib")
@@ -52,7 +51,6 @@ BEGIN_MSG_MAP_EX_IMP(CBeikeSafeMainDlg)
 	//CHAIN_MSG_MAP_MEMBER(m_ProtectionHandler)
 	CHAIN_MSG_MAP_MEMBER(m_UpliveHandler)
 	CHAIN_MSG_MAP_MEMBER((*m_sysoptHandler))
-	CHAIN_MSG_MAP_MEMBER((*m_SafeMonitorDlg))
 	CHAIN_MSG_MAP_MEMBER((*m_KClearHandle))
 	CHAIN_MSG_MAP_MEMBER((*m_KTrojanHandle))//hub trojan
 	CHAIN_MSG_MAP_MEMBER((*m_pWebShieldHandle))
@@ -76,7 +74,8 @@ BEGIN_MSG_MAP_EX_IMP(CBeikeSafeMainDlg)
 	MESSAGE_HANDLER_EX(WM_MEASUREITEM, OnMeasureItem)
 	MESSAGE_HANDLER_EX(MSG_VIRS_LBL_DUBA, OnVirsLblDuba)//调用毒霸
 	MESSAGE_HANDLER_EX(MSG_KWS_SETTING_CHANGE, OnKwsSettingChange)	
-	MESSAGE_HANDLER_EX(MSG_KSWEB_SYS_FIX, OnKwsSysFix)
+	MESSAGE_HANDLER_EX(MSG_KSWEB_FULL_SCAN, OnKwsFullScan)
+	MESSAGE_HANDLER_EX(MSG_KSWEB_FAST_SCAN, OnKwsFastScan)
 	REFLECT_NOTIFICATIONS_EX()
 END_MSG_MAP_IMP()
 //////////////////////////////////////////////////////////////////////////
@@ -105,7 +104,6 @@ CBeikeSafeMainDlg::CBeikeSafeMainDlg()
 	m_SoftmgrHandle			= new CBeikeSafeSoftmgrUIHandler(this);
 	m_KClearHandle			= new CKClearUIHandler(this);
 	m_KTrojanHandle			= new CKTrojanUIHandler(this);//hub trojan
-	m_SafeMonitorDlg		= new CBeiKeSafeMonitorDlg(this);
 	m_pFreeVirusHandle		= new CBeikeSafeFreeVirusUIHandler(this);
 	m_pWebShieldHandle      = new CKWebShieldUIHandler(this);
 
@@ -130,7 +128,6 @@ CBeikeSafeMainDlg::~CBeikeSafeMainDlg()
 	delete m_SoftmgrHandle;
 	delete m_KClearHandle;
 	delete m_KTrojanHandle;
-	delete m_SafeMonitorDlg;
 	delete m_pFreeVirusHandle;
 	delete m_pWebShieldHandle;
 }
@@ -488,7 +485,6 @@ BOOL CBeikeSafeMainDlg::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/
     (*m_pWebShieldHandle).InitCtrl();
 	(*m_sysoptHandler).Init();
 
-	(*m_SafeMonitorDlg).Init();
     // KClear 初始化
     //(*m_KClearHandle).Init(); 切换到清理页面才加载
 
@@ -631,23 +627,28 @@ CBkNavigator* CBeikeSafeMainDlg::OnNavigate(CString &strChildName)
 		_Module.Navigate(BKSFNS_MAKE_3(BKSFNS_UI, BKSFNS_PAGE_VIRSCAN, BKSFNS_VIRSCAN_PLUG));
 	}
 	else if (0 == strChildName.CompareNoCase(BKSFNS_PAGE_IEFIX))
-	{//网盾-》6
+	{//系统修复-》6
+		//系统修复-》6
 		TryToInitIEFix();
 		//pChild = &(*m_IEFixScanHandler);
 		pChild = &(*m_pWebShieldHandle);
 		SetTabCurSel(IDC_TAB_MAIN, 6);
+
+		/*pChild = &(*m_KTrojanHandle);
+		SetTabCurSel(IDC_TAB_MAIN, 1);
+		m_KTrojanHandle->OnNavigate((const CString)L"SysFix");*/
+	}
+	else if (0 == strChildName.CompareNoCase(BKSFNS_PAGE_IEFIX1))
+	{
+		pChild = &(*m_KTrojanHandle);
+		SetTabCurSel(IDC_TAB_MAIN, 1);
+		m_KTrojanHandle->OnNavigate((const CString)L"SysFix");
 	}
 	else if (0 == strChildName.CompareNoCase(BKSFNS_PAGE_SYSTEM_OPTIMIZE))
 	{//系统优化->4
 		pChild = &(*m_sysoptHandler);
 
 		SetTabCurSel(IDC_TAB_MAIN, 4);
-	}
-	else if (0 == strChildName.CompareNoCase(BKSFNS_PAGE_PROTECTION))
-	{//四是保护
-		pChild = &(*m_SafeMonitorDlg);
-
-		SetTabCurSel(IDC_TAB_MAIN, 7);
 	}
 	else if (0 == strChildName.CompareNoCase(BKSFNS_SETTING))
 	{//设置
@@ -678,7 +679,7 @@ CBkNavigator* CBeikeSafeMainDlg::OnNavigate(CString &strChildName)
 	else if ( 0 == strChildName.CompareNoCase(BKSFNS_SOFTMGR) )
 	{
 		pChild = &(*m_SoftmgrHandle);
-		SetTabCurSel(IDC_TAB_MAIN, 8);
+		SetTabCurSel(IDC_TAB_MAIN, 7);
 	}
 	else if ( 0 == strChildName.CompareNoCase(BKSFNS_KWS_SETTING) )
 	{
@@ -860,7 +861,7 @@ BOOL CBeikeSafeMainDlg::OnBkTabMainSelChange(int nTabItemIDOld, int nTabItemIDNe
 			(*m_pWebShieldHandle).Show(TRUE);
 		}
 		break;
-	case 8:		// 打开软件管理
+	case 7:		// 打开软件管理
 		{
 			DWORD nValue = CBkSafeTabChangeCtrl::Instance().Pop(TAB_SWITCH_SOFTMGR,TAB_SWITCH_SOFTMGR_FROM_CLICK);
 
@@ -1256,6 +1257,18 @@ void CBeikeSafeMainDlg::ShowVirusLog()
 	}
 }
 
+void CBeikeSafeMainDlg::ShowVirusTrustList()
+{
+	if (m_KTrojanHandle)
+	{
+		HWND hWnd = m_KTrojanHandle->GetTrojanHwnd();
+		if (hWnd)
+		{
+			::PostMessage(hWnd, MSG_TROHAN_VIRS_SHOWTRUST_LIST, NULL, NULL);
+		}
+	}
+}
+
 void CBeikeSafeMainDlg::ShowReportedUnknownLog()
 {
 	/*(*m_VirusScanHandler).ShowReportedUnknownLog();*///trojan hub
@@ -1404,9 +1417,17 @@ LRESULT CBeikeSafeMainDlg::OnKwsSettingChange( UINT /*uMsg*/, WPARAM wParam, LPA
 }
 
 
-LRESULT CBeikeSafeMainDlg::OnKwsSysFix( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
+LRESULT CBeikeSafeMainDlg::OnKwsFullScan( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
 {
 	SetTabCurSel(IDC_TAB_MAIN, 1);
-	m_KTrojanHandle->OnNavigate((const CString)L"SysFix");
+	m_KTrojanHandle->OnNavigate((const CString)L"Full");
+	return TRUE;
+}
+
+
+LRESULT CBeikeSafeMainDlg::OnKwsFastScan( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam )
+{
+	SetTabCurSel(IDC_TAB_MAIN, 1);
+	m_KTrojanHandle->OnNavigate((const CString)L"Fast");
 	return TRUE;
 }

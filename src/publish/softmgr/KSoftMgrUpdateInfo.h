@@ -2,6 +2,7 @@
 
 #include <atlsimpcoll.h>
 #include <time.h>
+#include <softmgr\ISoftChecker.h>
 
 namespace ksm
 {
@@ -53,6 +54,8 @@ public:
 	BOOL Load(const CString &kSafePath, BOOL bOnlyMajor /*= FALSE*/, LPCWSTR pszMainExe /*= NULL*/);
 	BOOL Save(const CString &kSafePath);
 
+	BOOL CheckUpdateStatus(const CString &kSafePath);
+
 	BOOL LoadIgnore(const CString &kSafePath);
 	BOOL SaveIgnore(const CString &kSafePath);
 	BOOL AddIgnorItem(const UpdateInfo &ui);
@@ -70,7 +73,8 @@ protected:
 	BOOL IsMajorItem(UpdateInfo& ui);
 
 	CString GetSoftIdByMainExe(const CString &szMainExe);
-private:
+
+public:
 	UpdateInfoArray m_updateInfoArray;
 	UpdateInfoArray m_updateInfoArrayIgnore;
 };

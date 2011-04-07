@@ -396,14 +396,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\beikesafemonitordlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\beikesafemonitordlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\beikesafemsgbox.cpp"
 				>
 			</File>
@@ -2039,58 +2031,6 @@
 			</File>
 			<File
 				RelativePath=".\downloadtoolsdlg.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Zip"
-			>
-			<File
-				RelativePath="..\..\import\kxe_improve_publish\zip\unzip.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\import\kxe_improve_publish\zip\unzip.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\import\kxe_improve_publish\zip\zip.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\import\kxe_improve_publish\zip\zip.h"
 				>
 			</File>
 		</Filter>

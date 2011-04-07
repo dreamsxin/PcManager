@@ -29,6 +29,8 @@ protected:
 	LRESULT OnDoneScan(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnVulFixEventHandle(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	
+    void OnBkBtnExport();
+
 protected:
 	void _AppendItem2ListCtrl( CListViewCtrlEx &listCtrl, T_VulListItemData * pVulItem );
 	void _FillFixed();
@@ -60,6 +62,7 @@ public:
 		BK_NOTIFY_ID_COMMAND(30500, OnBkBtnSelectAll)
 		BK_NOTIFY_ID_COMMAND(30501, OnBkBtnSelectNone)
 		BK_NOTIFY_ID_COMMAND(30502, OnBkBtnCancelIgnore)
+        BK_NOTIFY_ID_COMMAND(2001,  OnBkBtnExport)
 	BK_NOTIFY_MAP_END()
 	
 	BEGIN_MSG_MAP_EX(CDlgViewDetail)

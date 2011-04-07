@@ -221,7 +221,7 @@
                       
                     </dlg>
                   </tab>
-                  <tab title="网盾" width="full" height="full">
+                  <tab title="上网保护" width="full" height="full">
                     <dlg pos="0,0,-0,-0" class="settingpage">
                       <dlg pos="0,0,-10,100">
                         <hr pos="0,6,-0,6" class="settingline"/>

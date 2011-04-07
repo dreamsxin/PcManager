@@ -127,6 +127,8 @@ public:
     LRESULT OnVulTipIgnore(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnSelectedChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+    LRESULT OnBkBtnExportMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 protected:
 	int FindListItem( int nID );
 	void _ShutdownComputer(BOOL bReboot);
@@ -212,6 +214,8 @@ public:
         MESSAGE_HANDLER(MSG_USER_VUL_TIP_DESTORY, OnVulTipDestory)
         MESSAGE_HANDLER(MSG_USER_VUL_IGNORE, OnVulTipIgnore)
         MESSAGE_HANDLER(MSG_USER_VUL_SELECT_CHANGE, OnSelectedChanged)
+
+        MESSAGE_HANDLER(MSG_USER_VUL_EXPORT, OnBkBtnExportMessage)
 
 //		NOTIFY_ID_HANDLER(IDC_LST_VULFIX_RESULT_LIST, OnListBoxVulFixNotify)
 //		NOTIFY_HANDLER(IDC_TXT_VULFIX_VUL_DESCRIPTION, EN_LINK, OnRichEditLink)

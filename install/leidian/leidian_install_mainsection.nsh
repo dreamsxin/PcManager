@@ -19,7 +19,7 @@ Section "MainSection" SEC01
 	${endif}
 
   ;关掉当前运行的
-  KillProcDLL::KillProc "KSafe.exe"
+  !insertmacro KillLeidianMain
   !insertmacro KillLeidianTray
 ; 卸载以前的服务
   push $0
@@ -28,14 +28,15 @@ Section "MainSection" SEC01
   ${if} $0 != "0"
        Strcpy $1 "$0\KSafeSvc.exe"
        IfFileExists $1 0 +2
-        KillProcDLL::KillProc "KSafeSvc.exe"
+        ;KillProcDLL::KillProc "KSafeSvc.exe"
+        ExecWait "$1 /stop"
         ExecWait "$1 /uninstall"
   ${endif}
   pop $1
   pop $0
   
-  KillProcDLL::KillProc "KSafeSvc.exe"
-  KillProcDLL::KillProc "KSafe.exe"
+  ;KillProcDLL::KillProc "KSafeSvc.exe"
+  !insertmacro KillLeidianMain
   KillProcDLL::KillProc "kprivacy.exe"
   KillProcDLL::KillProc "netmon.exe"
   KillProcDLL::KillProc "kmspeed.exe"
@@ -51,8 +52,9 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  
+!ifndef PRODUCT_UPDATE
   !insertmacro FileEx "${BIN_DIR}\KnInstAD.exe" "$INSTDIR\KnInstAD.exe" "$INSTDIR\"
+!endif
   !insertmacro FileEx "${BIN_DIR}\KSafeTray.exe" "$INSTDIR\KSafeTray.exe" "$INSTDIR\"
   !insertmacro FileEx "${BIN_DIR}\KSafe.exe" "$INSTDIR\KSafe.exe" "$INSTDIR\"
   !insertmacro FileEx "${BIN_DIR}\kscan.dll" "$INSTDIR\kscan.dll" "$INSTDIR\"
@@ -159,10 +161,10 @@ Section "MainSection" SEC01
   File "${BIN_DIR}\kwsprio.ini"
   File "${BIN_DIR}\oem.ini"
   
- !insertmacro UpVirusDat4 "config3.dat" "2011.3.29" "1"
+ !insertmacro UpVirusDat4 "config3.dat" "2011.4.2" "1"
  !insertmacro UpVirusDat4 "WhiteList.dat" "2010.9.8.1" "1"
- !insertmacro UpVirusDat4 "sp3.nlb" "2011.3.29" "1"
- !insertmacro UpVirusDat4 "kwsu.dat" "2011.3.21" "1"
+ !insertmacro UpVirusDat4 "sp3.nlb" "2011.4.2" "1"
+ !insertmacro UpVirusDat4 "kwsu.dat" "2010.12.16" "1"
  !insertmacro UpVirusDat4 "vf1.dat" "2011.1.19" "1"
 
   SetOutPath "$INSTDIR\kse"
@@ -417,14 +419,14 @@ Section "MainSection" SEC01
   !ifdef WRITE_PID_SPECAIL_VALUE
     WriteRegDWORD HKLM "SOFTWARE\KSafe\Coop" "${SPECAIL_KEY_VALUE}" "${SPECAIL_KEY_VALUE_DATA}"
   !endif
-
+!ifndef PRODUCT_UPDATE
 	${if} ${silent}
   ${else}
 	  SetDetailsPrint none
 	  ExecWait '"$INSTDIR\KnInstAD.exe" -h:$HWNDPARENT -t:金山卫士 -i:0'
 	  SetDetailsPrint both
   ${endif}
-  
+!endif
 	
 SectionEnd
 

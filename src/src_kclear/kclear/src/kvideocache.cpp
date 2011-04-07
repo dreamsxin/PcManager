@@ -493,6 +493,8 @@ BOOL _ScanYoukuCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
 	bRet = ScanFileBasedPathAndName(L"YouKu",pTF, strResult, strName, nStopIndex);
 
     strPath = strResult;
+
+    bRet = TRUE;
 	 
 clean0:
 	return bRet;
@@ -1255,6 +1257,111 @@ BOOL _ScanKuwoCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
 
     bRet = TRUE;
 
+Clear0:
+    return bRet;
+}
+
+BOOL _ScanKSafeVulCache(ITraverseFile *pTF, CString& strPath, int nStopIndex)
+{
+    BOOL bRet = FALSE;
+    WCHAR szPath[MAX_PATH] = { 0 };
+    WCHAR szCmdline[MAX_PATH * 2] = { 0 };
+    CString strResult;
+
+    ::GetModuleFileName(NULL, szPath, MAX_PATH);
+
+    ::PathRemoveFileSpec(szPath);
+
+    std::wstring strIniPath = szPath;
+    std::wstring strTemp;
+
+    IniEditor inif;
+
+    strIniPath += L"\\cfg\\vulfix.ini";
+
+    if (!PathFileExists(strIniPath.c_str()))
+        goto Clear0;
+
+    inif.SetFile(strIniPath.c_str());
+    strTemp = inif.ReadString(L"Main", L"downpath");
+    if(strTemp.find(L"//") != -1)
+    {
+        strTemp.replace(strTemp.find(L"//"), 1, L"\\");
+    }
+
+    if (strTemp.length() == 0)
+    {
+        strResult = szPath;
+        strResult += L"\\hotfix";
+    }
+    else
+    {
+        strResult = strTemp.c_str();
+    }
+
+    bRet =_ScanKSafeVulCacheEx(pTF, strResult, nStopIndex);
+
+Clear0:
+    return bRet;
+}
+
+BOOL _ScanKSafeVulCacheEx(ITraverseFile *pTF, CString& strPath, int nStopIndex)
+{
+#define MAX_BUFFER_SIZE 32767
+ 
+    BOOL bRet = FALSE;
+    
+    IniEditor iniEditor;
+    CString strIni = strPath + L"\\vulfix.ini";
+
+    iniEditor.SetFile(strIni.GetBuffer());
+
+    long  m_lRetValue;   
+    int   i,index;
+    CString  m_strFileName;   
+    std::vector<CString>  vecSectionData;
+    CString strSectionTemp;
+    TCHAR ac_Result[MAX_BUFFER_SIZE] = {0};
+
+    m_lRetValue = GetPrivateProfileSection(TEXT("downloadedfiles"),   ac_Result,  MAX_BUFFER_SIZE,   strIni);   
+
+    if (m_lRetValue == 0)
+        goto Clear0;
+
+    for (i = 0; i < m_lRetValue; i++)   
+    {   
+        if (ac_Result[i] != L'\0')   
+        {   
+            //strSectionData[m]   =   strSectionData[m]   +   ac_Result[i];   
+            strSectionTemp += ac_Result[i];
+        }   
+        else
+        {   
+            vecSectionData.push_back(strSectionTemp);
+            strSectionTemp = L"";
+        }   
+    }  
+
+    for (size_t iCount = 0; iCount < vecSectionData.size(); ++iCount)
+    {
+        index = vecSectionData[iCount].Find('=');
+        if (index >= 0)
+        {
+            int len = vecSectionData[iCount].GetLength();
+            //CString strName = vecSectionData[iCount].Left(index);
+            //iniEditor.Del(L"downloadedfiles", strName.GetBuffer());
+            vecSectionData[iCount] = vecSectionData[iCount].Right(len - index - 1);
+        }
+    }
+
+    for (size_t iCount = 0; iCount < vecSectionData.size(); ++iCount)
+    {
+        ScanFileBasedPathAndName(L"KSafe", pTF, strPath, vecSectionData[iCount], nStopIndex);
+    }
+
+    ScanFileBasedPathAndName(L"KSafe", pTF, strPath, L"vulfix.ini", nStopIndex);
+    
+    bRet = TRUE;
 Clear0:
     return bRet;
 }

@@ -31,6 +31,7 @@
 
 CFindFileTraverse find;
 
+UINT g_nCloseID;
 //////////////////////////////////////////////////////////////////////////
 CUIHandlerTrash::CUIHandlerTrash(CKscMainDlg* refDialog) : m_dlg(refDialog)
 {
@@ -500,6 +501,85 @@ LRESULT CUIHandlerTrash::OnInitilize(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     return 0;
 }
+
+LRESULT CUIHandlerTrash::OnTrashRescan(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    m_skipCtrl.StopCountdown();
+
+    _UpdateUI(TRASH_BEGIN);
+
+    OnRescan();
+
+    return TRUE;
+}
+
+LRESULT CUIHandlerTrash::OnCloseItemTask(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    UINT nItemID = (UINT)wParam;
+    LPCTSTR lpProcess = (LPCTSTR)lParam;
+    
+    g_nCloseID = nItemID;
+
+    PROCESSENTRY32 pe;
+    DWORD id = 0;
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+    pe.dwSize = sizeof(PROCESSENTRY32);
+    
+    if( !Process32First(hSnapshot,&pe) )
+        return 0;
+    
+    while(1)
+    {
+        pe.dwSize = sizeof(PROCESSENTRY32);
+        if( Process32Next(hSnapshot,&pe)==FALSE )
+            break;
+        if(wcsicmp(pe.szExeFile, lpProcess) == 0)
+        {
+            {
+                id = pe.th32ProcessID;
+                ::OutputDebugString(pe.szExeFile);
+                EnumWindows((WNDENUMPROC)EnumWndProc, (LPARAM)id);
+            }
+        }
+
+    }
+    CloseHandle(hSnapshot);
+
+    //remove the item by nItemID
+    m_skipCtrl.RemoveItemByProcess(lpProcess);
+    m_dlg->SetItemVisible(IDC_BTN_TRASH_SKIP_RESCAN, TRUE);
+    if (m_skipCtrl.GetSize() == 0)
+    {
+        m_skipCtrl.StartCountdown();
+    }
+    else
+    {
+        m_skipCtrl.Invalidate();
+    }
+
+    return TRUE;
+}
+
+BOOL CALLBACK EnumWndProc(HWND hwnd, LPARAM lParam)
+{
+    BOOL bRet = TRUE;
+
+    DWORD dwID ; 
+
+    GetWindowThreadProcessId(hwnd, &dwID) ; 
+
+    if (dwID == (DWORD)lParam && IsWindowVisible(hwnd) && GetParent(hwnd) == NULL) 
+    { 
+        ::PostMessage(hwnd, WM_CLOSE, NULL, NULL);
+        bRet = FALSE;
+    } 
+    else if (dwID == (DWORD)lParam && g_nCloseID != BROWER_FIREFOX)
+    {
+        ::PostMessage(hwnd, WM_CLOSE, NULL,NULL);
+    }
+
+    return bRet;
+}
 //////////////////////////////////////////////////////////////////////////
 DWORD CUIHandlerTrash::ClearFileThread(LPVOID lpVoid)
 {
@@ -551,20 +631,6 @@ void CUIHandlerTrash::RunClearFile()
 				std::vector<TRASHFILEITEM> itemArray = 
 					m_FileListData.m_itemArray[m_configData.m_ConfigData[j].id].itemArray;
 
-// 				if (itemArray.size()>0)
-// 				{
-// 					for(std::vector<CString>::iterator iter =m_configData.m_ConfigData[j].strDirectory.begin();
-// 						iter!=m_configData.m_ConfigData[j].strDirectory.end();iter++)
-// 					{
-// 						if(::PathIsDirectory(iter->GetBuffer()))
-// 						{
-// 							CTrashCleanerFeedback cTrashFB;
-// 							cTrashFB.Report(iter->GetBuffer(), _Module.GetAppVersion(),j);
-// 						}
-// 					}
-// 
-// 
-// 				}
                 m_nCurrentFindIndex = m_configData.m_ConfigData[j].id;
 
 				ULONGLONG ulCurSize = m_FileListData.m_itemArray[m_configData.m_ConfigData[j].id].ulAllFileSize;
@@ -581,10 +647,7 @@ void CUIHandlerTrash::RunClearFile()
 
                     if (bRunning)
                     {
-                        CString strName;
-
-                        m_trashCtrl.GetItemName(m_nCurrentFindIndex, strName);
-                        m_skipCtrl.AddItem(m_nCurrentFindIndex, strName, ulCurSize);
+                        _AddItemToSkipCtrl(m_nCurrentFindIndex, ulCurSize);
 
                         nRemainingCount -= (int)itemArray.size();
                         m_nProgressPos = (int)(100 - ((double)nRemainingCount / m_nDelTotalCount) * 100); 
@@ -700,6 +763,9 @@ DWORD CUIHandlerTrash::WaitThread(LPVOID lpVoid)
 UINT CUIHandlerTrash::InitilizeThread(LPVOID lpVoid)
 {
     CUIHandlerTrash* pThis = (CUIHandlerTrash*)lpVoid;
+    ULONGLONG uBeginTime, uEndTime;
+
+    uBeginTime = GetTickCount();
 
     BOOL nRetCode = pThis->m_configData.ReadConfig();
 
@@ -712,9 +778,15 @@ UINT CUIHandlerTrash::InitilizeThread(LPVOID lpVoid)
     else
     {	    
         pThis->_InitListConfig();
+        {
+            KAutoLock lock(pThis->m_lock);
+            pThis->m_FileListData.m_itemArray.resize(ENUM_ID_END);
+        }
+        uEndTime = GetTickCount();
 
-        KAutoLock lock(pThis->m_lock);
-        pThis->m_FileListData.m_itemArray.resize(ENUM_ID_END);
+        CString strTime;
+        strTime.Format(L"load time  %I64d\n",(uEndTime - uBeginTime));
+        ::OutputDebugString(strTime);
 
         ::PostMessage(pThis->m_dlg->m_hWnd, WM_FINISH_INITILIZE, NULL, NULL);
     }
@@ -853,6 +925,73 @@ void CUIHandlerTrash::OnClickPushApp3()
     WinExec(CW2A(szCmdline), SW_HIDE);
 }
 
+void CUIHandlerTrash::OnClickPushApp4()
+{
+    // 转向 开机加速页面
+    KAppRes& appRes = KAppRes::Instance();
+    std::wstring strNav, strName;
+
+    appRes.GetString("IDS_PUSH_APP4_NAV", strNav);
+    appRes.GetString("IDS_PUSH_APP4_NAME", strName);
+
+    WCHAR szPath[MAX_PATH] = { 0 };
+    WCHAR szCmdline[MAX_PATH * 2] = { 0 };
+    ::GetModuleFileName(NULL, szPath, MAX_PATH);
+
+    CString strExepath = szPath;
+    if (L'\\' == strExepath.GetAt(strExepath.GetLength() - 1))
+    {
+        strExepath.Delete(strExepath.GetLength() -1);
+    }
+
+    wsprintf(szCmdline, L"\"%s\" -do:%s", strExepath.GetBuffer(), strNav.c_str());
+    WinExec(CW2A(szCmdline), SW_HIDE);
+}
+void CUIHandlerTrash::OnClickPushApp5()
+{
+    // 转向 开机加速页面
+    KAppRes& appRes = KAppRes::Instance();
+    std::wstring strNav, strName;
+
+    appRes.GetString("IDS_PUSH_APP5_NAV", strNav);
+    appRes.GetString("IDS_PUSH_APP5_NAME", strName);
+
+    WCHAR szPath[MAX_PATH] = { 0 };
+    WCHAR szCmdline[MAX_PATH * 2] = { 0 };
+    ::GetModuleFileName(NULL, szPath, MAX_PATH);
+
+    CString strExepath = szPath;
+    if (L'\\' == strExepath.GetAt(strExepath.GetLength() - 1))
+    {
+        strExepath.Delete(strExepath.GetLength() -1);
+    }
+
+    wsprintf(szCmdline, L"\"%s\" -do:%s", strExepath.GetBuffer(), strNav.c_str());
+    WinExec(CW2A(szCmdline), SW_HIDE);
+}
+void CUIHandlerTrash::OnClickPushApp6()
+{
+    // 转向 开机加速页面
+    KAppRes& appRes = KAppRes::Instance();
+    std::wstring strNav, strName;
+
+    appRes.GetString("IDS_PUSH_APP6_NAV", strNav);
+    appRes.GetString("IDS_PUSH_APP6_NAME", strName);
+
+    WCHAR szPath[MAX_PATH] = { 0 };
+    WCHAR szCmdline[MAX_PATH * 2] = { 0 };
+    ::GetModuleFileName(NULL, szPath, MAX_PATH);
+
+    CString strExepath = szPath;
+    if (L'\\' == strExepath.GetAt(strExepath.GetLength() - 1))
+    {
+        strExepath.Delete(strExepath.GetLength() -1);
+    }
+
+    wsprintf(szCmdline, L"\"%s\" -do:%s", strExepath.GetBuffer(), strNav.c_str());
+    WinExec(CW2A(szCmdline), SW_HIDE);
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 void CUIHandlerTrash::OnClickCancelWork()
@@ -922,32 +1061,9 @@ void CUIHandlerTrash::OnClickBeginClean()
 
 					ulTotalJunkFileSize += m_FileListData.m_itemArray.at(m_configData.m_ConfigData[j].id).ulAllFileSize;
 
-//					if (m_configData.m_ConfigData[j].id >= VIDEO_TUDOU&&m_configData.m_ConfigData[j].id <= VIDEO_QQLIVE )
                     if (m_configData.m_ConfigData[j].parent == VIDEO_TRASH && m_configData.m_ConfigData[j].id != VIDEO_SOGOU)
                         bIsVideo = TRUE;
 
-// 					for (int k = 0;k<(int)m_FileListData.m_itemArray.at(m_configData.m_ConfigData[j].id).itemArray.size();k++)
-// 					{
-// //						if(!(m_configData.m_ConfigData[j].id >= VIDEO_TUDOU&&m_configData.m_ConfigData[j].id <= VIDEO_QQLIVE))
-//                         if (m_configData.m_ConfigData[j].parent == VIDEO_TRASH && m_configData.m_ConfigData[j].id != VIDEO_SOGOU)
-// 							break;
-// 						if(is_havespecsuffix)
-// 							break;
-// 						if (m_configData.m_ConfigData[j].id == WIN_HUISHOUZHAN)
-// 						{
-// 							break;
-// 						}
-// //						CString Fileext = GetExtName(m_FileListData.m_itemArray[m_configData.m_ConfigData[j].id].itemArray.at(k).strFileName);
-// // 						for(int i = 0;i<m_SSuffix.size();i++)
-// // 						{
-// // 							if(Fileext.CompareNoCase(m_SSuffix[i]) == 0)
-// // 							{
-// // 								is_havespecsuffix = true;
-// // 								break;
-// // 							}
-// // 						}
-// 
-// 					}
                     if (m_configData.m_ConfigData[j].id == WIN_HUISHOUZHAN)
                     {
                         ULONGLONG uSize;
@@ -1092,12 +1208,18 @@ void CUIHandlerTrash::OnCheckAll()
 
 void CUIHandlerTrash::OnRescan()
 {
+    _UpdateUI(TRASH_BEGIN);
+
+    m_skipCtrl.StopCountdown();
+
 	OnClickScanBegin();
 }
 void CUIHandlerTrash::OnReturnBeginPage()
 {
 	m_bScaning = FALSE;
 	m_bCleaning = FALSE;
+    
+    m_skipCtrl.StopCountdown();
 
 	m_trashCtrl.SetStatus();
 
@@ -1122,6 +1244,13 @@ void CUIHandlerTrash::OnClickRecommend()
 void CUIHandlerTrash::OnTipsClose()
 {
 	::SendMessage(m_dlg->m_hWnd, WM_TRASH_TIPS_SHOW_STATUS, (WPARAM)FALSE, NULL);
+}
+
+void CUIHandlerTrash::OnSkipRescan()
+{
+    _UpdateUI(TRASH_BEGIN);
+    
+    OnRescan();
 }
 void CUIHandlerTrash::OnCheckTrashCleanDetail()
 {
@@ -1464,7 +1593,7 @@ void CUIHandlerTrash::_OnFlashImgEvent()
 	{
 		m_dlg->SetItemIntAttribute(IDC_IMG_TRASH_FLASHING_CLEAN, DEF_KUI_ATT_SUB, m_nFlashCount);
 		++m_nFlashCount;
-		if (m_nFlashCount >= DEF_TRASH_FLASH_NUM)
+		if (m_nFlashCount >= 4)
 			m_nFlashCount = 0;
 	}
 }
@@ -1511,6 +1640,145 @@ void CUIHandlerTrash::_OnUpdateListEvent()
 
 Clear0:
     return;
+}
+BOOL CUIHandlerTrash::_AddItemToSkipCtrl(UINT nCurrentIndex, ULONGLONG uSize)
+{
+    BOOL bRet = FALSE;
+    CString strName;
+    CString strProcess;
+    std::vector<CString> vecProcess;
+    std::vector<CString> vecRunningProcess;
+    std::vector<CString>::iterator ite;
+
+    GetProcessNamesByID(nCurrentIndex, vecProcess);
+
+    if (vecProcess.size() == 0)
+        goto Clear0;
+
+    _GetRunningProcessName(vecProcess, vecRunningProcess);
+
+    for (ite = vecRunningProcess.begin(); ite != vecRunningProcess.end(); ++ite)
+    {
+        LPTRASH_SKIP_ITEM lpItem = NULL;
+        strProcess = (CString)(*ite);
+        _GetItemProcessName(nCurrentIndex, strProcess, strName);
+
+        if (m_skipCtrl.GetItemByProcessName(strProcess, lpItem))
+        {
+            if (lpItem == NULL)
+                continue;
+            if (nCurrentIndex == BROWER_SOGO || nCurrentIndex == VIDEO_SOGOU)
+            {
+                lpItem->uAddSize += uSize;
+            }
+            else if (nCurrentIndex == BROWER_MATHRON)
+            {
+                lpItem->uAddSize += uSize;
+            }
+            continue;
+        }
+
+        m_skipCtrl.AddItem(nCurrentIndex, strName, strProcess, uSize);
+    }
+
+    bRet = TRUE;
+Clear0:
+    return bRet;
+}
+
+BOOL CUIHandlerTrash::_GetItemProcessName(UINT nIndex, CString strProcess, CString& strName)
+{
+    BOOL bRet = FALSE;
+
+    if (nIndex == BROWER_IE)
+    {
+        if (!strProcess.CompareNoCase(_T("iexplore.exe")))
+        {
+            strName = _T("IE 浏览器");
+        }
+        else if (!strProcess.CompareNoCase(_T("360se.exe")))
+        {
+            strName = _T("360安全 浏览器");
+        }
+        else if (!strProcess.CompareNoCase(_T("TTraveler.exe")))
+        {
+            strName = _T("腾讯TT 浏览器");
+        }
+        else if (!strProcess.CompareNoCase(_T("TheWorld.exe")))
+        {
+            strName = _T("世界之窗 浏览器");
+        }
+        else if (!strProcess.CompareNoCase(_T("maxthon.exe")))
+        {
+            //m_trashCtrl.GetItemName(BROWER_MATHRON, strName);
+            strName = _T("遨游 浏览器");
+        }
+        else if (!strProcess.CompareNoCase(_T("sogouexplorer.exe")))
+        {
+            m_trashCtrl.GetItemName(BROWER_SOGO, strName);
+        }
+        else
+        {
+            goto Clear0;
+        }
+    }
+    else if (nIndex == VIDEO_SOGOU)
+    {
+        m_trashCtrl.GetItemName(BROWER_SOGO, strName);
+    }
+    else
+    {
+        m_trashCtrl.GetItemName(nIndex, strName);
+    }
+    
+    bRet = TRUE;
+Clear0:
+    return bRet;
+}
+
+BOOL CUIHandlerTrash::_GetRunningProcessName(std::vector<CString>& vecProcess, std::vector<CString>& vecRunning)
+{
+    BOOL bRet = FALSE;
+    std::vector<CString>::iterator ite;
+    PROCESSENTRY32 pe;
+    DWORD id = 0;
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+
+    if (vecProcess.size() == 0)
+        goto Clear0;
+
+
+    pe.dwSize = sizeof(PROCESSENTRY32);
+    if( !Process32First(hSnapshot,&pe) )
+        goto Clear0;
+
+    while(1)
+    {
+        pe.dwSize = sizeof(PROCESSENTRY32);
+        if( Process32Next(hSnapshot,&pe)==FALSE )
+            break;
+        for (ite = vecProcess.begin(); ite != vecProcess.end(); ++ite)
+        {
+            CString strTemp = (*ite);
+            if (strTemp.CompareNoCase(pe.szExeFile) == 0)
+            {
+                vecRunning.push_back(strTemp);
+                vecProcess.erase(ite);
+                break;
+            }
+        }
+        if (vecProcess.size() == 0)
+            break;
+        
+    }
+
+Clear0:
+    if (hSnapshot != NULL)
+    {
+        CloseHandle(hSnapshot);
+        hSnapshot = NULL;
+    }
+    return bRet;
 }
 //////////////////////////////////////////////////////////////////////////
 void CUIHandlerTrash::_UpdateUI(Trash_status nStatus)
@@ -1598,6 +1866,7 @@ void CUIHandlerTrash::_UpdateUI(Trash_status nStatus)
 				DEF_KUI_ATT_SKIN, 
 				DEF_TRASH_SKIN_FINISH_CANCEL_R);
 			m_dlg->SetItemVisible(IDC_IMG_TRASH_CLEAN_CANCEL, TRUE);
+            m_dlg->SetItemVisible(IDC_IMG_TRASH_RISK, FALSE);
 			m_dlg->SetItemVisible(IDC_IMG_TRASH_FINISH_HEAD, FALSE);
 // 			m_dlg->SetItemStringAttribute(IDC_IMG_TRASH_FINISH_HEAD,
 // 				DEF_KUI_ATT_SKIN,
@@ -1627,7 +1896,7 @@ void CUIHandlerTrash::_UpdateUI(Trash_status nStatus)
 	case TRASH_CLEAN_FINISH:
 		{		
 			m_dlg->SetItemVisible(IDC_IMG_TRASH_CLEAN_CANCEL, FALSE);
-			m_dlg->SetItemVisible(IDC_IMG_TRASH_FINISH_HEAD, TRUE);			
+            m_dlg->SetItemVisible(IDC_IMG_TRASH_RISK, FALSE);
 
 			_SetCleanFinishPageShow();
 			m_dlg->SetItemStringAttribute(IDC_IMG_TRASH_FINISH_STU, 
@@ -1644,11 +1913,11 @@ void CUIHandlerTrash::_UpdateUI(Trash_status nStatus)
             CString strSizeInfo;
             CString strSize;
             GetFileSizeTextString(m_nDelTotalSize, strSize);
-            strSizeInfo.Format(strFormat, strSize);
-
-            m_dlg->SetRichText(IDC_TXT_TRASH_CLEAN_DES, strSizeInfo);
+             
             if (m_skipCtrl.GetSize() == 0)
             {
+                strSizeInfo.Format(strFormat, strSize);
+                m_dlg->SetRichText(IDC_TXT_TRASH_CLEAN_DES, strSizeInfo);
                 m_dlg->SetItemText(IDC_TXT_TRASH_FINISH_THIS, strSize);
 
                 GetFileSizeTextString(m_uConfigTotalSize, strSize);
@@ -1656,8 +1925,15 @@ void CUIHandlerTrash::_UpdateUI(Trash_status nStatus)
             }
             else
             {
+                strFormat = res.GetString("IDS_TRASH_CLEAN_FINISH_HAS_SKIP");
+                strSizeInfo.Format(strFormat, strSize, m_skipCtrl.GetSize());
+                m_dlg->SetRichText(IDC_TXT_TRASH_CLEAN_DES, strSizeInfo);
+                m_dlg->SetItemVisible(IDC_BTN_TRASH_SKIP_RESCAN, FALSE);
                 m_dlg->SetItemVisible(IDC_DLG_TRASH_SKIP, TRUE);
                 m_dlg->SetItemVisible(IDC_DLG_TRASH_FINISH, FALSE);
+                m_dlg->SetItemVisible(IDC_IMG_TRASH_RISK, TRUE);
+                m_dlg->SetItemVisible(IDC_IMG_TRASH_FINISH_HEAD, FALSE);
+                
             }
 
 			_SetCompleteSize();
@@ -1798,7 +2074,7 @@ void CUIHandlerTrash::_InitListConfig()
 		{
 			TrashDetailItem detailItem;
 			detailItem.nItemId = BROWER_SOGO;
-			detailItem.strName = L"搜狗浏览器高速模式";
+			detailItem.strName = L"搜狗浏览器 高速模式";
 			item.vecItems.push_back(detailItem);
 		}
         if (CheckSoftInstalled(BROWER_MATHRON) || 
@@ -1806,7 +2082,7 @@ void CUIHandlerTrash::_InitListConfig()
 		{
 			TrashDetailItem detailItem;
 			detailItem.nItemId = BROWER_MATHRON;
-			detailItem.strName = L"傲游浏览器3极速模式";
+			detailItem.strName = L"傲游浏览器3 极速模式";
 			item.vecItems.push_back(detailItem);
 		}
         if (CheckSoftInstalled(BROWER_FIREFOX) || 
@@ -1856,12 +2132,19 @@ void CUIHandlerTrash::_InitListConfig()
         item.nIconID = 1;
 		item.uItemId = VIDEO_TRASH;
 
+        {
+            TrashDetailItem detailItem;
+            detailItem.nItemId = VIDEO_MEDIA_PALYER;
+            detailItem.strName = L"Windows Media Player";
+            item.vecItems.push_back(detailItem);
+        }
+
         if (CheckSoftInstalled(VIDEO_PPTV) || 
             CheckSoftPathExist(m_configData.GetConfigItemByID(VIDEO_PPTV).strDirectory))
 		{	
 			TrashDetailItem detailItem;
 			detailItem.nItemId = VIDEO_PPTV;
-			detailItem.strName = L"PPTV网络电视";
+			detailItem.strName = L"PPTV 网络电视";
 			item.vecItems.push_back(detailItem);
 		}
         if (CheckSoftInstalled(VIDEO_QQLIVE) || 
@@ -1869,7 +2152,7 @@ void CUIHandlerTrash::_InitListConfig()
 		{	
 			TrashDetailItem detailItem;
 			detailItem.nItemId = VIDEO_QQLIVE;
-			detailItem.strName = L"QQLive网络电视";
+			detailItem.strName = L"QQLive 网络电视";
 			item.vecItems.push_back(detailItem);
 		}
         if (CheckSoftInstalled(VIDEO_XUNLEI) || 
@@ -1933,7 +2216,7 @@ void CUIHandlerTrash::_InitListConfig()
         {
             TrashDetailItem detailItem;
             detailItem.nItemId = VIDEO_PPS;
-            detailItem.strName = L"PPS网络电视";
+            detailItem.strName = L"PPS 网络电视";
             item.vecItems.push_back(detailItem);
         }
 
@@ -1961,7 +2244,7 @@ void CUIHandlerTrash::_InitListConfig()
         {
             TrashDetailItem detailItem;
             detailItem.nItemId = VIDEO_KUGOO;
-            detailItem.strName = L"酷狗音乐盒";
+            detailItem.strName = L"酷狗音乐";
             item.vecItems.push_back(detailItem);
         }
         if (CheckSoftInstalled(VIDEO_PIPI) || 
@@ -2083,6 +2366,13 @@ void CUIHandlerTrash::_InitListConfig()
         item.nIconID = 3;
         item.bShow = TRUE;
         item.uItemId = COMMON_SOFTWARE;
+
+        {
+            TrashDetailItem detailItem;
+            detailItem.nItemId = SOFT_KSAFE;
+            detailItem.strName = L"金山卫士漏洞修复补丁";
+            item.vecItems.push_back(detailItem);
+        }
 
         if (CheckSoftInstalled(WIN_OFFICE))
         {	

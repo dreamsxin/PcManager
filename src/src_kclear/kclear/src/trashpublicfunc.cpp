@@ -1014,7 +1014,7 @@ clean0:
     std::vector<CString>::iterator ite;
     CString strPath;
     
-    GetPorcessNameByID(nCurIndex, vecPro);
+    GetProcessNamesByID(nCurIndex, vecPro);
     
     for (ite = vecPro.begin(); ite != vecPro.end(); ++ite)
     {
@@ -1027,7 +1027,7 @@ Clear0:
     return bRet;
  }
 
- BOOL GetPorcessNameByID(UINT nCurIndex, std::vector<CString>& vecPro)
+ BOOL GetProcessNamesByID(UINT nCurIndex, std::vector<CString>& vecPro)
  {
      BOOL bRet = FALSE;
 
@@ -1036,6 +1036,7 @@ Clear0:
      case BROWER_IE:
          vecPro.push_back(L"iexplore.exe");
          vecPro.push_back(L"360se.exe");
+         vecPro.push_back(L"TTRAVE~1.EXE");
          vecPro.push_back(L"TTraveler.exe");
          vecPro.push_back(L"TheWorld.exe");
          vecPro.push_back(L"maxthon.exe");

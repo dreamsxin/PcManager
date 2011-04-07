@@ -200,6 +200,7 @@ public:
 	VIRTUAL_ENG HRESULT GetTrustPlugDetailInfo(PLUG_SCAN_RESULT** pInfo, DWORD* pdwSize) = 0;
 	VIRTUAL_ENG HRESULT	SetCLSIDNoTrust(LPCTSTR lpCLSID) = 0;
 	VIRTUAL_ENG HRESULT	SetReturnTrustScanRes(BOOL bRet) = 0;
+	VIRTUAL_ENG HRESULT	LoadLibrary() = 0;//hub
 };
 struct PLUG_EXTEND_INFO
 {
@@ -269,6 +270,7 @@ public:
 		pfnFree		= NULL;
 		pfnGetCheck = NULL;
 		pfnFreeCheck = NULL;
+		m_pPlugEng   = NULL;
 		CString strDllPath = strAppPath;
 
 		if (TRUE == strAppPath.IsEmpty())
@@ -318,15 +320,25 @@ public:
 
 	IPlugEng* GetPlugEngine()
 	{
-		if ( pfnGet != NULL )
-			return pfnGet(VERSION_PLUG_INTERFACE_HIGH);
-
-		return NULL;
+// 		if ( pfnGet != NULL )
+// 			return pfnGet(VERSION_PLUG_INTERFACE_HIGH);
+// 
+// 		return NULL;
+		if (m_pPlugEng == NULL)
+		{
+			if ( pfnGet != NULL )
+				m_pPlugEng = pfnGet(VERSION_PLUG_INTERFACE_HIGH);
+		}		
+		return m_pPlugEng;
 	}
+	
 	VOID FreePlugEngine(IPlugEng* pEng)
 	{
 		if ( pfnFree != NULL )
+		{
 			pfnFree(pEng);
+			m_pPlugEng = NULL;
+		}
 	}
 
 	ICheckInterface* GetCheckInterface()
@@ -348,6 +360,7 @@ protected:
 	PFNFreeEngine		pfnFree;
 	PFNFreeCheckEngine	pfnFreeCheck;
 	PFNGetCheckEngine	pfnGetCheck;
+	IPlugEng*			m_pPlugEng;//hub
 };
 
 class CPlugNullCallback : public IEngineCallback

@@ -653,7 +653,13 @@
 #define IDC_CTR_TRASH_SKIP_MAIN             (ID_TRASH_CLEAN_BASE+41)
 #define IDC_LNK_TRASH_CLEAN_DETAIL          (ID_TRASH_CLEAN_BASE+42)
 #define IDC_BTN_TRASH_RESCAN                (ID_TRASH_CLEAN_BASE+43)
+#define IDC_BTN_TRASH_SKIP_RESCAN           (ID_TRASH_CLEAN_BASE+44)
 
+#define IDC_BTN_PUSH_APP4                   (ID_TRASH_CLEAN_BASE+45)
+#define IDC_BTN_PUSH_APP5                   (ID_TRASH_CLEAN_BASE+46)
+#define IDC_BTN_PUSH_APP6                   (ID_TRASH_CLEAN_BASE+47)
+
+#define IDC_IMG_TRASH_RISK                  (ID_TRASH_CLEAN_BASE+48)
 
 // œµÕ≥≈Ã ›…Ì
 #define ID_SYSTEM_SLIM_BASE                 7700

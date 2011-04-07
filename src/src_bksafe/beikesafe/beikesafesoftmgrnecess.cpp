@@ -1019,7 +1019,7 @@ VOID CBeikeSafeSoftmgrNecessHandler::OnBtnQuerySoft()
 				strSearch, m_arrRightList.GetSize());
 
 			m_pMainDlg->SetItemVisible(IDC_SOFT_NECESS_DIV_SEARCH_TIP,TRUE);
-			m_pMainDlg->SetItemAttribute(IDC_SOFTMGR_SOFTLIST_NECESS, "pos", "0,27,-0,-0");
+			m_pMainDlg->SetItemAttribute(IDC_SOFTMGR_SOFTLIST_NECESS, "pos", "0,24,-0,-0");
 
 			m_pMainDlg->SetItemVisible(IDC_SOFT_NECESS_DIV_NO_FIND, FALSE);
 			m_pMainDlg->SetItemVisible(IDC_SOFTMGR_SOFTLIST_NECESS, TRUE);

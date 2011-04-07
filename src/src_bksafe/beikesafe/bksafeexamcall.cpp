@@ -127,6 +127,12 @@ void CBkSafeExamCaller::FixItem(int nItemID, void* pData /*= NULL*/)
             {
                 strNavigate += L"scan";
             }
+
+			if (0 == strNavigate.CompareNoCase(L"ui_protection_common"))
+			{
+				strNavigate = L"ui_IEFix_IEFixSm";
+			}
+
 			_Module.Navigate(strNavigate);
 		}
 		

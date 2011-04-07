@@ -315,6 +315,11 @@ void CDlgViewDetail::OnBkBtnCancelIgnore()
 	_UpdateIgnoredTitle();
 }
 
+void CDlgViewDetail::OnBkBtnExport()
+{
+    ::SendMessage(::GetParent(m_hWnd), MSG_USER_VUL_EXPORT, NULL, NULL);
+}
+
 void CDlgViewDetail::_AppendItem2ListCtrl( CListViewCtrlEx &listCtrl, T_VulListItemData * pVulItem )
 {
 	if(m_bDisplayInstallDate)

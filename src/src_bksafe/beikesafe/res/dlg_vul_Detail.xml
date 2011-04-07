@@ -54,5 +54,6 @@
 			</tab>
 		</tabctrl>
 		<button id="20503" pos="-100,-45,-20,-23" class="normalbtn">关闭</button>
+		<text id="2001" pos="-115,10" class="linktext" crtext="FFFFFF">导出漏洞信息</text>
 	</body>
 </layer>

@@ -13,6 +13,7 @@
 #define CFG_VALUE_SCAN_EXT_FASTSCAN     L"ExtFastScan"
 #define CFG_VALUE_SCAN_AUTO_EXTSCAN     L"AutoExtScan"
 #define CFG_VALUE_SCAN_IS_NORMAL_COMPLETE     L"NormalComplete"
+#define CFG_VALUE_SCAN_TRUSTPLUG_NUM		  L"TrustPlugNum"
 
 #define CFG_IEFIX_SETTING       L"iefixcfg.ini"
 #define CFG_KEY_FIXLIST             L"fixlist"
@@ -487,6 +488,16 @@ public:
 	static void SetNormalCompleteScan( BOOL bNormalComplete )//hub
 	{
 		_SaveConfig(CFG_VIRSCAN_SETTING, CFG_KEY_SCAN, CFG_VALUE_SCAN_IS_NORMAL_COMPLETE, bNormalComplete );
+	}
+	static void SetTrustPlugNum(int num)
+	{
+		_SaveConfig(CFG_VIRSCAN_SETTING, CFG_KEY_SCAN, CFG_VALUE_SCAN_TRUSTPLUG_NUM, num );
+	}
+	static int GetTrustPlugNum()
+	{
+		int nValue = 0;
+		_LoadConfig(CFG_VIRSCAN_SETTING, CFG_KEY_SCAN, CFG_VALUE_SCAN_TRUSTPLUG_NUM, nValue, 0);
+		return nValue;
 	}
 
 	static BOOL GetAutoExpandScan()

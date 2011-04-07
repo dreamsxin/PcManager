@@ -227,10 +227,14 @@
 
 <png name="arp_install_png" src="66"/>
 
-<png name="btn_onekeyopt" src="20025" subwidth="98"/>
+<png name="btn_onekeyopt" src="20025" subwidth="151"/>
 <png name="btn_onekeyopt_continue" src="20026" subwidth="98"/>
+<!--
 <png name="onekeyopt_scan" src="20027" subwidth="48"/>
+-->
+<png name="onekeyopt_scan" src="12004" subwidth="73"/>
 <png name="scanscroll" src="20028" subwidth="370"/>
+<png name="onekeyopt_status" src="12003" subwidth="73"/>
 <!-- -->
 <imghorzex name="vul_head_back" src="12001"/>
 <png name="vul_repair" src="12002" subwidth="151"/>

@@ -151,11 +151,11 @@ HRESULT CBkServiceCallImp::Execute(
     LPVOID pvEnvironment = NULL;
 	BOOL bRet = FALSE;
 
-    if ( !VerifyExePath( strExePath ) )
-    {
-        hr = E_ACCESSDENIED;
-        goto Exit0;
-    }
+//    if ( !VerifyExePath( strExePath ) )
+//    {
+//        hr = E_ACCESSDENIED;
+//        goto Exit0;
+//    }
 #ifdef ENABLE_SIGN_CHECK
     hr = CSignVerifer::Instance().VerifyFile( strExePath );
     if ( FAILED ( hr ) )

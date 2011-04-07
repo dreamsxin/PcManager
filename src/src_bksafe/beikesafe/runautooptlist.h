@@ -448,6 +448,9 @@ public:
 		_ARUN_ITEM_DATA*	pData = GetItemParamData(lpDrawItemStruct->itemID);
 		CDCHandle			dcx;
 		CRect				rcItem = lpDrawItemStruct->rcItem;
+		CRect				rcItemTemp;
+		GetClientRect(rcItemTemp);
+		rcItem.right = rcItem.left + rcItemTemp.Width();
 		DWORD				nOldClr;
 		BOOL				bSelect = FALSE ;
 		DWORD				nTformat = DT_VCENTER|DT_LEFT|DT_SINGLELINE|DT_END_ELLIPSIS;
@@ -485,7 +488,6 @@ public:
 				CRect	rcSecond;
 				CRect	rcThird;
 				CRect	rcFourth;
-				CRect	rcItem = lpDrawItemStruct->rcItem;
 				GetSubItemRect(lpDrawItemStruct->itemID,0,LVIR_LABEL,&rcFirst);
 				GetSubItemRect(lpDrawItemStruct->itemID,1,LVIR_LABEL,&rcSecond);
 				GetSubItemRect(lpDrawItemStruct->itemID,2,LVIR_LABEL,&rcThird);

@@ -617,7 +617,13 @@ void DownloadCallBack(DTManager_Stat st, void* tk,void* para)
 						pData->m_bContinue = FALSE;
 						pDlg->m_pDTManager->PauseTask(tk);
 					}
+					
 
+					if( tk != NULL )
+					{
+						IDownload* pDownLoad = (IDownload*)tk;
+						nErr = (int)pDownLoad->LastError();
+					}
 
 					pDlg->_RefershItemBySoftIDWorkerThread(pData->m_strSoftID);
 //#ifdef _DEBUG

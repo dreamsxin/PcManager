@@ -207,9 +207,9 @@ BOOL CBeikeVulfixHandler::Init(HWND hMainWnd, HWND hWndParent)
 	{
 //		m_wndListCtrlVul.InsertColumn(0, _T("ѡ"), LVCFMT_LEFT, 26);
         m_wndListCtrlVul.InsertColumn(0, BkString::Get(IDS_VULFIX_5020), LVCFMT_CENTER, 460);
-        m_wndListCtrlVul.InsertColumn(1, BkString::Get(IDS_VULFIX_5019), LVCFMT_LEFT, 100);
-        m_wndListCtrlVul.InsertColumn(2, BkString::Get(IDS_VULFIX_5017), LVCFMT_RIGHT, 100);
-        m_wndListCtrlVul.InsertColumn(3, BkString::Get(IDS_VULFIX_5021), LVCFMT_RIGHT, 100);
+        m_wndListCtrlVul.InsertColumn(1, BkString::Get(IDS_VULFIX_5019), LVCFMT_CENTER, 100);
+        m_wndListCtrlVul.InsertColumn(2, BkString::Get(IDS_VULFIX_5017), LVCFMT_CENTER, 100);
+        m_wndListCtrlVul.InsertColumn(3, BkString::Get(IDS_VULFIX_5021), LVCFMT_CENTER, 100);
 //		m_wndListCtrlVul.InsertColumn(4, BkString::Get(IDS_VULFIX_5022), LVCFMT_LEFT, 70);
 		m_wndListCtrlVul.SetItemHeight(30);
 	}
@@ -1998,6 +1998,12 @@ LRESULT CBeikeVulfixHandler::OnSelectedChanged(UINT uMsg, WPARAM wParam, LPARAM 
     SetItemText(IDC_TXT_VULFIX_SELECT_NUM, strCount);
     SetItemText(IDC_TXT_VULFIX_SELCET_SIZE, strSize);
 
+    return TRUE;
+}
+
+LRESULT CBeikeVulfixHandler::OnBkBtnExportMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    OnBkBtnExport();
     return TRUE;
 }
 //////////////////////////////////////////////////////////////////////////

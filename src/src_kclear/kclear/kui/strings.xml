@@ -48,12 +48,22 @@
 <string id="IDS_SET_DEST_DIR_TITLE" value="请您选择搬移到后的位置：" />
 
 <!-- 新版垃圾清理 -->
+<!--
 <string id="IDS_PUSH_APP1_NAV" value="ui_softmgr_softuninstall"/>
 <string id="IDS_PUSH_APP1_NAME" value="softmgr_softuninstall" />
+-->
+<string id="IDS_PUSH_APP1_NAV" value="ui_sysopt_ksafetools"/>
+<string id="IDS_PUSH_APP1_NAME" value="sysopt_ksafetools" />
 <string id="IDS_PUSH_APP2_NAV" value="ui_pluginscan"/>
 <string id="IDS_PUSH_APP2_NAME" value="pluginscan" />
 <string id="IDS_PUSH_APP3_NAV" value="ui_sysopt_runopt"/>
 <string id="IDS_PUSH_APP3_NAME" value="sysopt_runopt" />
+<string id="IDS_PUSH_APP4_NAV" value="ui_sysopt_ksafeperfopt"/>
+<string id="IDS_PUSH_APP4_NAME" value="sysopt_ksafeperfopt" />
+<string id="IDS_PUSH_APP5_NAV" value="ui_kclear_clrshoushen"/>
+<string id="IDS_PUSH_APP5_NAME" value="kclear_clrshoushen" />
+<string id="IDS_PUSH_APP6_NAV" value="ui_virscan_sysfix"/>
+<string id="IDS_PUSH_APP6_NAME" value="virscan_sysfix" />
 
 <string id="IDS_TRASH_LAST_INFO" value="您上次清理于%s，清理了 %s 垃圾。"/>
 <string id="IDS_TRASH_LAST_TIME" value="自%s至今，已累计帮助您节省了 %s 空间。"/>
@@ -79,6 +89,8 @@
 <string id="IDS_TRASH_FIRSTDAY" value="已累计为您释放磁盘空间 %s 。"/>
 <string id="IDS_TRASH_TIME_A_NUM" value="&lt;c color=676767&gt;清理用时：&lt;c color=FB0000&gt;%.2f秒&lt;/c&gt; &lt;sp/&gt;&lt;sp/&gt;&lt;sp/&gt;垃圾文件数：&lt;c color=FB0000&gt;%s个&lt;/c&gt; &lt;/c&gt;" />
 <string id="IDS_TRASH_DETAIL" value="金山卫士 - 垃圾清理详情"/>
+<string id="IDS_TRASH_CLEAN_FINISH_HAS_SKIP" value="共为您释放磁盘空间&lt;sp/&gt; &lt;c color=FB0000&gt;%s&lt;/c&gt;，检测到&lt;sp/&gt; &lt;c color=FB0000&gt;%d&lt;/c&gt;&lt;sp/&gt;个正在运行的程序！"/>
+
 <!-- 系统瘦身 -->
 <string id="" value=""/>
 </strings>

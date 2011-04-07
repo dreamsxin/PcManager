@@ -249,6 +249,13 @@ void KTrashOnekeyTask::RunCleanFile()
 
         if (dirwork.bDefaultSelect)
         { 
+            BOOL bRunning = IsItemProcessRunning(dirwork.id);
+
+            if (bRunning)
+            {
+                continue;
+            }
+
             nCleanCount++;
             std::vector<CString>::iterator iter = dirwork.strDirectory.begin();
             if (dirwork.strFriendName == L"ªÿ ’’æ")

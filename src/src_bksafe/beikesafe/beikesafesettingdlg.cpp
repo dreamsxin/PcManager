@@ -2130,9 +2130,14 @@ UINT_PTR CBeikeSafeSettingNavigator::DoModal(int nPage/* = SettingPageCommon*/, 
 
 void CBeikeSafeSettingDlg::OnLblSettingWhiteList()
 {
-    CBeikeSafeVirScanWhiteListDlg dlg;
-
-    dlg.DoModal();
+//     CBeikeSafeVirScanWhiteListDlg dlg;
+// 
+//     dlg.DoModal();
+	if (m_dlg)
+	{
+		//调用查杀历史记录
+		m_dlg->ShowVirusTrustList();
+	}
 }
 
 void CBeikeSafeSettingDlg::OnClickNetRemindDay( void )

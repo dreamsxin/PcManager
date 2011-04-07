@@ -31,16 +31,18 @@
 #define DEF_TRASH_SKIN_SCAN					_T("trash_scanning")
 #define DEF_TRASH_SKIN_CLEAR				_T("trash_cleaning")
 
-#define DEF_TRASH_FLASH_NUM					12
+#define DEF_TRASH_FLASH_NUM					10
 #define DEF_TRASH_FLASH_TIME				50 // ms
-#define DEF_TRASH_PRO_TIME					100 // ms
+#define DEF_TRASH_PRO_TIME					200 // ms
 #define DEF_TRASH_PROGRESS_COUNT			24
 
 
 #include "kclearmsg.h"
 
 //////////////////////////////////////////////////////////////////////////
+BOOL CALLBACK EnumWndProc(HWND hwnd, LPARAM lParam);
 
+extern UINT g_nCloseID;
 //////////////////////////////////////////////////////////////////////////
 class CUIHandlerTrash : public ITraverseFile
 {
@@ -140,6 +142,9 @@ public:
 		KUI_NOTIFY_ID_COMMAND(IDC_BTN_PUSH_APP1,        OnClickPushApp1)
 		KUI_NOTIFY_ID_COMMAND(IDC_BTN_PUSH_APP2,        OnClickPushApp2)
 		KUI_NOTIFY_ID_COMMAND(IDC_BTN_PUSH_APP3,        OnClickPushApp3)
+        KUI_NOTIFY_ID_COMMAND(IDC_BTN_PUSH_APP4,        OnClickPushApp4)
+        KUI_NOTIFY_ID_COMMAND(IDC_BTN_PUSH_APP5,        OnClickPushApp5)
+        KUI_NOTIFY_ID_COMMAND(IDC_BTN_PUSH_APP6,        OnClickPushApp6)
 
 		KUI_NOTIFY_ID_COMMAND(IDC_BTN_TRASH_BEGIN_SCAN, OnClickScanBegin)
 		KUI_NOTIFY_ID_COMMAND(IDC_CHK_TRASH_CHECK_ALL,	OnCheckAll)
@@ -151,7 +156,9 @@ public:
         KUI_NOTIFY_ID_COMMAND(IDC_BTN_TRASH_RESCAN,     OnRescan)
         KUI_NOTIFY_ID_COMMAND(IDC_BTN_TRASH_TIPS_CLOSE,	OnTipsClose)
         KUI_NOTIFY_ID_COMMAND(IDC_LNK_TRASH_CLEAN_DETAIL,OnCheckTrashCleanDetail)
-		KUI_NOTIFY_REALWND_RESIZED(IDC_CTR_TRASH_MAIN,	OnCtrlReSize)	
+		KUI_NOTIFY_ID_COMMAND(IDC_BTN_TRASH_SKIP_RESCAN, OnSkipRescan)
+
+        KUI_NOTIFY_REALWND_RESIZED(IDC_CTR_TRASH_MAIN,	OnCtrlReSize)	
 	KUI_NOTIFY_MAP_END()
 
 	BEGIN_MSG_MAP_EX(CUIHandlerTrash)
@@ -174,6 +181,10 @@ public:
 
 		MESSAGE_HANDLER(WM_SELCETED_CHECKED_CHANGE, OnCheckedAllChanged)
         MESSAGE_HANDLER(WM_TRASH_CHECK_DETAIL,      OnCheckItemDetail)
+
+        MESSAGE_HANDLER(WM_TRASH_RESCAN,            OnTrashRescan)
+
+        MESSAGE_HANDLER(WM_TRASH_CLOSE_TASK,        OnCloseItemTask)
 	END_MSG_MAP()
 
 	void OnTimer(UINT_PTR nIDEvent);
@@ -193,6 +204,10 @@ public:
 
 	LRESULT OnCheckedAllChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnCheckItemDetail(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    
+    LRESULT OnCloseItemTask(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+    LRESULT OnTrashRescan(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnOneKeyClean(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnInitilize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -202,6 +217,9 @@ public:
 	void OnClickPushApp1();
 	void OnClickPushApp2();
 	void OnClickPushApp3();
+    void OnClickPushApp4();
+    void OnClickPushApp5();
+    void OnClickPushApp6();
 
 	void OnClickCancelWork();
 	void OnClickBeginClean();
@@ -215,6 +233,9 @@ public:
 	void OnTipsClose();
     
     void OnCheckTrashCleanDetail();
+
+    void OnSkipRescan();
+
 protected:
 
 	void _InitListConfig();
@@ -246,6 +267,9 @@ protected:
 
 	void _SetNeedEnableItems(BOOL bEnbale);
 
+    BOOL _AddItemToSkipCtrl(UINT nCurrentIndex, ULONGLONG uSize);
+    BOOL _GetItemProcessName(UINT nIndex, CString strProcess, CString& strName);
+    BOOL _GetRunningProcessName(std::vector<CString>& vecProcess, std::vector<CString>& vecRunning);
 private:
 
     KLock m_lock;

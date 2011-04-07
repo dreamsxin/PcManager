@@ -205,8 +205,6 @@ protected:
 			CString	strValue;
 			while (SHEnumStringValue(hKey,iIndex++,strValue,strData)==ERROR_SUCCESS)
 			{
-				if (strData.IsEmpty())//如果路径为空，会被CommandLineToArgvW解析到当前路径,所以就跳过
-					continue;
 				REG_RUN_INFO	runinfo;
 				runinfo.strName	= strValue;
 				runinfo.strPath	= strData;		

@@ -280,9 +280,14 @@ BOOL CKscMainDlg::OnNavigate(const CString& strNavigate)
         nTabIndex = 3;
     }
     else if (!strNavigate.CompareNoCase(KCLEARNS_BIGCLEANER) ||
-             !strNavigate.CompareNoCase(BKSFNS_SYSOPT_CLR_SHOUSHEN))
+             !strNavigate.CompareNoCase(BKSFNS_SYSOPT_BIG_FILE))
     {
         nTabIndex = 4;
+    }
+    else if (!strNavigate.CompareNoCase(KCLEARNS_SYSTEMSLIM) ||
+             !strNavigate.CompareNoCase(BKSFNS_SYSOPT_CLR_SHOUSHEN))
+    {
+        nTabIndex = 5;
     }
     else if (!strNavigate.CompareNoCase(L"clrrubscan"))
     {

@@ -9,8 +9,8 @@
 #include "buildcfg.h"
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 2,0,0,1388
-PRODUCTVERSION 2,0,0,1388
+FILEVERSION 2,0,0,1393
+PRODUCTVERSION 2,0,0,1393
 FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 FILEFLAGS VS_FF_DEBUG
@@ -27,12 +27,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kingsoft Corporation"
             VALUE "FileDescription", VI_FILEDESCRIPTION
-            VALUE "FileVersion", "2.0.0.1388"
+            VALUE "FileVersion", "2.0.0.1393"
             VALUE "InternalName", VI_INTERNALNAME
             VALUE "LegalCopyright", "Copyright (C) 1998-2011 Kingsoft Corporation"
             VALUE "OriginalFilename", VI_ORIGINALFILENAME
             VALUE "ProductName", "Ω…ΩŒ¿ ø"
-            VALUE "ProductVersion", "2.0.0.1388"
+            VALUE "ProductVersion", "2.0.0.1393"
         END
     END
     BLOCK "VarFileInfo"

@@ -27,8 +27,11 @@
 #define DEF_TRASH_FLASH_EVENT               (WM_USER+700)
 #define DEF_TRASH_PROGRESS_EVENT            (WM_USER+701)
 #define DEF_TRASH_LIST_UPDATE_EVENT         (WM_USER+702)
+#define DEF_TRASH_SKIP_RESCAN_EVENT         (WM_USER+703)
 #define WM_CLEAR_SETTIING                   (WM_USER+6000)
 #define WM_FINISH_INITILIZE                 (WM_USER+6001)
+#define WM_TRASH_CLOSE_TASK                 (WM_USER+6002)
+#define WM_TRASH_RESCAN                     (WM_USER+6003)
 
 //////////////////////////////////////////////////////////////////////////
 // œµÕ≥≈Ã ›…Ì

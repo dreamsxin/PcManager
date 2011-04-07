@@ -1,4 +1,4 @@
-include\buildcfg\VersionNo.rc2,0,2.6.2,Kingsoft Corporation,0
+include\buildcfg\VersionNo.rc2,0,2.6.3,Kingsoft Corporation,0
 include\ext_buildcfg\kplugextno.rc2,0,2.0.0,Kingsoft Corporation,0
 include\inst_buildcfg\knsdinstno.rc2,0,1.0.0,Kingsoft Corporation,0
 include\keng_buildcfg\kengno.rc2,0,1.1.0,Kingsoft Corporation,0

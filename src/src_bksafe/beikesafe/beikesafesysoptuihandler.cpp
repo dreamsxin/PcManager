@@ -664,6 +664,7 @@ BOOL CBeikeSafeSysOptUIHandler::OnBkSysOptSelChange( int nTabItemIDOld, int nTab
 	m_dlg->SetItemVisible(IDC_DIV_SYSOPT_SYSTOOLS, nTabItemIDNew == 4);
 	m_dlg->SetItemVisible(IDC_DIV_AUTOOPT, (nTabItemIDNew == 0));
 	m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP, (nTabItemIDNew == 0));
+	m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP2, (nTabItemIDNew == 0));
 	m_dlg->SetItemVisible(IDC_DIV_RUN_TOPTIP, (nTabItemIDNew != 0));
 	m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_BTM , nTabItemIDNew == 0);
 
@@ -914,6 +915,7 @@ void CBeikeSafeSysOptUIHandler::InitAutoOptList()
 			m_dlg->SetItemVisible(IDC_CHECKBOX_AUTOOPT_ALL, FALSE);
 			m_dlg->SetItemVisible(IDC_LST_RUN_AUTOOPT, FALSE);
 			m_dlg->EnableItem(IDC_CHECKBOX_AUTOOPT_ALL, FALSE);
+			m_dlg->SetItemVisible(IDC_LNK_AUTOOPT_TOP_REFRESH, TRUE);
 		}
 		else
 		{
@@ -926,8 +928,9 @@ void CBeikeSafeSysOptUIHandler::InitAutoOptList()
 			m_dlg->SetItemVisible(IDC_CHECKBOX_AUTOOPT_ALL, TRUE);
 			m_dlg->EnableItem(IDC_CHECKBOX_AUTOOPT_ALL, TRUE);
 			m_dlg->SetItemVisible(IDC_BTN_RUN_AUTOOPT_DO, TRUE);
+			m_dlg->SetItemVisible(IDC_LNK_AUTOOPT_TOP_REFRESH, TRUE);
 			m_dlg->SetItemVisible(IDC_LST_RUN_AUTOOPT, TRUE);
-			m_dlg->SetItemStringAttribute(IDC_BTN_RUN_AUTOOPT_DO, "skin", L"btn_onekeyopt");
+//			m_dlg->SetItemStringAttribute(IDC_BTN_RUN_AUTOOPT_DO, "skin", L"vul_repair");
 			m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_NO_OPTITEM, FALSE);
 			m_dlg->EnableItem(IDC_CHECKBOX_AUTOOPT_ALL, TRUE);
 		}
@@ -955,7 +958,7 @@ void CBeikeSafeSysOptUIHandler::_ShowOneKeyOptDoing()
 {
 	static int nPos = 0;
 	++nPos;
-	m_dlg->SetItemIntAttribute(IDC_IMG_AUTOOPT_TOP_DOING, "sub", (nPos)%12);
+	m_dlg->SetItemIntAttribute(IDC_IMG_AUTOOPT_TOP_DOING, "sub", (nPos)%10);
 	m_dlg->SetItemIntAttribute(IDC_IMG_ONEKEYOPT_PROCESS_ANIMATION, "sub", (nPos)%24);
 }
 
@@ -963,7 +966,7 @@ void CBeikeSafeSysOptUIHandler::_ShowOneKeyOptScanning()
 {
 	static int nPos = 0;
 	++nPos;
-	m_dlg->SetItemIntAttribute(IDC_IMG_ONEKEYOPT_SCAN_ANIMATION, "sub", (nPos)%12);
+	m_dlg->SetItemIntAttribute(IDC_IMG_ONEKEYOPT_SCAN_ANIMATION, "sub", (nPos)%10);
 	m_dlg->SetItemIntAttribute(IDC_IMG_ONEKEYOPT_PROCESS_ANIMATION2, "sub", (nPos)%24);
 }
 
@@ -989,6 +992,7 @@ void CBeikeSafeSysOptUIHandler::OnBkBtnRefresh()
 	m_RunList.ClearAll();
 	m_dlg->SetItemVisible(IDC_DIV_RUNOPT_BOTTOM, FALSE);
 	m_dlg->SetItemVisible(IDC_BTN_RUN_AUTOOPT_DO, FALSE);
+	m_dlg->SetItemVisible(IDC_LNK_AUTOOPT_TOP_REFRESH, FALSE);
 	m_dlg->EnableItem(IDC_LNK_AUTOOPT_TOP_REFRESH, FALSE);
 	m_dlg->EnableItem(IDC_LNK_SHOW_IGNORED, FALSE);
 	m_dlg->EnableItem(IDC_LNK_AUTOOPT_CANCELALL, FALSE);
@@ -1031,6 +1035,7 @@ void CBeikeSafeSysOptUIHandler::OnBkBtnOnkeyOpt()
 	m_dlg->EnableItem(IDC_CHECKBOX_AUTOOPT_ALL, FALSE);
 
 	m_dlg->EnableItem(IDC_LNK_AUTOOPT_TOP_REFRESH, FALSE);
+	m_dlg->SetItemVisible(IDC_LNK_AUTOOPT_TOP_REFRESH, FALSE);
 	m_dlg->EnableItem(IDC_LNK_SHOW_IGNORED, FALSE);
 	m_dlg->EnableItem(IDC_LNK_AUTOOPT_CANCELALL, FALSE);
 	m_hOptimizeThread = ::CreateThread(NULL, 0, &CBeikeSafeSysOptUIHandler::OneKeyOptProc, this, 0, NULL);
@@ -1130,7 +1135,7 @@ LRESULT CBeikeSafeSysOptUIHandler::OnOnekeyOptEnd(UINT uMsg, WPARAM wParam, LPAR
 		m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP_NOITEM, FALSE);
 		strTopTip.Format(BkString::Get(IDS_SYSOPT_4075), nRunItemCount);
 		m_dlg->SetRichText(IDC_TXT_AUTOOPT_TOP_OPT_ALL, strTopTip);
-		m_dlg->SetItemStringAttribute(IDC_BTN_RUN_AUTOOPT_DO, "skin", L"btn_onekeyopt");
+//		m_dlg->SetItemStringAttribute(IDC_BTN_RUN_AUTOOPT_DO, "skin", L"vul_repair");
 		m_dlg->EnableItem(IDC_CHECKBOX_AUTOOPT_ALL, FALSE);
 		m_bOpting = FALSE;
 	}
@@ -1142,7 +1147,7 @@ LRESULT CBeikeSafeSysOptUIHandler::OnOnekeyOptEnd(UINT uMsg, WPARAM wParam, LPAR
 			m_bOpting = FALSE;
 		}
 		m_dlg->EnableItem(IDC_BTN_RUN_AUTOOPT_DO, TRUE);
-		m_dlg->SetItemStringAttribute(IDC_BTN_RUN_AUTOOPT_DO, "skin", L"btn_onekeyopt_continue");
+//		m_dlg->SetItemStringAttribute(IDC_BTN_RUN_AUTOOPT_DO, "skin", L"vul_repair");
 		m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP_DONE_PART, TRUE);
 		m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP_DOING, FALSE);
 		m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP_INIT, FALSE);
@@ -1154,6 +1159,7 @@ LRESULT CBeikeSafeSysOptUIHandler::OnOnekeyOptEnd(UINT uMsg, WPARAM wParam, LPAR
 
 	m_dlg->KillTimer(TIMER_ID_RUNOPT_AUTOOPT_TOPTIP);
 	m_dlg->SetItemVisible(IDC_DIV_AUTOOPT_TOP_DOING, FALSE);
+	m_dlg->SetItemVisible(IDC_LNK_AUTOOPT_TOP_REFRESH, TRUE);
 	m_dlg->EnableItem(IDC_LNK_AUTOOPT_TOP_REFRESH, TRUE);
 	m_dlg->EnableItem(IDC_LNK_SHOW_IGNORED, TRUE);
 	m_dlg->EnableItem(IDC_LNK_AUTOOPT_CANCELALL, TRUE);
@@ -1337,22 +1343,22 @@ void CBeikeSafeSysOptUIHandler::SaveIgnoreID(int nNewIgnoreID)
 
 void CBeikeSafeSysOptUIHandler::LoadIgnoredID()
 {
-	m_arrayIgnoredID.RemoveAll();
 	CIniFile ini_IgnoredList(m_strIgnoredIniPath);
 	CString strGetValue;
 	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN, KEY_IGNOREDLIST_COMMENT, strGetValue.GetBuffer(65536), 65536);
 	strGetValue.ReleaseBuffer(65536);
 
 	WCHAR *szValue;
-	WCHAR szTemp[10];
+	WCHAR szTemp[50];
+	m_arrayIgnoredID.RemoveAll();
 	szValue = strGetValue.GetBuffer();
 	strGetValue.ReleaseBuffer();
-	WCHAR* p = wcstok(szValue,L"|");
-	while(p)
+	WCHAR* pToken = wcstok(szValue, L"|");
+	while(pToken)
 	{
-		wcscpy_s(szTemp,p);
+		wcscpy_s(szTemp, pToken);
 		m_arrayIgnoredID.Add(_wtoi(szTemp));
-		p = wcstok(NULL,L"|");
+		pToken = wcstok(NULL,L"|");
 	}
 }
 

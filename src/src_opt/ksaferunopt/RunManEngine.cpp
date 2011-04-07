@@ -98,8 +98,8 @@ void LoadIgnoredID(CSimpleArray<int>& arrayIgnoredID)
 	strIgnoredIniPath.Append(IGNORED_FILEPATH);
 	CIniFile ini_IgnoredList(strIgnoredIniPath);
 	CString strGetValue;
-	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN,KEY_IGNOREDLIST_COMMENT,strGetValue.GetBuffer(MAX_PATH),MAX_PATH);
-	strGetValue.ReleaseBuffer(MAX_PATH);
+	ini_IgnoredList.GetStrValue(SEC_IGNOREDLIST_MAIN,KEY_IGNOREDLIST_COMMENT,strGetValue.GetBuffer(65536),65536);
+	strGetValue.ReleaseBuffer(65536);
 
 	WCHAR *szValue;
 	WCHAR szTemp[10];
@@ -228,6 +228,8 @@ void CRunManEngine::EnumRegRunner(BOOL bEnable, CRunRegEnumer* pEnumer, IEnumRun
 			CKsafeRunInfo	cinfo;
 			CRunRegEnumer::REG_RUN_INFO&	runreginfo = pEnumer->GetItem(i);
 
+			if (runreginfo.strPath.IsEmpty())//如果路径为空，会被CommandLineToArgvW解析到当前路径,所以就跳过
+				continue;
 			if (pFilter != NULL)
 			{
 				BOOL	bExist = FALSE;
@@ -308,6 +310,9 @@ void CRunManEngine::EnumDirRunner( BOOL bEnable, CRunDirEnumer* pEnumer, IEnumRu
 		{
 			CKsafeRunInfo	cinfo;
 			CRunDirEnumer::RUN_DIR_INFO&	rundirinfo = pEnumer->GetItem(i);
+
+			if (rundirinfo.strPath.IsEmpty())//如果路径为空，会被CommandLineToArgvW解析到当前路径,所以就跳过
+				continue;
 
 			if (pFilter != NULL)
 			{
@@ -449,6 +454,9 @@ Sub_Tasks:
 			{
 				CKsafeRunInfo	cinfo;
 				CTaskSchedularEnumer::TASK_JOB_INFO&	jobInfo = taskEnumer.GetItem(i);
+
+				if (jobInfo.strExePath.IsEmpty())//如果路径为空，会被CommandLineToArgvW解析到当前路径,所以就跳过
+					continue;
 
 				if (m_wow64Switcher.IsWin64())
 				{

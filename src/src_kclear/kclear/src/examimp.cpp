@@ -19,6 +19,8 @@ bool __stdcall HasTrash()
     KExamScanner trashscanner;
     CString strDebugMsg;
 
+    SetErrorMode(SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
+
     trashscanner.StartScan();
     
     strDebugMsg.Format(_T("%I64d"), trashscanner.GetFileSize());
@@ -40,6 +42,8 @@ bool __stdcall SetTrashNotifyHwnd(HWND hNotifyWnd)
     BOOL bAlreadyExisted = FALSE;
     HRESULT hr;
     CAtlFileMapping<HWND> *pNotifyWndMapping = NULL;
+
+    SetErrorMode(SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
 
     pNotifyWndMapping = new CAtlFileMapping<HWND>();
     if (!pNotifyWndMapping)

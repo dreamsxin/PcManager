@@ -1176,6 +1176,7 @@
 #define IDC_TXT_AUTOOPT_TOP_OPT_INIT			4076//经金山卫士智能分析，以下...
 #define IDC_TXT_AUTOOPT_TOP_OPT_ALL				4077//优化完成，本次共优化...
 #define IDC_TXT_AUTOOPT_TOP_OPT_PART			4078//优化完成，本次共优化...尚有...
+#define IDC_DIV_AUTOOPT_TOP2					4061
 
 //}
 //“一键优化”底部
@@ -1183,7 +1184,7 @@
 #define IDC_CHECKBOX_AUTOOPT_ALL				4027//全选
 #define IDC_BTN_RUN_AUTOOPT_DO					4053//立即优化
 //}
-//{4061,4072
+//{4072
 #define IDC_LNK_AUTOOPT_TOP_REFRESH				4062//重新扫描
 #define IDC_LNK_AUTOOPT_CANCELALL				4087//撤销所有
 //}
@@ -1572,6 +1573,7 @@
 
 #define IDC_BACK_QUERY_UNI_SOFTMGR_ICO		8174
 #define IDC_BACK_QUERY_SOFTMGR_ICO			8175
+#define IDC_BACK_QUERY_DAQUAN_SOFTMGR_ICO	8176
 
 #define IDC_SMR_UNI_HEADER_NAME				8300
 #define IDC_SMR_UNI_HEADER_SIZE				8301

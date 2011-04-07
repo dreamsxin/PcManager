@@ -20,7 +20,6 @@ class CBeikeSafeSysOptUIHandler;
 class CBeikeSafeSoftmgrUIHandler;
 class CKClearUIHandler;
 class CKTrojanUIHandler;//hub trojan
-class CBeiKeSafeMonitorDlg;
 class CBeikeSafeFreeVirusUIHandler;
 
 class CBeikeSafeMainDlg
@@ -54,6 +53,7 @@ public:
     void RefreshReportedUnknownInfo(int nCount);
 
     void ShowVirusLog();
+	void ShowVirusTrustList();
     void ShowReportedUnknownLog();
 
     void RescanVirusInLastScan();
@@ -85,7 +85,6 @@ protected:
     CBeikeSafeUpliveUIHandler       m_UpliveHandler;
 	CBeikeSafeSysOptUIHandler*       m_sysoptHandler;
 	CBeikeSafeSoftmgrUIHandler*		m_SoftmgrHandle;
-	CBeiKeSafeMonitorDlg*			m_SafeMonitorDlg;
     CKClearUIHandler*                m_KClearHandle;
 	CKTrojanUIHandler*				 m_KTrojanHandle;//hub trojan
 	CBeikeSafeFreeVirusUIHandler*	m_pFreeVirusHandle;
@@ -143,7 +142,8 @@ protected:
 	//hub trojan
 	LRESULT OnVirsLblDuba( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam );
 	LRESULT OnKwsSettingChange( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam );
-	LRESULT OnKwsSysFix( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam );
+	LRESULT OnKwsFullScan( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam );
+	LRESULT OnKwsFastScan( UINT /*uMsg*/, WPARAM wParam, LPARAM lParam );
 
 protected:
 	// Vulfix 
