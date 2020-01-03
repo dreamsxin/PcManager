@@ -1,3 +1,5 @@
+New code https://github.com/dreamsxin/knoss-pcmanager
+
 欢迎进入 金山卫士开源计划 !
 
 在这里你可以接触到中国最专业的安全类软件源代码;
